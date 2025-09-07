@@ -1,14 +1,7 @@
-﻿
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Text.RegularExpressions;
+﻿using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace IVSoftware.Portable
 {
@@ -72,13 +65,13 @@ namespace IVSoftware.Portable
 
                 var keyParts = localNormalizeKey(key);
 
-                var exactMatches = _glyphLookup.Keys
+                var exactMatches = GlyphLookup.Keys
                     .Where(k => localNormalizeKey(k).SequenceEqual(keyParts, StringComparer.OrdinalIgnoreCase))
                     .ToList();
 
                 if (exactMatches.Count == 1)
                 {
-                    code = _glyphLookup[exactMatches[0]].Code;
+                    code = GlyphLookup[exactMatches[0]].Code;
                 }
                 else if (exactMatches.Count > 1)
                 {
@@ -88,13 +81,13 @@ namespace IVSoftware.Portable
 
                 if (code == null)
                 {
-                    var partialMatches = _glyphLookup.Keys
+                    var partialMatches = GlyphLookup.Keys
                         .Where(k => localNormalizeKey(k).Intersect(keyParts, StringComparer.OrdinalIgnoreCase).Any())
                         .ToList();
 
                     if (partialMatches.Count == 1)
                     {
-                        code = _glyphLookup[partialMatches[0]].Code;
+                        code = GlyphLookup[partialMatches[0]].Code;
                     }
                     else
                     {
@@ -130,29 +123,71 @@ namespace IVSoftware.Portable
             }
         }
 
-
         /// <summary>
-        /// Typically this is driven by a bindable property in XAML.
+        /// One option is to drive this using a bindable property in XAML.
         /// </summary>
-
-        public static GlyphProvider FromFontConfigJson(string fontName)
+        public static GlyphProvider? FromFontConfigJson(string fontName)
         {
             lock (_lock)
             {
-                if (!_fontFamilyLookup.TryGetValue(fontName, out var provider))
-                {
-                    provider = new GlyphProvider(fontName);
-                    _fontFamilyLookup[fontName] = provider;
-                }
+                _ = FontFamilyLookup.TryGetValue(fontName, out var provider);
                 return provider;
             }
         }
         private static readonly object _lock = new object();
+        private static Dictionary<string, GlyphProvider> FontFamilyLookup
+        {
+            get
+            {
+                if (_fontFamilyLookup is null)
+                {
+                    _fontFamilyLookup = new Dictionary<string, GlyphProvider>();
 
-        private static readonly Dictionary<string, GlyphProvider> _fontFamilyLookup
-            = new Dictionary<string, GlyphProvider>();
+                    foreach (var asm in AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .Where(_ =>
+                            !string.IsNullOrEmpty(_.Location) &&
+                            !_.Location.Contains("Microsoft.NETCore", StringComparison.OrdinalIgnoreCase) &&
+                            !_.Location.Contains("System.Private.CoreLib", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        foreach (var resourcePath in asm.GetManifestResourceNames())
+                        {
+                            if (resourcePath.Contains("config.json", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                using var stream = asm.GetManifestResourceStream(resourcePath) ?? throw new Exception();
+                                using var reader = new StreamReader(stream);
+                                var json = reader.ReadToEnd();
+                                var glyphProvider = JsonConvert.DeserializeObject<GlyphProvider>(json);
+                                if (string.IsNullOrWhiteSpace(glyphProvider?.Name))
+                                {
+                                    Debug.Fail("ADVISORY - Defective config file.");
+                                }
+                                else
+                                {
+                                    _fontFamilyLookup[glyphProvider.Name] = glyphProvider;
+                                }
+                            }
+                        }
+                    }
+                }
+                return _fontFamilyLookup;
+            }
+        }
+        private static Dictionary<string, GlyphProvider>? _fontFamilyLookup = null;
 
-        private Dictionary<string, Glyph> _glyphLookup;
+
+        public Dictionary<string, Glyph> GlyphLookup
+        {
+            get
+            {
+                if (_glyphLookup is null)
+                {
+                    _glyphLookup = Glyphs.ToDictionary(_ => _.Css, _ => _);
+                }
+                return _glyphLookup;
+            }
+        }
+        Dictionary<string, Glyph>? _glyphLookup = null;
 
         #region J S O N    P R O P E R T I E S
         public string? Name { get; set; }
@@ -164,33 +199,12 @@ namespace IVSoftware.Portable
         public List<Glyph> Glyphs { get; set; }
         #endregion  J S O N    P R O P E R T I E S
 
-        private GlyphProvider(string resourceName)
-        {
-            var json = LoadEmbeddedResource(resourceName, "config.json") ?? "{}";
-            JsonConvert.PopulateObject(json, this);
-            Glyphs ??= new();
-            _glyphLookup = Glyphs.ToDictionary(_ => _.Css, _ => _) ?? new();
-        }
-
-
-        private string? LoadEmbeddedResource(string resourceName, string endsWith)
-        {
-            if (resourceName.GetResourcePath(endsWith, out var asm) is { } resourcePath && asm != null)
-            {
-                using (var stream = asm.GetManifestResourceStream(resourcePath) ?? throw new Exception())
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
-            return null;
-        }
         internal string CreateEnumPrototype()
         {
             var builder = new List<string>();
             builder.Add($"public enum Std{localLintTerm(string.IsNullOrWhiteSpace(Name) ? "Prototype" : Name)}Glyph");
             builder.Add($"{{");
-            foreach (var name in _glyphLookup.Keys)
+            foreach (var name in GlyphLookup.Keys)
             {
                 builder.Add($"\t[Description(\"{name}\")]");
                 builder.Add($"\t{localLintTerm(name)},\n");
@@ -225,64 +239,5 @@ namespace IVSoftware.Portable
     {
         public string Path { get; set; } = string.Empty;
         public int Width { get; set; }
-    }
-    public static class FontExtensions
-    {
-        public static string? GetResourcePath(this string fontFamily, string endsWith, out Assembly? asm)
-        {
-            string[]? manifestResourceNames;
-            string? resourcePath;
-
-
-            asm = typeof(GlyphProvider).Assembly;
-            manifestResourceNames = asm.GetManifestResourceNames();
-
-            resourcePath = manifestResourceNames
-                .FirstOrDefault(_ =>
-                _.EndsWith(endsWith, StringComparison.OrdinalIgnoreCase) &&
-
-                    // Try replacing hyphens with underscores FIRST.
-                    _.Contains($".{fontFamily.Replace('-', '_')}.") ||
-                    // Then try orig.
-                    _.Contains($".{fontFamily}.")
-                );
-            if (string.IsNullOrWhiteSpace(resourcePath))
-            {
-                asm = Assembly.GetEntryAssembly();
-                manifestResourceNames = asm?.GetManifestResourceNames();
-                if (asm != null)
-                {
-                    resourcePath = manifestResourceNames
-                        ?.FirstOrDefault(_ =>
-                        _.EndsWith(endsWith, StringComparison.OrdinalIgnoreCase) &&
-
-                            // Try replacing hyphens with underscores FIRST.
-                            _.Contains($".{fontFamily.Replace('-', '_')}.") ||
-                            // Then try orig.
-                            _.Contains($".{fontFamily}.")
-                        );
-                }
-            }
-            return resourcePath;
-        }
-
-        public static string ToGlyph(this string fontFamily, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode)
-            => GlyphProvider.FromFontConfigJson(fontFamily)[fuzzyKey, format];
-
-        public static string ToGlyph(this string fontFamily, Enum stdGlyph, GlyphFormat format = GlyphFormat.Unicode)
-            => GlyphProvider.FromFontConfigJson(fontFamily)[stdGlyph, format];
-
-        /// <summary>
-        /// - Retrieves a standard attribute applied to an Enum member, or null if not found.
-        /// - Throws if multiple attributes of type TAttr are applied to the same Enum member.
-        /// - To retrieve intentional multiple attributes, call GetOnePageAttributes() instead.
-        /// </summary>
-        internal static TAttr? GetCustomAttribute<TAttr>(this Enum opid)
-            where TAttr : Attribute
-            => opid
-                .GetType()
-                .GetField(opid.ToString())
-                ?.GetCustomAttributes<TAttr>()
-                .SingleOrDefault();
     }
 }

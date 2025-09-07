@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
@@ -15,11 +15,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+
+	<!-- Use direct project reference for DEBUG builds -->
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
 		<ProjectReference Include="..\IVSoftware.Portable.GlyphProvider\IVSoftware.Portable.GlyphProvider.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	<!-- Use NuGet package reference for RELEASE builds -->
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-alpha" />
 	</ItemGroup>
 
 </Project>

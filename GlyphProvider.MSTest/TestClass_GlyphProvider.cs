@@ -107,5 +107,33 @@ U+E807";
             );
 
         }
+
+
+        [TestMethod]
+        public void Test_ToGlyphFromFuzzyString()
+        {
+            string actual, expected;
+
+            actual = "basics-icons".ToGlyph("search", GlyphFormat.UnicodeDisplay);
+            expected = @" 
+U+E807";
+
+            Assert.AreEqual(
+                expected.NormalizeResult(),
+                actual.NormalizeResult(),
+                "Expecting unicode formatted display value"
+            );
+
+            actual = "basics-icons".ToGlyph("search", GlyphFormat.Xaml);
+            expected = @" 
+&#xE807;";
+
+            Assert.AreEqual(
+                expected.NormalizeResult(),
+                actual.NormalizeResult(),
+                "Expecting xaml formatted display value"
+            );
+
+        }
     }
 }

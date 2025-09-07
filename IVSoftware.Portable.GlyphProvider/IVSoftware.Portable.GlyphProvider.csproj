@@ -1,11 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Title>IVSoftware.Portable.GlyphProvider</Title>
+		<PackageId>IVSoftware.Portable.GlyphProvider</PackageId>
+		<Description>Portable glyph identity resolver using embedded config.json files shipped alongside custom fonts (e.g. basics-icons.ttf). Provides ToGlyph extensions, enum prototype generation, and GlyphAttribute for declarative binding.</Description>
+		<PackageTags>portable;cross-platform;glyphs;fontello;icons;enum;binding;declarative;net8.0</PackageTags>
+		<RepositoryUrl>https://github.com/IVSoftware/IVSoftware.Portable.GlyphProvider.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/IVSoftware/IVSoftware.Portable.GlyphProvider.git</PackageProjectUrl>
+		<RootNamespace>IVSoftware.Portable</RootNamespace>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<RootNamespace>IVSoftware.Portable</RootNamespace>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Author>Thomas C. Gregor</Author>
+		<Owner>IVSoftware LLC</Owner>
+		<Copyright>Copyright © 2023-2025 IVSoftware LLC</Copyright>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>
+			Initial prerelease including:
+			- Discovery of embedded config.json across loaded assemblies.
+			- Fuzzy string glyph lookup with fallback for prototyping.
+			- CreateEnumPrototype for strongly typed glyph enums.
+			- GlyphAttribute for declarative property/enum binding.
+			- Bundled basics-icons.ttf as a starter font with StdBasicsGlyph enum.
+		</PackageReleaseNotes>
+
+		<AssemblyOriginatorKeyFile>D:\PFX\ivsoft-240410.pfx</AssemblyOriginatorKeyFile>
+		<DebugType>embedded</DebugType>
+		<BaseVersion>1.0.0</BaseVersion>
+		<VersionPrefix>$(BaseVersion)-alpha</VersionPrefix>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<SignAssembly>True</SignAssembly>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="README\**" />
+	  <EmbeddedResource Remove="README\**" />
+	  <None Remove="README\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Remove="Resources\Fonts\Basics\config.json" />
@@ -15,12 +53,25 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\Fonts\Basics\config.json" />
 		<EmbeddedResource Include="Resources\Fonts\Basics\font\basics-icons.ttf">
-		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Resources\Fonts\Basics\LICENSE.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

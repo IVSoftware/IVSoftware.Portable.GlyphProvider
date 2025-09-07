@@ -135,6 +135,16 @@ namespace IVSoftware.Portable
             }
         }
         private static readonly object _lock = new object();
+
+        /// <summary>
+        /// Discovers and caches embedded font resources across the current app domain, 
+        /// building a lookup keyed by the font family name specified in each config.json file.
+        /// </summary>
+        /// <remarks>
+        /// - Scans non-framework assemblies only, filtering resource names that end with config.json.  
+        /// - Each JSON is deserialized into a GlyphProvider and added to the lookup.  
+        /// - If multiple configs specify the same name, the last one discovered overwrites earlier entries.  
+        /// </remarks>
         private static Dictionary<string, GlyphProvider> FontFamilyLookup
         {
             get
@@ -152,7 +162,7 @@ namespace IVSoftware.Portable
                     {
                         foreach (var resourcePath in asm.GetManifestResourceNames())
                         {
-                            if (resourcePath.Contains("config.json", StringComparison.InvariantCultureIgnoreCase))
+                            if (resourcePath.EndsWith("config.json", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 using var stream = asm.GetManifestResourceStream(resourcePath) ?? throw new Exception();
                                 using var reader = new StreamReader(stream);
@@ -215,6 +225,12 @@ namespace IVSoftware.Portable
             builder.Add($"{{");
             foreach (var name in GlyphLookup.Keys)
             {
+                // Only allow glyph names that can be linted into valid C# identifiers.
+                // Regex: letters, digits, underscore, and hyphen (lint strips hyphen/underscore).
+                if (!Regex.IsMatch(name, @"^[A-Za-z0-9\-_]+$"))
+                {
+                    continue;
+                }
                 builder.Add($"\t[Description(\"{name}\")]");
                 builder.Add($"\t{localLintTerm(name)},\n");
             }
@@ -228,7 +244,14 @@ namespace IVSoftware.Portable
                 if (string.IsNullOrWhiteSpace(expr)) throw new InvalidOperationException("Requires non-empty term");
 
                 var parts = expr.Split(new[] { '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
-                return string.Concat(parts.Select(p => char.ToUpperInvariant(p[0]) + p.Substring(1)));
+                var aspirant = string.Concat(parts.Select(p => char.ToUpperInvariant(p[0]) + p.Substring(1)));
+
+                // Ensure identifier does not start with a digit
+                if (char.IsDigit(aspirant[0]))
+                {
+                    aspirant = "_" + aspirant;
+                }
+                return aspirant;
             }
         }
     }

@@ -13,8 +13,6 @@ namespace GlyphProvider.MSTest
 
             var stdEnum = "basics-icons".CreateEnumPrototype();
             actual = stdEnum;
-            actual.ToClipboardAssert("Expecting enum gen with some minor manual nits");
-            { }
             expected = @" 
 public enum StdBasicsIcons
 {
@@ -72,10 +70,8 @@ public enum StdBasicsIcons
 	[Description(""doc-new"")]
 	DocNew,
 
-	[Description(""https://fontello.com/"")]
-	Https://fontello.com/,
-
-}";
+}"
+            ;
 
             Assert.AreEqual(
                 expected.NormalizeResult(),
@@ -89,6 +85,26 @@ public enum StdBasicsIcons
         public void Test_ToGlyphFromEnum()
         {
             string actual, expected;
+
+			actual = "basics-icons".ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
+            expected = @" 
+U+E807";
+
+            Assert.AreEqual(
+                expected.NormalizeResult(),
+                actual.NormalizeResult(),
+                "Expecting unicode formatted display value"
+            );
+
+			actual = "basics-icons".ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+            expected = @" 
+&#xE807;";
+
+            Assert.AreEqual(
+                expected.NormalizeResult(),
+                actual.NormalizeResult(),
+                "Expecting xaml formatted display value"
+            );
 
         }
     }

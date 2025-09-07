@@ -9,7 +9,7 @@ Typically, when creating custom fonts (for example, with [Fontello](https://www.
 This is what makes the scheme portable: the source of truth for glyph identity lives in embedded JSON, not in platform-specific font mechanics.
 
 ⚠️ The `.ttf` file itself is still subject to platform import rules.  
-MAUI, WPF, WinForms, etc. each require you to register or package fonts according to their own conventions. The `GlyphProvider` does not replace that step—it complements it by providing a uniform, declarative way to resolve glyphs across platforms.
+MAUI, WPF, WinForms, etc. each require you to register or package fonts according to their own conventions. The `GlyphProvider` does not replace that step - it complements it by providing a uniform, declarative way to resolve glyphs across platforms.
 
 ---
 
@@ -45,8 +45,31 @@ string g2 = "basics-icons".ToGlyph(StdBasicsGlyph.Trash);
 ```
 
 ### String vs. Enum keys
-- String keys allow quick fuzzy lookups.  
-- Enums provide compile-time safety and serve as canonical contracts between code and glyphs.
+- String keys allow quick fuzzy lookups and are useful during prototyping.  
+- But string lookups are fragile in production.  
+
+To promote safety, use `CreateEnumPrototype()` to generate a strongly typed enum scaffold directly from the font's `config.json`. This lets you replace brittle strings with a compile-time contract:
+
+```csharp
+string proto = "basics-icons".CreateEnumPrototype();
+Console.WriteLine(proto);
+```
+
+Output (excerpt):
+
+```csharp
+public enum StdBasicsIcons
+{
+    [Description("search")]
+    Search,
+
+    [Description("trash")]
+    Trash,
+    ...
+}
+```
+
+By pasting this enum into your project, you get the benefits of both discoverability and compile-time safety.
 
 ### Declarative Bindings using GlyphAttribute
 Annotate models or properties directly:

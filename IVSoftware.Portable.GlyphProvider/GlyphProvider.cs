@@ -126,12 +126,12 @@ namespace IVSoftware.Portable
         /// <summary>
         /// One option is to drive this using a bindable property in XAML.
         /// </summary>
-        public static GlyphProvider? FromFontConfigJson(string fontName)
+        public static GlyphProvider FromFontConfigJson(string fontName)
         {
             lock (_lock)
             {
                 _ = FontFamilyLookup.TryGetValue(fontName, out var provider);
-                return provider;
+                return provider ?? new();
             }
         }
         private static readonly object _lock = new object();
@@ -175,7 +175,6 @@ namespace IVSoftware.Portable
         }
         private static Dictionary<string, GlyphProvider>? _fontFamilyLookup = null;
 
-
         public Dictionary<string, Glyph> GlyphLookup
         {
             get
@@ -196,7 +195,7 @@ namespace IVSoftware.Portable
         public bool Hinting { get; set; }
         public int UnitsPerEm { get; set; }
         public int Ascent { get; set; }
-        public List<Glyph> Glyphs { get; set; }
+        public List<Glyph> Glyphs { get; set; } = [];
         #endregion  J S O N    P R O P E R T I E S
 
         internal string CreateEnumPrototype()

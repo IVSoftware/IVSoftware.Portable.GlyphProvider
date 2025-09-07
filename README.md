@@ -13,21 +13,17 @@ MAUI, WPF, WinForms, etc. each require you to register or package fonts accordin
 
 ---
 
-
----
-
 ### Table of Contents
 
 1. [Concept](#concept)  
-2. [How It Works](#how-it-works)  
-   - [Singleton Family Lookup](#singleton-family-lookup)  
-   - [JSON Configuration](#json-configuration)  
-   - [Friendly Name Mapping](#friendly-name-mapping)  
-3. [Usage](#usage)  
-   - [From Glyph Family](#from-glyph-family)  
-   - [Lookup by Enum](#lookup-by-enum)  
-   - [XAML Integration](#xaml-integration)  
-4. [Why Glyph Provider (Not Font)](#why-glyph-provider-not-font)  
-5. [Relation to OnePage Tenets](#relation-to-onepage-tenets)
+   - [Discover and Catalog](#)  
+   - [GlyphProvider with Indexing](#)  
+   - [String v. Enum keys](#)  
+   - [Declarative Bindings using GlyphAttribute](#)  
+2. [Usage](#usage)  
+   - [ToGlyph() extensions](#)  
+   - [Return formats](#)  
+   - [XAML Integration](#)  
+3. [Why Glyph Provider (Not Font)](#)  
 
 ---

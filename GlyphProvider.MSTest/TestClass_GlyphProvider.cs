@@ -16,7 +16,7 @@ namespace GlyphProvider.MSTest
             actual.ToClipboardAssert("Expecting enum gen with some minor manual nits");
             { }
             expected = @" 
-public enum StdBasicsIconsGlyph
+public enum StdBasicsIcons
 {
 	[Description(""add"")]
 	Add,

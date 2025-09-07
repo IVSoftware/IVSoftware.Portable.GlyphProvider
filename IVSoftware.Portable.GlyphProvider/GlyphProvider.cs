@@ -200,8 +200,18 @@ namespace IVSoftware.Portable
 
         internal string CreateEnumPrototype()
         {
+            var enumType = localLintTerm(string.IsNullOrWhiteSpace(Name) ? "Prototype" : Name);
+
             var builder = new List<string>();
-            builder.Add($"public enum Std{localLintTerm(string.IsNullOrWhiteSpace(Name) ? "Prototype" : Name)}Glyph");
+            if(enumType.Contains("glyph", StringComparison.InvariantCultureIgnoreCase) ||
+               enumType.Contains("icon", StringComparison.InvariantCultureIgnoreCase))
+            {
+                builder.Add($"public enum Std{enumType}");
+            }
+            else
+            {
+                builder.Add($"public enum Std{enumType}Glyph");
+            }
             builder.Add($"{{");
             foreach (var name in GlyphLookup.Keys)
             {

@@ -1,0 +1,20 @@
+<Project>
+  <ItemGroup>
+    <!-- 
+      Expose the embedded TTF as a MAUI font.
+      This makes the consumer's build treat the packaged .ttf as if it were
+      declared in their own .csproj <MauiFont Include=...>.
+      No copy into their Resources\Fonts folder is needed — MAUI picks it up from here.
+    -->
+    <MauiFont Include="$(MSBuildThisPackageRoot)buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\font\basics-icons.ttf"
+              Alias="basics-icons" />
+
+    <!-- 
+      Ship the font's license alongside the build output.
+      This ensures LICENSE.txt is copied into the consumer's bin/Debug/... folder
+      so that runtime artifacts are properly documented.
+    -->
+    <None Include="$(MSBuildThisPackageRoot)buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\LICENSE.txt"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

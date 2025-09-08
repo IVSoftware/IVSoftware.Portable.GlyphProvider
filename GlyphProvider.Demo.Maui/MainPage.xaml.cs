@@ -4,8 +4,6 @@ namespace GlyphProvider.Demo.Maui
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
@@ -22,28 +20,29 @@ namespace GlyphProvider.Demo.Maui
                     CounterBtn.Text = $"Cycled {cycleCount} time";
                 else
                     CounterBtn.Text = $"Cycled {cycleCount} times";
-                // CounterBtn.WidthTracksHeight = false;
+                if(_widthRequestPrev is double width)
+                {
+                    CounterBtn.WidthRequest = width;
+                }
             }
             else
             {
-                CounterBtn.FontFamily = "onepage-icons";
-
-                //    // This is what the Glyph property abstracts!
-                //    // OLD
-                //    // CounterBtn.Glyph = GlyphProvider.FromFontConfigJson(Framework.OP_FONT_FAMILY)["Search"];
-                //    // NEW
-                //    CounterBtn.Glyph = Framework.OP_FONT_FAMILY.ToGlyph(StdOnepageIconsGlyph.Search);
+                CounterBtn.FontFamily = "basics-icons";
+                CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search);
+                _widthRequestPrev = CounterBtn.WidthRequest;
+                CounterBtn.WidthRequest = CounterBtn.Height;
                 // Alt
                 var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
                 // Readable
                 var display = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
                 { }
 
-                //    CounterBtn.WidthTracksHeight = true;
-                //}
+                var fonts = IVSoftware.Portable.GlyphProvider.ListFonts();
 
                 SemanticScreenReader.Announce(CounterBtn.Text);
             }
         }
+        double? _widthRequestPrev;
+        int count = 0;
     }
 }

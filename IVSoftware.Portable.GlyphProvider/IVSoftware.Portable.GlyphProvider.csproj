@@ -32,7 +32,7 @@
 		<AssemblyOriginatorKeyFile>D:\PFX\ivsoft-240410.pfx</AssemblyOriginatorKeyFile>
 		<DebugType>embedded</DebugType>
 		<BaseVersion>1.0.0</BaseVersion>
-		<VersionPrefix>$(BaseVersion)-local11</VersionPrefix>
+		<VersionPrefix>$(BaseVersion)-local15</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -52,9 +52,7 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\Fonts\Basics\config.json" />
-		<EmbeddedResource Include="Resources\Fonts\Basics\font\basics-icons.ttf">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</EmbeddedResource>
+		<EmbeddedResource Include="Resources\Fonts\Basics\font\basics-icons.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,8 +66,9 @@
 		</None>
 	</ItemGroup>
 
+
 	<ItemGroup>
-		<None Include="Resources\Fonts\Basics\font\basics-icons.ttf" Pack="true" PackagePath="buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\font" />
+		<Content Include="Resources\Fonts\Basics\font\basics-icons.ttf" Pack="true" PackagePath="contentFiles\any\any" CopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -78,18 +77,5 @@
 			<PackagePath>\</PackagePath>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
-	
-	<ItemGroup>
-		<None Include="MARKLAR.txt">
-			<Pack>true</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="IVSoftware.Portable.GlyphProvider.targets"
-			  Pack="true"
-			  PackagePath="buildTransitive" />
 	</ItemGroup>
 </Project>

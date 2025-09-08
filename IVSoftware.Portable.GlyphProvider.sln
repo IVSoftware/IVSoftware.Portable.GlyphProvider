@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.Maui", "
 		{6EC1662E-5888-4425-A0AA-53C6A2926C3A} = {6EC1662E-5888-4425-A0AA-53C6A2926C3A}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.WinForms", "GlyphProvider.Demo.WinForms\GlyphProvider.Demo.WinForms.csproj", "{7BFCCB69-0772-48A3-963A-294808194726}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{A29AEE64-FAD9-4130-A3A1-2F3AF449A8D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A29AEE64-FAD9-4130-A3A1-2F3AF449A8D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A29AEE64-FAD9-4130-A3A1-2F3AF449A8D7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7BFCCB69-0772-48A3-963A-294808194726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFCCB69-0772-48A3-963A-294808194726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFCCB69-0772-48A3-963A-294808194726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFCCB69-0772-48A3-963A-294808194726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

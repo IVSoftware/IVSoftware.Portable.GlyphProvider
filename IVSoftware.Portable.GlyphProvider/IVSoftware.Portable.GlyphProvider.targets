@@ -1,16 +1,4 @@
 <Project>
   <ItemGroup Condition="'$(UseMaui)' == 'true'">
-    <!-- 
-      Expose the embedded TTF as a MAUI font.
-      $(MSBuildThisFileDirectory) points to the folder containing GlyphProvider.targets 
-      within the NuGet package's buildTransitive folder (e.g., .../buildTransitive/IVSoftware.Portable.GlyphProvider/)
-    -->
-    <MauiFont Include="$(MSBuildThisFileDirectory)Resources\Fonts\Basics\font\basics-icons.ttf"
-              Alias="basics-icons" />
-  </ItemGroup>
-  <ItemGroup>              
-    <None Include="$(MSBuildThisPackageRoot)MARKLAR.txt"
-          Link="MARKLAR.txt"
-          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

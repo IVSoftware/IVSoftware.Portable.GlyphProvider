@@ -25,7 +25,7 @@
 
 	<!-- Use NuGet package reference for RELEASE builds -->
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local10" />
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local11" />
 	</ItemGroup>
 
 </Project>

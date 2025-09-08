@@ -22,7 +22,7 @@ namespace GlyphProvider.Demo.Maui
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("basics-icons.ttf", "basics-icons");
+                    fonts.AddEmbeddedResourceFont(typeof(IVSoftware.Portable.GlyphProvider).Assembly, "basics-icons.ttf", "basics-icons");
                 });
 
 #if DEBUG

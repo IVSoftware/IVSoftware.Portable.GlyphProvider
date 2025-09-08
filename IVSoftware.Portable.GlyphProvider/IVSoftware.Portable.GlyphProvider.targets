@@ -1,0 +1,4 @@
+<Project>
+  <ItemGroup Condition="'$(UseMaui)' == 'true'">
+  </ItemGroup>
+</Project>

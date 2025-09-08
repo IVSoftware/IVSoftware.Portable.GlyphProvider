@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace IVSoftware.Portable
@@ -232,8 +233,11 @@ namespace IVSoftware.Portable
                     continue;
                 }
                 builder.Add($"\t[Description(\"{name}\")]");
-                builder.Add($"\t{localLintTerm(name)},\n");
+                builder.Add($"\t{localLintTerm(name)}");
+                builder.Add(string.Empty);
             }
+            if(builder.Count > 1) 
+                builder.Remove(builder.Last());
             builder.Add($"}}");
             var joined = string.Join(Environment.NewLine, builder);
             Debug.WriteLine(joined);
@@ -254,6 +258,104 @@ namespace IVSoftware.Portable
                 return aspirant;
             }
         }
+
+
+        public static string ListConfigs()
+        {
+            var builder = new List<string>();
+
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string asmFile;
+                try { asmFile = asm.Location; }
+                catch { asmFile = "(dynamic / no location)"; }
+
+                string[] resources;
+                try { resources = asm.GetManifestResourceNames(); }
+                catch { resources = Array.Empty<string>(); }
+
+                foreach (var res in resources.Where(r => r.EndsWith("config.json", StringComparison.OrdinalIgnoreCase)))
+                {
+                    string? fontName = null;
+                    try
+                    {
+                        using var stream = asm.GetManifestResourceStream(res);
+                        using var reader = new StreamReader(stream ?? Stream.Null);
+                        var json = reader.ReadToEnd();
+                        var provider = JsonConvert.DeserializeObject<GlyphProvider>(json);
+                        fontName = provider?.Name;
+                    }
+                    catch { }
+
+                    builder.Add($"Assembly: {asm.GetName().Name}");
+                    builder.Add($"File: {asmFile}");
+                    builder.Add($"Resource: {res}");
+                    builder.Add($"Family: {fontName}");
+                    builder.Add($"");
+                }
+            }
+            var joined = string.Join(Environment.NewLine, builder.SkipLast(1));
+            return joined;
+        }
+
+        public static string ListFonts()
+        {
+            var builder = new List<string>();
+
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string asmFile;
+                try { asmFile = asm.Location; }
+                catch { asmFile = "(dynamic / no location)"; }
+
+                string[] resources;
+                try { resources = asm.GetManifestResourceNames(); }
+                catch { resources = Array.Empty<string>(); }
+
+                foreach (var res in resources.Where(r => r.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase)))
+                {
+                    builder.Add($"Assembly: {asm.GetName().Name}");
+                    builder.Add($"File: {asmFile}");
+                    builder.Add($"Resource: {res}");
+                    builder.Add($"");
+                }
+            }
+
+            var joined = string.Join(Environment.NewLine, builder.SkipLast(1));
+            return joined;
+        }
+        record GlyphConfigReport(
+            string AssemblyName,
+            string AssemblyFile,
+            string ResourceName,
+            string? FontFamilyName
+        );
+
+        record GlyphFontReport(
+            string AssemblyName,
+            string AssemblyFile,
+            string ResourceName
+        );
+
+        /// <summary>
+        /// Fallback utility to extract the font file from this package.
+        /// </summary>
+        public static void CopyBasicsIconsTtf(string destinationFolder)
+        {
+            const string resourceName = "IVSoftware.Portable.Resources.Fonts.Basics.font.basics-icons.ttf";
+
+            using var stream = typeof(GlyphProvider)
+                .Assembly
+                .GetManifestResourceStream(resourceName)
+                ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
+
+            var destPath = Path.Combine(destinationFolder, "basics-icons.ttf");
+            Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+
+            using var file = File.Create(destPath);
+            stream.CopyTo(file);
+        }
+
     }
 
     public class Glyph

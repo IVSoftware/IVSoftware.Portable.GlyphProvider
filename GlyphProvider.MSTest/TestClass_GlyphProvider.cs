@@ -11,8 +11,7 @@ namespace GlyphProvider.MSTest
         {
             string actual, expected;
 
-            var stdEnum = "basics-icons".CreateEnumPrototype();
-            actual = stdEnum;
+            actual = "basics-icons".CreateEnumPrototype();
             expected = @" 
 public enum StdBasicsIcons
 {
@@ -108,7 +107,6 @@ U+E807";
 
         }
 
-
         [TestMethod]
         public void Test_ToGlyphFromFuzzyString()
         {
@@ -133,7 +131,26 @@ U+E807";
                 actual.NormalizeResult(),
                 "Expecting xaml formatted display value"
             );
+        }
 
+        [TestMethod]
+        public void Test_Reports()
+        {
+            string actual, expected;
+
+            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListFonts());
+            expected = @" 
+Assembly: IVSoftware.Portable.GlyphProvider
+File: D:\Github\IVSoftware\TMP\IVSoftware.Portable.GlyphProvider\GlyphProvider.MSTest\bin\Debug\net8.0-windows\IVSoftware.Portable.GlyphProvider.dll
+Resource: IVSoftware.Portable.Resources.Fonts.Basics.font.basics-icons.ttf";
+
+            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListConfigs());
+            expected = @" 
+Assembly: IVSoftware.Portable.GlyphProvider
+File: D:\Github\IVSoftware\TMP\IVSoftware.Portable.GlyphProvider\GlyphProvider.MSTest\bin\Debug\net8.0-windows\IVSoftware.Portable.GlyphProvider.dll
+Resource: IVSoftware.Portable.Resources.Fonts.Basics.config.json
+Family: basics-icons"
+            ;
         }
     }
 }

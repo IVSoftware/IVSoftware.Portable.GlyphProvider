@@ -7,9 +7,10 @@
     -->
     <MauiFont Include="$(MSBuildThisFileDirectory)Resources\Fonts\Basics\font\basics-icons.ttf"
               Alias="basics-icons" />
-              
-    <None Include="$(MSBuildThisPackageRoot)README.md"
-          Link="README.md"
+  </ItemGroup>
+  <ItemGroup>              
+    <None Include="$(MSBuildThisPackageRoot)MARKLAR.txt"
+          Link="MARKLAR.txt"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

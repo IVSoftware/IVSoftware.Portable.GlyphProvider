@@ -32,7 +32,7 @@
 		<AssemblyOriginatorKeyFile>D:\PFX\ivsoft-240410.pfx</AssemblyOriginatorKeyFile>
 		<DebugType>embedded</DebugType>
 		<BaseVersion>1.0.0</BaseVersion>
-		<VersionPrefix>$(BaseVersion)-local7</VersionPrefix>
+		<VersionPrefix>$(BaseVersion)-local10</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -79,6 +79,13 @@
 			<Pack>true</Pack>
 			<PackagePath>\</PackagePath>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Include="MARKLAR.txt">
+			<Pack>true</Pack>
+			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
 

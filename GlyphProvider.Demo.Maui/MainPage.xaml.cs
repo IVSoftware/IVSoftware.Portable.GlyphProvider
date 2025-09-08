@@ -39,6 +39,9 @@ namespace GlyphProvider.Demo.Maui
 
                 var fonts = IVSoftware.Portable.GlyphProvider.ListFonts();
 
+
+                var names = GetType().Assembly.GetManifestResourceNames();
+                { }
                 SemanticScreenReader.Announce(CounterBtn.Text);
             }
         }

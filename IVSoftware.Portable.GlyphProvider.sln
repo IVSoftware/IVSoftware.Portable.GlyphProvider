@@ -6,8 +6,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IVSoftware.Portable.GlyphProvider", "IVSoftware.Portable.GlyphProvider\IVSoftware.Portable.GlyphProvider.csproj", "{6EC1662E-5888-4425-A0AA-53C6A2926C3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.MSTest", "GlyphProvider.MSTest\GlyphProvider.MSTest.csproj", "{7D575689-5E60-4B42-9EED-9FDB60928959}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6EC1662E-5888-4425-A0AA-53C6A2926C3A} = {6EC1662E-5888-4425-A0AA-53C6A2926C3A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.Maui", "GlyphProvider.Demo.Maui\GlyphProvider.Demo.Maui.csproj", "{A29AEE64-FAD9-4130-A3A1-2F3AF449A8D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6EC1662E-5888-4425-A0AA-53C6A2926C3A} = {6EC1662E-5888-4425-A0AA-53C6A2926C3A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

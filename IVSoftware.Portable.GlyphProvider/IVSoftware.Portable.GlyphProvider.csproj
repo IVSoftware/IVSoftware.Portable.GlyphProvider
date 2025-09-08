@@ -32,7 +32,7 @@
 		<AssemblyOriginatorKeyFile>D:\PFX\ivsoft-240410.pfx</AssemblyOriginatorKeyFile>
 		<DebugType>embedded</DebugType>
 		<BaseVersion>1.0.0</BaseVersion>
-		<VersionPrefix>$(BaseVersion)-alpha2</VersionPrefix>
+		<VersionPrefix>$(BaseVersion)-local7</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -69,21 +69,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Resources\Fonts\Basics\font\basics-icons.ttf"
+		<None Include="Resources\Fonts\Basics\font\basics-icons.ttf"
 				 Pack="true"
 				 PackagePath="buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\font" />
 	</ItemGroup>
 	
 	<ItemGroup>
-		<Content Include="Resources\Fonts\Basics\LICENSE.txt"
-				 Pack="true"
-				 PackagePath="buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\" />
+		<None Include="Resources\Fonts\Basics\LICENSE.txt">
+			<Pack>true</Pack>
+			<PackagePath>\</PackagePath>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="GlyphProvider.targets"
 			  Pack="true"
-			  PackagePath="buildTransitive\$(MSBuildProjectName)" />
+			  PackagePath="buildTransitive" />
 	</ItemGroup>
 	
 </Project>

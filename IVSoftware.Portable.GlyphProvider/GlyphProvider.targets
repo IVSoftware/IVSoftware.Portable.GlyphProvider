@@ -1,20 +1,15 @@
 <Project>
-  <ItemGroup>
+  <ItemGroup Condition="'$(UseMaui)' == 'true'">
     <!-- 
       Expose the embedded TTF as a MAUI font.
-      This makes the consumer's build treat the packaged .ttf as if it were
-      declared in their own .csproj <MauiFont Include=...>.
-      No copy into their Resources\Fonts folder is needed — MAUI picks it up from here.
+      $(MSBuildThisFileDirectory) points to the folder containing GlyphProvider.targets 
+      within the NuGet package's buildTransitive folder (e.g., .../buildTransitive/IVSoftware.Portable.GlyphProvider/)
     -->
-    <MauiFont Include="$(MSBuildThisPackageRoot)buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\font\basics-icons.ttf"
+    <MauiFont Include="$(MSBuildThisFileDirectory)Resources\Fonts\Basics\font\basics-icons.ttf"
               Alias="basics-icons" />
-
-    <!-- 
-      Ship the font's license alongside the build output.
-      This ensures LICENSE.txt is copied into the consumer's bin/Debug/... folder
-      so that runtime artifacts are properly documented.
-    -->
-    <None Include="$(MSBuildThisPackageRoot)buildTransitive\$(MSBuildProjectName)\Resources\Fonts\Basics\LICENSE.txt"
+              
+    <None Include="$(MSBuildThisPackageRoot)README.md"
+          Link="README.md"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

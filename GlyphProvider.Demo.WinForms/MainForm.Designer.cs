@@ -33,13 +33,15 @@
             // 
             // CounterBtn
             // 
+            CounterBtn.BackColor = Color.FromArgb(81, 43, 212);
             CounterBtn.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            CounterBtn.Location = new Point(140, 405);
+            CounterBtn.ForeColor = Color.White;
+            CounterBtn.Location = new Point(106, 405);
             CounterBtn.Name = "CounterBtn";
-            CounterBtn.Size = new Size(221, 51);
+            CounterBtn.Size = new Size(298, 62);
             CounterBtn.TabIndex = 0;
             CounterBtn.Text = "Click me";
-            CounterBtn.UseVisualStyleBackColor = true;
+            CounterBtn.UseVisualStyleBackColor = false;
             // 
             // MainForm
             // 

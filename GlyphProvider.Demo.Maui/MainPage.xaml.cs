@@ -1,5 +1,6 @@
 ﻿using IVSoftware.Portable;
 using System.Diagnostics;
+using Font = Microsoft.Maui.Font;
 
 namespace GlyphProvider.Demo.Maui
 {
@@ -8,8 +9,10 @@ namespace GlyphProvider.Demo.Maui
         public MainPage()
         {
             InitializeComponent();
-            //var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
-            _ = typeof(IVSoftware.Portable.GlyphProvider).Assembly;
+            // This lowers the lazy init time
+            IVSoftware.Portable.GlyphProvider.BoostCache();
+            _fontFamilyPrev = CounterBtn.FontFamily;
+            _widthRequestPrev = CounterBtn.WidthRequest;
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
@@ -33,7 +36,6 @@ namespace GlyphProvider.Demo.Maui
                 var stopwatch = Stopwatch.StartNew();
                 CounterBtn.FontFamily = "basics-icons";
                 CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search);
-                _widthRequestPrev = CounterBtn.WidthRequest;
                 CounterBtn.WidthRequest = CounterBtn.Height;
                 // Alt
                 var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
@@ -41,7 +43,7 @@ namespace GlyphProvider.Demo.Maui
                 var display = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
                 { }
 
-                var fonts = IVSoftware.Portable.GlyphProvider.ListFonts();
+                var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
 
 
                 var names = GetType().Assembly.GetManifestResourceNames();
@@ -54,7 +56,8 @@ namespace GlyphProvider.Demo.Maui
             }
 
         }
-        double? _widthRequestPrev;
+        private readonly string _fontFamilyPrev;
+        private readonly double _widthRequestPrev;
         int count = 0;
     }
 }

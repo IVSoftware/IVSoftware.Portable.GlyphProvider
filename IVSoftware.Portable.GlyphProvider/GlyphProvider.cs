@@ -260,7 +260,7 @@ namespace IVSoftware.Portable
         }
 
 
-        public static string ListConfigs()
+        public static string ListDomainFontConfigs()
         {
             var builder = new List<string>();
 
@@ -298,7 +298,7 @@ namespace IVSoftware.Portable
             return joined;
         }
 
-        public static string ListFonts()
+        public static string ListDomainFontResources()
         {
             var builder = new List<string>();
 
@@ -356,22 +356,45 @@ namespace IVSoftware.Portable
             stream.CopyTo(file);
         }
 
-    }
+        /// <summary>
+        /// Kick off a background task that preloads all GlyphProvider caches.
+        /// Safe to call multiple times; subsequent calls are ignored.
+        /// </summary>
+        public static void BoostCache()
+        {
+            if (_started) return;
+            _started = true;
 
-    public class Glyph
-    {
-        public string Uid { get; set; } = string.Empty;
-        public string Css { get; set; } = string.Empty;
-        public int Code { get; set; }
-        public string Src { get; set; } = string.Empty;
-        public bool? Selected { get; set; }
-        public SvgDetails Svg { get; set; } = new();
-        public List<string> Search { get; set; } = new();
-    }
+            Task.Run(() =>
+            {
+                try
+                {
+                    // Force discovery of all font families
+                    var families = FontFamilyLookup.Keys.ToList();
 
-    public class SvgDetails
-    {
-        public string Path { get; set; } = string.Empty;
-        public int Width { get; set; }
+                    foreach (var family in families)
+                    {
+                        // Resolve the provider
+                        var provider = GlyphProvider.FromFontConfigJson(family);
+
+                        // Touch its glyph lookup to force dictionary construction
+                        _ = provider.GlyphLookup.Count;
+
+                        // Optionally: touch the first glyph to also warm up format switches
+                        if (provider.GlyphLookup.Count > 0)
+                        {
+                            var firstKey = provider.GlyphLookup.Keys.First();
+                            _ = provider[firstKey, GlyphFormat.Unicode];
+                            _ = provider[firstKey, GlyphFormat.Xaml];
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"GlyphProviderWarmup exception: {ex}");
+                }
+            });
+        }
+        private static bool _started = false;
     }
 }

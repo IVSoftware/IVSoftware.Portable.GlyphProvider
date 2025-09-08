@@ -28,5 +28,10 @@ namespace GlyphProvider.Demo.Wpf
                 this.Height *= (96.0 / dpi.PixelsPerInchY);
             }
         }
+
+        private void OnCounterClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

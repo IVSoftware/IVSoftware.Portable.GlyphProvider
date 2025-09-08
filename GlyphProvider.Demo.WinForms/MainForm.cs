@@ -46,7 +46,7 @@ namespace GlyphProvider.Demo.WinForms
                 // Readable
                 var display = CounterBtn.Font.Name.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
                 { }
-                var fonts = IVSoftware.Portable.GlyphProvider.ListFonts();
+                var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
             }
         }
         private readonly int _widthRequestPrev;

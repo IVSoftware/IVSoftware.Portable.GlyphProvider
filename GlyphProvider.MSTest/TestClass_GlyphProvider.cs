@@ -138,13 +138,13 @@ U+E807";
         {
             string actual, expected;
 
-            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListFonts());
+            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListDomainFontResources());
             expected = @" 
 Assembly: IVSoftware.Portable.GlyphProvider
 File: D:\Github\IVSoftware\TMP\IVSoftware.Portable.GlyphProvider\GlyphProvider.MSTest\bin\Debug\net8.0-windows\IVSoftware.Portable.GlyphProvider.dll
 Resource: IVSoftware.Portable.Resources.Fonts.Basics.font.basics-icons.ttf";
 
-            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListConfigs());
+            actual = string.Join(Environment.NewLine, IVSoftware.Portable.GlyphProvider.ListDomainFontConfigs());
             expected = @" 
 Assembly: IVSoftware.Portable.GlyphProvider
 File: D:\Github\IVSoftware\TMP\IVSoftware.Portable.GlyphProvider\GlyphProvider.MSTest\bin\Debug\net8.0-windows\IVSoftware.Portable.GlyphProvider.dll

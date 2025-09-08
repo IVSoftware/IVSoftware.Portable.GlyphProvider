@@ -1,4 +1,5 @@
 ﻿using IVSoftware.Portable;
+using System.Diagnostics;
 
 namespace GlyphProvider.Demo.Maui
 {
@@ -7,6 +8,8 @@ namespace GlyphProvider.Demo.Maui
         public MainPage()
         {
             InitializeComponent();
+            //var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+            _ = typeof(IVSoftware.Portable.GlyphProvider).Assembly;
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
@@ -27,6 +30,7 @@ namespace GlyphProvider.Demo.Maui
             }
             else
             {
+                var stopwatch = Stopwatch.StartNew();
                 CounterBtn.FontFamily = "basics-icons";
                 CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search);
                 _widthRequestPrev = CounterBtn.WidthRequest;
@@ -43,7 +47,12 @@ namespace GlyphProvider.Demo.Maui
                 var names = GetType().Assembly.GetManifestResourceNames();
                 { }
                 SemanticScreenReader.Announce(CounterBtn.Text);
+                stopwatch.Stop();
+                Debug.WriteLine(stopwatch.ElapsedTicks);
+                // If preloaded (call to ToGlyph()) 640675 ticks
+                // Otherwise as much as            2764151
             }
+
         }
         double? _widthRequestPrev;
         int count = 0;

@@ -8,4 +8,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local15" />
+	</ItemGroup>
+
 </Project>

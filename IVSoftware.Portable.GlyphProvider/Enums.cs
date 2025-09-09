@@ -2,7 +2,7 @@
 
 namespace IVSoftware.Portable
 {
-    public enum StdBasicsIcons
+    public enum IconBasics
     {
         [Description("add")]
         Add,
@@ -13,10 +13,10 @@ namespace IVSoftware.Portable
         [Description("edit")]
         Edit,
 
-        [Description("ellipsis - horizontal")]
+        [Description("ellipsis-horizontal")]
         EllipsisHorizontal,
 
-        [Description("ellipsis - vertical")]
+        [Description("ellipsis-vertical")]
         EllipsisVertical,
 
         [Description("filter")]
@@ -40,22 +40,23 @@ namespace IVSoftware.Portable
         [Description("eye")]
         Eye,
 
-        [Description("eye - off")]
+        [Description("eye-off")]
         EyeOff,
 
-        [Description("help - circled")]
+        [Description("help-circled")]
         HelpCircled,
 
-        [Description("help - circled - alt")]
+        [Description("help-circled-alt")]
         HelpCircledAlt,
 
-        [Description("doc - empty")]
+        [Description("doc-empty")]
         DocEmpty,
 
         [Description("doc")]
         Doc,
 
-        [Description("doc - new")]
+        [Description("doc-new")]
         DocNew,
     }
+
 }

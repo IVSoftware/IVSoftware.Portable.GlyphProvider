@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace IVSoftware.Portable
 {
-    public static class FontExtensions
+    public static class GlyphProviderExtensions
     {
         public static string ToGlyph(this string fontFamily, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode)
             => GlyphProvider.FromFontConfigJson(fontFamily)[fuzzyKey, format];

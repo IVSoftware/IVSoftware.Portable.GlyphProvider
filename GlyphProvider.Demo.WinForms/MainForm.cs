@@ -17,6 +17,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
 #endif
+            GlyphProvider.BoostCache<IconBasics>();
 
 
 
@@ -48,12 +49,12 @@ namespace IVSGlyphProvider.Demo.WinForms
             else
             {
                 CounterBtn.Font = BasicsFont;
-                CounterBtn.Text = CounterBtn.Font.Name.ToGlyph(StdBasicsIcons.Search);
+                CounterBtn.Text = CounterBtn.Font.Name.ToGlyph(IconBasics.Search);
                 CounterBtn.Width = CounterBtn.Height;
                 // Alt
-                var xaml = CounterBtn.Font.Name.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+                var xaml = CounterBtn.Font.Name.ToGlyph(IconBasics.Search, GlyphFormat.Xaml);
                 // Readable
-                var display = CounterBtn.Font.Name.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
+                var display = CounterBtn.Font.Name.ToGlyph(IconBasics.Search, GlyphFormat.UnicodeDisplay);
                 { }
                 var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
             }

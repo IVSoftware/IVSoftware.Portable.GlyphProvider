@@ -85,7 +85,7 @@ public enum StdBasicsIcons
         {
             string actual, expected;
 
-			actual = "basics-icons".ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
+			actual = "basics-icons".ToGlyph(IconBasics.Search, GlyphFormat.UnicodeDisplay);
             expected = @" 
 U+E807";
 
@@ -95,7 +95,7 @@ U+E807";
                 "Expecting unicode formatted display value"
             );
 
-			actual = "basics-icons".ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+			actual = "basics-icons".ToGlyph(IconBasics.Search, GlyphFormat.Xaml);
             expected = @" 
 &#xE807;";
 

@@ -338,25 +338,6 @@ namespace IVSoftware.Portable
         );
 
         /// <summary>
-        /// Fallback utility to extract the font file from this package.
-        /// </summary>
-        public static void CopyBasicsIconsTtf(string destinationFolder)
-        {
-            const string resourceName = "IVSoftware.Portable.Resources.Fonts.Basics.font.basics-icons.ttf";
-
-            using var stream = typeof(GlyphProvider)
-                .Assembly
-                .GetManifestResourceStream(resourceName)
-                ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
-
-            var destPath = Path.Combine(destinationFolder, "basics-icons.ttf");
-            Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-
-            using var file = File.Create(destPath);
-            stream.CopyTo(file);
-        }
-
-        /// <summary>
         /// Kick off a background task that preloads all GlyphProvider caches.
         /// Safe to call multiple times; subsequent calls are ignored.
         /// </summary>
@@ -461,10 +442,11 @@ You can safely remove this file once other assets are present.".TrimStart());
                 .Where(_ => _.Contains(CONTAINS));
             string? 
                 resourceRoot = null,
+                enumPath = null,
                 sub,
                 dir,
                 fileName,
-                fqpath;
+                fqPath;
             foreach (var resourceName in names)
             {
                 using var stream = asm.GetManifestResourceStream(resourceName);
@@ -481,17 +463,50 @@ You can safely remove this file once other assets are present.".TrimStart());
                         .Replace('.', Path.DirectorySeparatorChar);
                     dir = Path.Combine(targetDir!, sub);
                     Directory.CreateDirectory(dir);
-                    fqpath = Path.Combine(
+                    fqPath = Path.Combine(
                         dir,
                         fileName);
-                    if (overwrite || !File.Exists(fqpath))
+                    if (overwrite || !File.Exists(fqPath))
                     {
-                        using var copyToFile = File.Create(fqpath);
+                        using var copyToFile = File.Create(fqPath);
                         stream.CopyTo(copyToFile);
+                    }
+                    enumPath ??= Path.Combine(dir, $"{nameof(IconBasics)}.Enum.cs");
+                    if (overwrite || !File.Exists(enumPath))
+                    {
+                        var builder = new List<string>();
+                        builder.Add($"using System.ComponentModel;");
+                        builder.Add($"");
+                        builder.Add($"namespace {typeof(IconBasics).Namespace};");
+                        builder.Add($"public enum {nameof(IconBasics)}");
+                        builder.Add($"{{");
+                        foreach (var member in Enum.GetValues<IconBasics>())
+                        {
+                            if(member.GetCustomAttribute<DescriptionAttribute>()?.Description is { } description)
+                            {
+                                builder.Add($"\t[Description(\"{description}\")]");
+                            }
+                            builder.Add($"\t{member.ToString()}," );
+                        }
+                        builder.Add($"}}");
+                        builder.Add($"");
+
+                        var joined = string.Join(Environment.NewLine, builder);
+                        File.WriteAllText(enumPath, joined);
                     }
                 }
             }
             return true;
+        }
+
+        public static Dictionary<T, Glyph?> BoostCache<T>()
+            where T : Enum
+            => GetGlyphs<T>(true);
+
+        public static Dictionary<T, Glyph?> GetGlyphs<T>(bool allowAppDomainFallback = false)
+            where T : Enum
+        {
+            throw new NotImplementedException("ToDo");
         }
     }
 }

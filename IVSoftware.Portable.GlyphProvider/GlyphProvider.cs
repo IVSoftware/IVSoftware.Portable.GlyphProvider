@@ -430,10 +430,10 @@ namespace IVSoftware.Portable
                     var readmePath = Path.Combine(dir, "autogen-readme.md");
                     if (!File.Exists(readmePath))
                     {
-                        File.WriteAllText(readmePath,
-                            "This folder is created by IVSoftware.Portable.GlyphProvider.\r\n" +
-                            "It is the default location for copied font resources.\r\n" +
-                            "You can safely remove this file once other assets are present.");
+                        File.WriteAllText(readmePath, @"
+This folder is created by `IVSoftware.Portable.GlyphProvider`.
+It is the default location for copied font resources.
+You can safely remove this file once other assets are present.".TrimStart());
                     }
                 }
             }

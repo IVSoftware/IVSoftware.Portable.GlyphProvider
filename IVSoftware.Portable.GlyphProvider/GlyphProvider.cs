@@ -26,7 +26,6 @@ namespace IVSoftware.Portable
         [JsonIgnore]
         public Assembly? Assembly { get; }
 
-
         [JsonIgnore]
         public string Key { get; private set; } = null!;
 
@@ -55,8 +54,11 @@ namespace IVSoftware.Portable
         ///   Preferred: 
         ///     Make a [Description] attribute with the exact case-sensitive
         ///     css name from the config.json file. This way, the enum member
-        ///     gets to be something like "Help" instead of 
-        ///   
+        ///     gets to be something like "Help" instead of "help-circled-alt"
+        ///   Otherwise:
+        ///     The StdEnum member bust be a case-sensitive match, bearing
+        ///     in mind that that spaces and hyphens are not allowed. Which
+        ///     translates to "this almost never works".
         /// </remarks>
         public string this[Enum stdEnum, GlyphFormat format = GlyphFormat.Unicode]
         {

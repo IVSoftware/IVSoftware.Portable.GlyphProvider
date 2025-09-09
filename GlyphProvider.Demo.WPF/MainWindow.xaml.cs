@@ -20,6 +20,13 @@ namespace IVSGlyphProvider.Demo.Wpf
     {
         public MainWindow()
         {
+#if DEBUG
+            if (GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
+            {
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
+            }
+            { }
+#endif
             InitializeComponent();
             // This lowers the lazy init time
             IVSoftware.Portable.GlyphProvider.BoostCache();
@@ -85,5 +92,7 @@ namespace IVSGlyphProvider.Demo.Wpf
         private readonly FontFamily _fontFamilyPrev;
         private readonly double _widthPrev;
         int count = 0;
+
+
     }
 }

@@ -10,7 +10,12 @@
 		</PropertyGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local21\contentFiles\any\any\Resources\Fonts\icon-basics.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local20\contentFiles\any\any\Resources\Fonts\icon-basics.ttf" />
+		<None Remove="Resources\Fonts\icon_basics\font\icon-basics.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -19,6 +24,7 @@
 
 	<ItemGroup>
 		<Resource Include="App.xaml" />
+		<Resource Include="Resources\Fonts\icon_basics\font\icon-basics.ttf" />
 	</ItemGroup>
 
 </Project>

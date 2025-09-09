@@ -395,6 +395,7 @@ namespace IVSoftware.Portable
                 }
             });
         }
+        private static bool _started = false;
 
         /// <summary>
         /// Find or optionally create the Resources\Fonts directory
@@ -453,41 +454,44 @@ You can safely remove this file once other assets are present.".TrimStart());
                     return false;
                 }
             }
-            const string ROOT = ".Resources.Fonts.";
+            const string CONTAINS = ".Resources.Fonts.";
             var asm = typeof(GlyphProvider).Assembly;
             var names = 
                 asm.GetManifestResourceNames()
-                .Where(_ => _.Contains(ROOT));
+                .Where(_ => _.Contains(CONTAINS));
             string? 
                 resourceRoot = null,
                 sub,
                 dir,
-                fileName;
+                fileName,
+                fqpath;
             foreach (var resourceName in names)
             {
                 using var stream = asm.GetManifestResourceStream(resourceName);
                 if (stream is not null)
                 {
                     resourceRoot ??=
-                        resourceName
-                        [..(resourceName.IndexOf(".Resources.Fonts.") + ROOT.Length)];
-                    sub = resourceName.Substring(resourceRoot.Length)
+                        resourceName[..(resourceName.LastIndexOf(CONTAINS) + CONTAINS.Length)];
+                    fileName =
+                        string.Join(
+                        ".", resourceName.Split('.')
+                        .Reverse().Take(2).Reverse());
+                    sub =
+                        resourceName[resourceRoot.Length..^fileName.Length]
                         .Replace('.', Path.DirectorySeparatorChar);
                     dir = Path.Combine(targetDir!, sub);
                     Directory.CreateDirectory(dir);
-                    fileName = Path.Combine(
+                    fqpath = Path.Combine(
                         dir,
-                        Path.GetFileName(resourceName));
-                    if (overwrite || !File.Exists(fileName))
+                        fileName);
+                    if (overwrite || !File.Exists(fqpath))
                     {
-                        using var copyToFile = File.Create(fileName);
+                        using var copyToFile = File.Create(fqpath);
                         stream.CopyTo(copyToFile);
                     }
                 }
             }
             return true;
         }
-
-        private static bool _started = false;
     }
 }

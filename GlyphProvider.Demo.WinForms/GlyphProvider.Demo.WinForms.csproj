@@ -21,5 +21,9 @@
 		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Resources\" />
+	</ItemGroup>
+
 
 </Project>

@@ -1,4 +1,4 @@
-namespace GlyphProvider.Demo.WinForms
+namespace IVSGlyphProvider.Demo.WinForms
 {
     internal static class Program
     {

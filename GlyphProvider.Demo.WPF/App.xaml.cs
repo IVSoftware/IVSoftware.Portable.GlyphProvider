@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace GlyphProvider.Demo.Wpf
+namespace IVSGlyphProvider.Demo.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml

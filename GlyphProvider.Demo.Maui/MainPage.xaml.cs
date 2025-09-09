@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Font = Microsoft.Maui.Font;
 
-namespace GlyphProvider.Demo.Maui
+namespace IVSGlyphProvider.Demo.Maui
 {
     public partial class MainPage : ContentPage
     {

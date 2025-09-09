@@ -4,13 +4,22 @@ using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace GlyphProvider.Demo.WinForms
+namespace IVSGlyphProvider.Demo.WinForms
 {
     public partial class MainForm : Form
     {
         public MainForm()
         {
             InitializeComponent();
+#if DEBUG
+            if(GlyphProvider.TryGetFontsDirectory(out string dir))
+            {
+
+            }
+#endif
+
+
+
             _fontPrev = CounterBtn.Font;
             _widthRequestPrev = CounterBtn.Width;
             CounterBtn.UseCompatibleTextRendering = true;

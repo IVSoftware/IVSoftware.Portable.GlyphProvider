@@ -1,7 +1,7 @@
 ﻿using IVSoftware.Portable;
 using IVSoftware.WinOS.MSTest.Extensions;
 
-namespace GlyphProvider.MSTest
+namespace IVSGlyphProvider.MSTest
 {
     [TestClass]
     public sealed class TestClass_GlyphProvider

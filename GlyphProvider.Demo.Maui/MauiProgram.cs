@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace GlyphProvider.Demo.Maui
+namespace IVSGlyphProvider.Demo.Maui
 {
     public static class MauiProgram
     {

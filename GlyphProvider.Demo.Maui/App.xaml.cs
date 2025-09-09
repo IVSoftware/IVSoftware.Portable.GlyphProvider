@@ -1,4 +1,4 @@
-﻿namespace GlyphProvider.Demo.Maui
+﻿namespace IVSGlyphProvider.Demo.Maui
 {
     public partial class App : Application
     {

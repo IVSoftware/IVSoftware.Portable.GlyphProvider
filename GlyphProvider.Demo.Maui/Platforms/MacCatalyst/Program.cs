@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace GlyphProvider.Demo.Maui
+namespace IVSGlyphProvider.Demo.Maui
 {
     public class Program
     {

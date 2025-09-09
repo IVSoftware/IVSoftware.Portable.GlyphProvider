@@ -395,6 +395,12 @@ namespace IVSoftware.Portable
                 }
             });
         }
+
+        public static bool TryGetFontsDirectory(out string dir)
+        {
+            throw new NotImplementedException();
+        }
+
         private static bool _started = false;
     }
 }

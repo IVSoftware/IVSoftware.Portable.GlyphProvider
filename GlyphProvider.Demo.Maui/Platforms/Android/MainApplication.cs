@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace GlyphProvider.Demo.Maui
+namespace IVSGlyphProvider.Demo.Maui
 {
     [Application]
     public class MainApplication : MauiApplication

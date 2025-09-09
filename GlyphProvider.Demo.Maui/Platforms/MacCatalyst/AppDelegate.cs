@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace GlyphProvider.Demo.Maui
+namespace IVSGlyphProvider.Demo.Maui
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

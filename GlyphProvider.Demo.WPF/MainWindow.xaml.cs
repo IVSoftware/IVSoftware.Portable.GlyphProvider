@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GlyphProvider.Demo.Wpf
+namespace IVSGlyphProvider.Demo.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

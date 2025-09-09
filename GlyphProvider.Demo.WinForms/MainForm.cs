@@ -71,18 +71,24 @@ namespace IVSGlyphProvider.Demo.WinForms
         {
             get
             {
-                var azz = GlyphProvider.GetGlyphs<IconBasics>();
-                { }
-                throw new NotImplementedException("ToDo");
-                var fontName = "basics-icons.ttf";
-                var alias = "basics-icons";
                 if (_basicsFont is null)
                 {
-                    var asm = typeof(GlyphProvider).Assembly;
+                    var glyphProvider = GlyphProvider.GetProvider<IconBasics>()
+                        ?? throw new NullReferenceException();
+
+                    string
+                        cssName = glyphProvider.Name,
+                        fileName = $"{cssName}.ttf";
+                    var asm = typeof(MainForm).Assembly;
                     var fullName = 
                         asm
                         .GetManifestResourceNames()                        
-                        .First(_ => _.EndsWith(fontName, StringComparison.OrdinalIgnoreCase));
+                        .FirstOrDefault(_ => _.EndsWith(fileName, StringComparison.OrdinalIgnoreCase));
+
+                    if(string.IsNullOrWhiteSpace(fullName))
+                    {
+                        throw new InvalidOperationException("Embedded resource not found.");
+                    }
 
                     using (Stream fontStream = asm.GetManifestResourceStream(fullName)
                            ?? throw new InvalidOperationException($"Failed to load stream for '{fullName}'."))
@@ -100,7 +106,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                         {
                             Marshal.FreeCoTaskMem(fontPtr); // Avoid memory leak
                         }
-                        FontFamily fontFamily = CustomFonts.Families.Single(_ => _.Name == alias);
+                        FontFamily fontFamily = CustomFonts.Families.Single(_ => _.Name == cssName);
                         _basicsFont = new Font(fontFamily, _fontPrev.Size);
                     }
                 }

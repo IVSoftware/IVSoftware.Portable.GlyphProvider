@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Reflection;
+using System.Text;
 
 namespace IVSoftware.Portable
 {
@@ -55,5 +56,28 @@ namespace IVSoftware.Portable
             member.GetType().ToGlyphProviderKey();        
         internal static string ToGlyphProviderKey(this Type type) =>
             $"{type.Assembly.GetName().Name}.{type.Name}";
+
+        public static string ToPascalCase(this string @this)
+        {
+            if (string.IsNullOrWhiteSpace(@this))
+                throw new ArgumentException("Requires non-empty input", nameof(@this));
+
+            // Split on hyphen, underscore, or whitespace
+            var parts = @this.Split(new[] { '-', '_', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var sb = new StringBuilder(@this.Length);
+            foreach (var part in parts)
+            {
+                sb.Append(char.ToUpperInvariant(part[0]));
+                if (part.Length > 1)
+                    sb.Append(part.Substring(1));
+            }
+
+            // Ensure identifier does not start with a digit
+            if (char.IsDigit(sb[0]))
+                sb.Insert(0, '_');
+
+            return sb.ToString();
+        }
     }
 }

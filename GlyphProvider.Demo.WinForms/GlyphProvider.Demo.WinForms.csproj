@@ -22,7 +22,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\" />
+	  <None Remove="Resources\Fonts\icon_basics\font\icon-basics.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Fonts\icon_basics\font\icon-basics.ttf" />
 	</ItemGroup>
 
 

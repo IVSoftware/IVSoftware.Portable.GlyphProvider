@@ -278,11 +278,8 @@ namespace IVSoftware.Portable
                 return _impl.TryGetValue(key, out provider);
             }
 
-            [Obsolete]
-            internal static bool TryGetValue(string fontName, out GlyphProvider provider)
-            {
-                throw new NotImplementedException();
-            }
+            internal static bool TryGetValue(string providerKey, out GlyphProvider? provider)
+                => _impl.TryGetValue(providerKey, out provider);
 
             public static async Task WaitAsync() =>
                 await _ready.Task.ConfigureAwait(false);
@@ -314,36 +311,11 @@ namespace IVSoftware.Portable
                 if (!Equals(_name, value))
                 {
                     _name = value;
-                    Key = $"{Assembly?.GetName().Name ?? getAutoId().ToFullKey()}.{localToPascalCase(_name)}";
+                    Key = $"{Assembly?.GetName().Name ?? getAutoId().ToFullKey()}.{_name.ToPascalCase()}";
                 }
-                #region L o c a l F x		
-                string localToPascalCase(string input)
-                {
-                    if (string.IsNullOrWhiteSpace(input))
-                        throw new ArgumentException("Requires non-empty input", nameof(input));
-
-                    // Split on hyphen, underscore, or whitespace
-                    var parts = input.Split(new[] { '-', '_', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var sb = new StringBuilder(input.Length);
-                    foreach (var part in parts)
-                    {
-                        sb.Append(char.ToUpperInvariant(part[0]));
-                        if (part.Length > 1)
-                            sb.Append(part.Substring(1));
-                    }
-
-                    // Ensure identifier does not start with a digit
-                    if (char.IsDigit(sb[0]))
-                        sb.Insert(0, '_');
-
-                    return sb.ToString();
-                }
-                #endregion L o c a l F x
             }
         }
         string _name = string.Empty;
-
         public string? CssPrefixText { get; set; }
         public bool CssUseSuffix { get; set; }
         public bool Hinting { get; set; }
@@ -607,14 +579,55 @@ You can safely remove this file once other assets are present.".TrimStart());
             }
             return true;
         }
-
-        public static Dictionary<T, Glyph?> GetGlyphs<T>(bool allowAppDomainFallback = false)
-            where T : Enum
+        public static GlyphProvider? GetProvider<T>()
+            where T : struct, Enum
+            => FontFamilyLookupProvider.TryGetValue(typeof(T).ToGlyphProviderKey(), out var glyphProvider)
+                ? glyphProvider
+                : null;
+        public static Dictionary<T, Glyph?>? GetGlyphs<T>(bool allowAppDomainFallback = false, bool allOrThrow = false)
+            where T : struct, Enum
+            => GetProvider<T>()?.GlyphLookupByEnumKey<T>(allowAppDomainFallback, allOrThrow);
+        private Dictionary<T, Glyph?>? GlyphLookupByEnumKey<T>(bool allowAppDomainFallback = false, bool allOrThrow = false) where T : struct, Enum
         {
-
-            var keys = FontFamilyLookupProvider.Keys;
-            { }
-            throw new NotImplementedException("ToDo");
+            if (FontFamilyLookupProvider.TryGetValue(typeof(T).ToGlyphProviderKey(), out var glyphProvider) &&
+                glyphProvider?.GlyphLookup is { } byCss)
+            {
+                var byEnumKey = new Dictionary<T, Glyph?>();
+                bool foundAll = true;
+                foreach (var stdEnum in Enum.GetValues<T>())
+                {
+                    var css = stdEnum.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                    if(css is not null)
+                    {
+                        Glyph? glyph;
+                        if(byCss.TryGetValue(css, out glyph))
+                        {
+                            byEnumKey[stdEnum] = glyph;
+                        }
+                        else
+                        {
+                            _ = byCss.TryGetValue(stdEnum.ToString(), out glyph);
+                            byEnumKey[stdEnum] = glyph; // Might be null
+                            if(glyph is null)
+                            {
+                                foundAll = false;
+                            }
+                        }
+                    }
+                }
+                if (foundAll)
+                {   /* G T K */
+                }
+                else
+                {
+                    if (allOrThrow)
+                    {
+                        throw new InvalidOperationException("Mapping is incomplete.");
+                    }
+                }
+                return byEnumKey;
+            }
+            else return null;
         }
 
         /// <summary>

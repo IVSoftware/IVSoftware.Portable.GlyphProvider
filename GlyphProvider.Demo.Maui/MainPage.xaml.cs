@@ -34,13 +34,15 @@ namespace IVSGlyphProvider.Demo.Maui
             else
             {
                 var stopwatch = Stopwatch.StartNew();
+                throw new NotImplementedException("ToDo");
+#if false
                 CounterBtn.FontFamily = "basics-icons";
-                CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search);
+                CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(IconBasics.Search);
                 CounterBtn.WidthRequest = CounterBtn.Height;
                 // Alt
-                var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+                var xaml = CounterBtn.FontFamily.ToGlyph(IconBasics.Search, GlyphFormat.Xaml);
                 // Readable
-                var display = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
+                var display = CounterBtn.FontFamily.ToGlyph(IconBasics.Search, GlyphFormat.UnicodeDisplay);
                 { }
 
                 var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
@@ -53,6 +55,7 @@ namespace IVSGlyphProvider.Demo.Maui
                 Debug.WriteLine(stopwatch.ElapsedTicks);
                 // If preloaded (call to ToGlyph()) 640675 ticks
                 // Otherwise as much as            2764151
+#endif
             }
 
         }

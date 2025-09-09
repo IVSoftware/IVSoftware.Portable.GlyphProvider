@@ -56,15 +56,13 @@ namespace IVSGlyphProvider.Demo.Wpf
             else
             {
                 var stopwatch = Stopwatch.StartNew();
-                CounterBtn.FontFamily = new FontFamily("basics-icons");
 
-
-                var xaml = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
-                var display = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
-
-                CounterBtn.Content = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search);
-                CounterBtn.Width = CounterBtn.Height;
+                var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
+                var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
+                throw new NotImplementedException("ToDo");
 #if false
+                CounterBtn.Content = CounterBtn.FontFamily.Source.ToGlyph(IconBasics.Search);
+                CounterBtn.Width = CounterBtn.Height;
 				// Alt
 				var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
 				// Readable

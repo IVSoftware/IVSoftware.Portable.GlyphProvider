@@ -13,12 +13,8 @@
 		<ProjectReference Include="..\IVSoftware.Portable.GlyphProvider\IVSoftware.Portable.GlyphProvider.csproj" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(Configuration)'=='Debug'">
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local20" />
-	</ItemGroup>
-
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0" />
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local21" />
 	</ItemGroup>
 
 	<ItemGroup>

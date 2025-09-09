@@ -5,14 +5,15 @@ namespace IVSoftware.Portable
 {
     public static class GlyphProviderExtensions
     {
-        public static string ToGlyph(this string fontFamily, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode)
-            => GlyphProvider.FromFontConfigJson(fontFamily)[fuzzyKey, format];
+        [Obsolete]
+        public static string ToGlyph(this Assembly asm, string fontFamily, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode)
+            => GlyphProvider.FromFontConfigJson(asm, fontFamily)[fuzzyKey, format];
 
-        public static string ToGlyph(this string fontFamily, Enum stdGlyph, GlyphFormat format = GlyphFormat.Unicode)
-            => GlyphProvider.FromFontConfigJson(fontFamily)[stdGlyph, format];
+        public static string ToGlyph(this Enum stdGlyph, GlyphFormat format = GlyphFormat.Unicode)
+        => GlyphProvider.FromFontConfigJson(stdGlyph)[stdGlyph, format];
 
-        public static string CreateEnumPrototype(this string fontFamily)
-            => GlyphProvider.CreateEnumPrototype(fontFamily);
+        public static string CreateEnumPrototype(this Assembly asm, string fontFamily)
+            => GlyphProvider.CreateEnumPrototype(asm, fontFamily);
 
         /// <summary>
         /// - Retrieves a standard attribute applied to an Enum member, or null if not found.

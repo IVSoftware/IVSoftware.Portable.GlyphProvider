@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -18,6 +21,15 @@ namespace IVSoftware.Portable
     /// </summary>
     public class GlyphProvider
     {
+        public GlyphProvider(Assembly? asm = null) => Assembly = asm;
+
+        [JsonIgnore]
+        public Assembly? Assembly { get; }
+
+
+        [JsonIgnore]
+        public string Key { get; private set; } = null!;
+
         /// <summary>
         /// Generates a prototype enum definition for the specified glyph family,
         /// based on the names discovered in its embedded config.json resource.
@@ -26,8 +38,8 @@ namespace IVSoftware.Portable
         /// This is intended as a developer aid during debugging and 
         /// the output may require some manual tweaking.
         /// </remarks>
-        public static string CreateEnumPrototype(string fontName)
-            => FromFontConfigJson(fontName).CreateEnumPrototype();
+        public static string CreateEnumPrototype(Assembly asm, string fontName)
+            => FromFontConfigJson(asm, fontName).CreateEnumPrototype();
 
         /// <summary>
         /// Retrieves the glyph string for the given enum member.
@@ -124,36 +136,37 @@ namespace IVSoftware.Portable
             }
         }
 
-        /// <summary>
-        /// One option is to drive this using a bindable property in XAML.
-        /// </summary>
-        public static GlyphProvider FromFontConfigJson(string fontName)
-        {
-            lock (_lock)
-            {
-                _ = FontFamilyLookup.TryGetValue(fontName, out var provider);
-                return provider ?? new();
-            }
-        }
         private static readonly object _lock = new object();
 
         /// <summary>
-        /// Discovers and caches embedded font resources across the current app domain, 
-        /// building a lookup keyed by the font family name specified in each config.json file.
+        /// One option is to drive this using a bindable property in XAML.
         /// </summary>
-        /// <remarks>
-        /// - Scans non-framework assemblies only, filtering resource names that end with config.json.  
-        /// - Each JSON is deserialized into a GlyphProvider and added to the lookup.  
-        /// - If multiple configs specify the same name, the last one discovered overwrites earlier entries.  
-        /// </remarks>
-        private static Dictionary<string, GlyphProvider> FontFamilyLookup
+        [Obsolete]
+        public static GlyphProvider FromFontConfigJson(Assembly asm, string fontName)
         {
-            get
+            lock (_lock)
             {
-                if (_fontFamilyLookup is null)
-                {
-                    _fontFamilyLookup = new Dictionary<string, GlyphProvider>();
+                _ = FontFamilyLookupProvider.TryGetValue(fontName, out var provider);
+                return provider ?? new(asm);
+            }
+        }
 
+        public static GlyphProvider FromFontConfigJson(Enum stdEnum)
+        {
+            lock (_lock)
+            {
+                _ = FontFamilyLookupProvider.TryGetValue(stdEnum, out var provider);
+                return provider ?? new();
+            }
+        }
+
+        static class FontFamilyLookupProvider
+        {
+            static TaskCompletionSource _ready = new ();
+            static FontFamilyLookupProvider()
+            {
+                Task.Run(() =>
+                {
                     foreach (var asm in AppDomain.CurrentDomain
                         .GetAssemblies()
                         .Where(_ =>
@@ -161,30 +174,89 @@ namespace IVSoftware.Portable
                             !_.Location.Contains("Microsoft.NETCore", StringComparison.OrdinalIgnoreCase) &&
                             !_.Location.Contains("System.Private.CoreLib", StringComparison.OrdinalIgnoreCase)))
                     {
-                        foreach (var resourcePath in asm.GetManifestResourceNames())
+                        var cMe = asm.GetManifestResourceNames();
+                        { }
+                        foreach (var resourcePath in cMe)
                         {
                             if (resourcePath.EndsWith("config.json", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 using var stream = asm.GetManifestResourceStream(resourcePath) ?? throw new Exception();
                                 using var reader = new StreamReader(stream);
                                 var json = reader.ReadToEnd();
-                                var glyphProvider = JsonConvert.DeserializeObject<GlyphProvider>(json);
+                                var glyphProvider = new GlyphProvider(asm);
+                                JsonConvert.PopulateObject(json, glyphProvider);
                                 if (string.IsNullOrWhiteSpace(glyphProvider?.Name))
                                 {
                                     Debug.Fail("ADVISORY - Defective config file.");
                                 }
-                                else
-                                {
-                                    _fontFamilyLookup[glyphProvider.Name] = glyphProvider;
-                                }
                             }
                         }
                     }
+                });
+            }
+#if false
+
+            foreach (var family in families)
+            {
+                // Resolve the provider
+                var provider = GlyphProvider.FromFontConfigJson(family);
+
+                // Touch its glyph lookup to force dictionary construction
+                _ = provider.GlyphLookup.Count;
+
+                // Optionally: touch the first glyph to also warm up format switches
+                if (provider.GlyphLookup.Count > 0)
+                {
+                    var firstKey = provider.GlyphLookup.Keys.First();
+                    _ = provider[firstKey, GlyphFormat.Unicode];
+                    _ = provider[firstKey, GlyphFormat.Xaml];
                 }
-                return _fontFamilyLookup;
+            }
+#endif
+            private static Dictionary<string, GlyphProvider> _impl = new();
+
+            public static string[] Keys => _impl.Keys.ToArray();
+
+            //public static GlyphProvider this[Enum stdEnum]
+            //{
+            //    get 
+            //    {
+            //        if (_impl.TryGetValue(stdEnum.GetType().FullName!, out var glyphProvider))
+            //        {
+            //            return glyphProvider;
+            //        }
+            //        else return null;
+            //    }
+            //    set => throw new NotImplementedException("ToDo");
+            //}
+
+            //public GlyphProvider this[Assembly asm, string css]
+            //{
+            //    set
+            //    {
+            //        var key = $"{asm.GetName().Name}.{localToPascalCase(css)}";
+            //        if(_impl.ContainsKey(key))
+            //        {
+            //            Debug.Fail("ADVISORY - Check concurrency.");
+            //        }
+            //        _impl[key] = value;
+            //    }
+            //}
+            public static bool TryGetValue(Enum stdEnum, out GlyphProvider provider)
+            {
+                foreach (var key in Keys)
+                {
+
+                }
+                throw new NotImplementedException();
+            }
+
+            [Obsolete]
+            internal static bool TryGetValue(string fontName, out GlyphProvider provider)
+            {
+                throw new NotImplementedException();
             }
         }
-        private static Dictionary<string, GlyphProvider>? _fontFamilyLookup = null;
 
         public Dictionary<string, Glyph> GlyphLookup
         {
@@ -200,7 +272,48 @@ namespace IVSoftware.Portable
         Dictionary<string, Glyph>? _glyphLookup = null;
 
         #region J S O N    P R O P E R T I E S
-        public string? Name { get; set; }
+
+        enum DefaultId {  Create };
+        static uint _autoIdCount = 0;
+        static DefaultId getAutoId() => (DefaultId)(++_autoIdCount);
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (!Equals(_name, value))
+                {
+                    _name = value;
+                    Key = $"{Assembly?.GetName().Name }.{localToPascalCase(_name)}";
+                }
+                #region L o c a l F x		
+                string localToPascalCase(string input)
+                {
+                    if (string.IsNullOrWhiteSpace(input))
+                        throw new ArgumentException("Requires non-empty input", nameof(input));
+
+                    // Split on hyphen, underscore, or whitespace
+                    var parts = input.Split(new[] { '-', '_', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    var sb = new StringBuilder(input.Length);
+                    foreach (var part in parts)
+                    {
+                        sb.Append(char.ToUpperInvariant(part[0]));
+                        if (part.Length > 1)
+                            sb.Append(part.Substring(1));
+                    }
+
+                    // Ensure identifier does not start with a digit
+                    if (char.IsDigit(sb[0]))
+                        sb.Insert(0, '_');
+
+                    return sb.ToString();
+                }
+                #endregion L o c a l F x
+            }
+        }
+        string _name = string.Empty;
+
         public string? CssPrefixText { get; set; }
         public bool CssUseSuffix { get; set; }
         public bool Hinting { get; set; }
@@ -338,47 +451,6 @@ namespace IVSoftware.Portable
         );
 
         /// <summary>
-        /// Kick off a background task that preloads all GlyphProvider caches.
-        /// Safe to call multiple times; subsequent calls are ignored.
-        /// </summary>
-        public static void BoostCache()
-        {
-            if (_started) return;
-            _started = true;
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    // Force discovery of all font families
-                    var families = FontFamilyLookup.Keys.ToList();
-
-                    foreach (var family in families)
-                    {
-                        // Resolve the provider
-                        var provider = GlyphProvider.FromFontConfigJson(family);
-
-                        // Touch its glyph lookup to force dictionary construction
-                        _ = provider.GlyphLookup.Count;
-
-                        // Optionally: touch the first glyph to also warm up format switches
-                        if (provider.GlyphLookup.Count > 0)
-                        {
-                            var firstKey = provider.GlyphLookup.Keys.First();
-                            _ = provider[firstKey, GlyphFormat.Unicode];
-                            _ = provider[firstKey, GlyphFormat.Xaml];
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"GlyphProviderWarmup exception: {ex}");
-                }
-            });
-        }
-        private static bool _started = false;
-
-        /// <summary>
         /// Find or optionally create the Resources\Fonts directory
         /// </summary>
         public static bool TryGetFontsDirectory(out string? dir, bool allowCreate = false)
@@ -426,7 +498,11 @@ You can safely remove this file once other assets are present.".TrimStart());
         /// Specialized debug-time utility to copy out the 
         /// fonts file structure from this package specifically.
         /// </summary>
-        public static bool CopyEmbeddedFontsFromPackage(string? targetDir = null, bool overwrite = false)
+        public static bool CopyEmbeddedFontsFromPackage(
+                string? targetDir = null,
+                bool overwrite = false,
+                bool includeEnumDefinition = false
+            )
         {
             if(targetDir is null)
             {
@@ -443,8 +519,8 @@ You can safely remove this file once other assets are present.".TrimStart());
             string? 
                 resourceRoot = null,
                 enumPath = null,
+                dir = null,
                 sub,
-                dir,
                 fileName,
                 fqPath;
             foreach (var resourceName in names)
@@ -471,42 +547,57 @@ You can safely remove this file once other assets are present.".TrimStart());
                         using var copyToFile = File.Create(fqPath);
                         stream.CopyTo(copyToFile);
                     }
-                    enumPath ??= Path.Combine(dir, $"{nameof(IconBasics)}.Enum.cs");
-                    if (overwrite || !File.Exists(enumPath))
+                }
+            }
+            if (includeEnumDefinition && dir is not null)
+            {
+                enumPath ??= Path.Combine(dir, $"{nameof(IconBasics)}.Enum.cs");
+                if (overwrite || !File.Exists(enumPath))
+                {
+                    var builder = new List<string>();
+                    builder.Add($"using System.ComponentModel;");
+                    builder.Add($"");
+                    builder.Add($"namespace {typeof(IconBasics).Namespace};");
+                    builder.Add($"public enum {nameof(IconBasics)}");
+                    builder.Add($"{{");
+                    foreach (var member in Enum.GetValues<IconBasics>())
                     {
-                        var builder = new List<string>();
-                        builder.Add($"using System.ComponentModel;");
-                        builder.Add($"");
-                        builder.Add($"namespace {typeof(IconBasics).Namespace};");
-                        builder.Add($"public enum {nameof(IconBasics)}");
-                        builder.Add($"{{");
-                        foreach (var member in Enum.GetValues<IconBasics>())
+                        if (member.GetCustomAttribute<DescriptionAttribute>()?.Description is { } description)
                         {
-                            if(member.GetCustomAttribute<DescriptionAttribute>()?.Description is { } description)
-                            {
-                                builder.Add($"\t[Description(\"{description}\")]");
-                            }
-                            builder.Add($"\t{member.ToString()}," );
+                            builder.Add($"\t[Description(\"{description}\")]");
                         }
-                        builder.Add($"}}");
-                        builder.Add($"");
-
-                        var joined = string.Join(Environment.NewLine, builder);
-                        File.WriteAllText(enumPath, joined);
+                        builder.Add($"\t{member.ToString()},");
                     }
+                    builder.Add($"}}");
+                    builder.Add($"");
+
+                    var joined = string.Join(Environment.NewLine, builder);
+                    File.WriteAllText(enumPath, joined);
                 }
             }
             return true;
         }
-
-        public static Dictionary<T, Glyph?> BoostCache<T>()
-            where T : Enum
-            => GetGlyphs<T>(true);
 
         public static Dictionary<T, Glyph?> GetGlyphs<T>(bool allowAppDomainFallback = false)
             where T : Enum
         {
             throw new NotImplementedException("ToDo");
         }
+
+        /// <summary>
+        /// Kick off a background task that preloads all GlyphProvider caches.
+        /// Safe to call multiple times; subsequent calls are ignored.
+        /// </summary>
+        public static async Task BoostCache()
+        {
+            if (_started) return;
+            _started = true;
+
+            await Task.Run(() =>
+            {
+                _ = FontFamilyLookupProvider.Keys;
+            });
+        }
+        private static bool _started = false;
     }
 }

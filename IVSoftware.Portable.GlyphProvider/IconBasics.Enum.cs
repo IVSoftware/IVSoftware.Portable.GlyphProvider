@@ -2,6 +2,12 @@
 
 namespace IVSoftware.Portable
 {
+    /// <summary>
+    /// [Careful] 
+    /// This file must remain C# Compiler.
+    /// The CreateEnumPrototype utility bases its
+    /// code gen on this concrete definition.
+    /// </summary>
     public enum IconBasics
     {
         [Description("add")]

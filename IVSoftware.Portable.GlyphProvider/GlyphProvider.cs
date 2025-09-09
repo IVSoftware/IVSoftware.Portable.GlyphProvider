@@ -42,13 +42,21 @@ namespace IVSoftware.Portable
             => FromFontConfigJson(asm, fontName).CreateEnumPrototype();
 
         /// <summary>
-        /// Retrieves the glyph string for the given enum member.
+        /// Returns the glyph string in the requested GlyphFormat or
+        /// the first character of the key (uppercased) if not found.
         /// </summary>
         /// <remarks>
-        /// If the enum member has a <see cref="DescriptionAttribute"/>, its value is used
-        /// for lookup (e.g., "help-circled-alt"). Otherwise the enum name itself is used.
-        /// Returns the glyph string in the requested <see cref="GlyphFormat"/>, or
-        /// the first character of the key (uppercased) if not found.
+        /// - Basically: 
+        ///   We have no control over the glyph names found in the
+        ///   config.json file, and these are often in kebab format. Likewise,
+        ///   while we offer a utility to make a linted enum from the config.json
+        ///   there is no requirement for the end user dev to take this approach.
+        /// - So, for this to work:
+        ///   Preferred: 
+        ///     Make a [Description] attribute with the exact case-sensitive
+        ///     css name from the config.json file. This way, the enum member
+        ///     gets to be something like "Help" instead of 
+        ///   
         /// </remarks>
         public string this[Enum stdEnum, GlyphFormat format = GlyphFormat.Unicode]
         {

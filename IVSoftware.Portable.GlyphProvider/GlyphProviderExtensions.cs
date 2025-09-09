@@ -5,9 +5,9 @@ namespace IVSoftware.Portable
 {
     public static class GlyphProviderExtensions
     {
-        [Obsolete]
+        [Obsolete("The asm arg has not been reviewed.")]
         public static string ToGlyph(this Assembly asm, string fontFamily, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode)
-            => GlyphProvider.FromFontConfigJson(asm, fontFamily)[fuzzyKey, format];
+            => GlyphProvider.FromFontConfigJson(asm, fontFamily)[asm, fuzzyKey, format];
 
         public static string ToGlyph(this Enum stdGlyph, GlyphFormat format = GlyphFormat.Unicode)
         => GlyphProvider.FromFontConfigJson(stdGlyph)[stdGlyph, format];
@@ -28,6 +28,14 @@ namespace IVSoftware.Portable
                 ?.GetCustomAttributes<TAttr>()
                 .SingleOrDefault();
 
-        internal static string ToFullKey(this Enum member) => $"{member.GetType().Name}.{member}";
+        /// <summary>
+        /// Produces a key in the form "EnumType.Member".
+        /// Useful when the member value alone might be insufficiently unique.
+        /// </summary>
+        internal static string ToFullKey(this Enum member) =>
+            $"{member.GetType().Name}.{member}";
+
+        internal static string ToAssemblyKey(this Enum member) =>
+            $"{member.GetType().Assembly.GetName().Name}.{member.GetType().Name}";
     }
 }

@@ -50,14 +50,16 @@ namespace IVSoftware.Portable
         /// Returns the glyph string in the requested <see cref="GlyphFormat"/>, or
         /// the first character of the key (uppercased) if not found.
         /// </remarks>
-        public string this[Enum key, GlyphFormat format = GlyphFormat.Unicode]
-            => this[key
-                    .GetCustomAttribute<DescriptionAttribute>()
-                    ?.Description
-                    ?? key.ToString(), format];
+        public string this[Enum stdEnum, GlyphFormat format = GlyphFormat.Unicode]
+        {
+            get
+            {
+                throw new NotImplementedException("ToDo");
+            }
+        }
 
         /// <summary>
-        /// Retrieves a glyph string in the requested <see cref="GlyphFormat"/>.
+        /// Retrieves a glyph string in the requested GlyphFormat.
         /// </summary>
         /// <remarks>
         /// - This overload is heuristic: 
@@ -66,17 +68,17 @@ namespace IVSoftware.Portable
         /// - If a unique match is found, returns the glyph (e.g., "\uE801" or "&#xE801;").  
         /// - If ambiguous or not found, returns the first character of the key, uppercased.
         /// </remarks>
-        public string this[string key, GlyphFormat format = GlyphFormat.Unicode]
+        public string this[Assembly asm, string fuzzyKey, GlyphFormat format = GlyphFormat.Unicode]
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(key))
+                if (string.IsNullOrWhiteSpace(fuzzyKey))
                     return string.Empty;
 
-                string fallback = key.First().ToString().ToUpper();
+                string fallback = fuzzyKey.First().ToString().ToUpper();
                 int? code = null;
 
-                var keyParts = localNormalizeKey(key);
+                var keyParts = localNormalizeKey(fuzzyKey);
 
                 var exactMatches = GlyphLookup.Keys
                     .Where(k => localNormalizeKey(k).SequenceEqual(keyParts, StringComparer.OrdinalIgnoreCase))
@@ -88,7 +90,7 @@ namespace IVSoftware.Portable
                 }
                 else if (exactMatches.Count > 1)
                 {
-                    Debug.Fail($"Ambiguous match for key '{key}': {string.Join(", ", exactMatches)}");
+                    Debug.Fail($"Ambiguous match for key '{fuzzyKey}': {string.Join(", ", exactMatches)}");
                     return fallback;
                 }
 
@@ -105,7 +107,7 @@ namespace IVSoftware.Portable
                     else
                     {
                         if (partialMatches.Count > 1)
-                            Debug.Fail($"Ambiguous partial match for key '{key}': {string.Join(", ", partialMatches)}");
+                            Debug.Fail($"Ambiguous partial match for key '{fuzzyKey}': {string.Join(", ", partialMatches)}");
                         return fallback;
                     }
                 }
@@ -258,7 +260,7 @@ namespace IVSoftware.Portable
             //}
             public static bool TryGetValue(Enum stdEnum, out GlyphProvider? provider)
             {
-                var key = $"{stdEnum.GetType().Name}.{stdEnum}";
+                var key = stdEnum.ToAssemblyKey();
                 if(Keys.Any())
                 {
                     foreach (var knownkey in Keys)

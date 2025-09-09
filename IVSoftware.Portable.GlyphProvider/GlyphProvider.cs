@@ -396,9 +396,39 @@ namespace IVSoftware.Portable
             });
         }
 
-        public static bool TryGetFontsDirectory(out string dir)
+        public static bool TryGetFontsDirectory(out string? dir, bool allowCreate = false)
         {
-            throw new NotImplementedException();
+            bool foundBin = false;
+            dir = null;
+            var baseDir = AppContext.BaseDirectory;
+
+            // Start at the base dir and walk upward until we hit "bin" or root
+            var current = new DirectoryInfo(baseDir);
+            string? aspirant = null;
+            while (current.Parent is not null)
+            { 
+                if(current.Name.Equals("bin", StringComparison.OrdinalIgnoreCase))
+                {
+                    foundBin = true;
+                    aspirant = Path.Combine(current.Parent.FullName, "Resources", "Fonts");
+                    break;
+                }
+                current = current.Parent;
+            }
+
+            if (foundBin)
+            {
+                if(Directory.Exists(aspirant))
+                {
+
+                }
+                else
+                {
+
+                }
+                throw new NotImplementedException("ToDo");
+            }
+            else return false;
         }
 
         private static bool _started = false;

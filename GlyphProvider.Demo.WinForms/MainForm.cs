@@ -12,7 +12,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         {
             InitializeComponent();
 #if DEBUG
-            if(GlyphProvider.TryGetFontsDirectory(out string dir))
+            if(GlyphProvider.TryGetFontsDirectory(out string dir, allowCreate: true))
             {
 
             }

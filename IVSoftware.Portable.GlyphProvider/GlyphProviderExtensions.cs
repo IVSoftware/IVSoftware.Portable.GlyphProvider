@@ -45,15 +45,15 @@ namespace IVSoftware.Portable
         ///   provides a stronger anchor across packages and contexts.
         /// </summary>
         /// <remarks>
-        /// - This key identifies the font family dictionary for the enum’s assembly.
-        /// - Once that dictionary is located, the same member is used as the key
-        ///   to retrieve the glyph. The pattern makes enum-to-glyph mapping
-        ///   feel natural and fluent in code, rather than requiring a separate
-        ///   type and member lookup. 
-        /// - This also explains why we don't yet use the actual member value 
-        ///   in this intermediate step.
+        /// - This key identifies the font family dictionary for a given enum type.
+        /// - If called with an enum member, only the declaring type is used at this step.
+        /// - If called with a Type directly, the result is the same, without needing a member.
+        /// - Once the dictionary is located, the member itself (when present) is used as
+        ///   the final key to retrieve the glyph.
         /// </remarks>
         internal static string ToGlyphProviderKey(this Enum member) =>
-            $"{member.GetType().Assembly.GetName().Name}.{member.GetType().Name}";
+            member.GetType().ToGlyphProviderKey();        
+        internal static string ToGlyphProviderKey(this Type type) =>
+            $"{type.Assembly.GetName().Name}.{type.Name}";
     }
 }

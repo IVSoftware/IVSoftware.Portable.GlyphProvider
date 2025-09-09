@@ -167,16 +167,28 @@ namespace IVSoftware.Portable
             {
                 Task.Run(() =>
                 {
-                    foreach (var asm in AppDomain.CurrentDomain
+                    var all = AppDomain.CurrentDomain
                         .GetAssemblies()
                         .Where(_ =>
                             !string.IsNullOrEmpty(_.Location) &&
                             !_.Location.Contains("Microsoft.NETCore", StringComparison.OrdinalIgnoreCase) &&
-                            !_.Location.Contains("System.Private.CoreLib", StringComparison.OrdinalIgnoreCase)))
+                            !_.Location.Contains("System.Private.CoreLib", StringComparison.OrdinalIgnoreCase))
+                        .ToArray();
+                    { }
+#if DEBUG
+                    if (AppDomain.CurrentDomain
+                        .GetAssemblies().FirstOrDefault(_ => _.GetName().Name?.Contains("IVSoftware.Portable") == true)
+                        is { } ivs)
                     {
-                        var cMe = asm.GetManifestResourceNames();
-                        { }
-                        foreach (var resourcePath in cMe)
+                        var ivsNames = ivs.GetManifestResourceNames();
+                    }
+#endif
+
+                    foreach (var asm in all)
+                    {
+                        var cMe1 = asm.GetName().Name;
+                        var cMe2 = asm.GetManifestResourceNames();
+                        foreach (var resourcePath in cMe2)
                         {
                             if (resourcePath.EndsWith("config.json", StringComparison.InvariantCultureIgnoreCase))
                             {
@@ -189,9 +201,11 @@ namespace IVSoftware.Portable
                                 {
                                     Debug.Fail("ADVISORY - Defective config file.");
                                 }
+                                _impl[glyphProvider.Key] = glyphProvider;
                             }
                         }
                     }
+                    _ready.SetResult();
                 });
             }
 #if false
@@ -242,13 +256,17 @@ namespace IVSoftware.Portable
             //        _impl[key] = value;
             //    }
             //}
-            public static bool TryGetValue(Enum stdEnum, out GlyphProvider provider)
+            public static bool TryGetValue(Enum stdEnum, out GlyphProvider? provider)
             {
-                foreach (var key in Keys)
+                var key = $"{stdEnum.GetType().Name}.{stdEnum}";
+                if(Keys.Any())
                 {
+                    foreach (var knownkey in Keys)
+                    {
 
+                    }                    
                 }
-                throw new NotImplementedException();
+                return _impl.TryGetValue(key, out provider);
             }
 
             [Obsolete]
@@ -256,6 +274,9 @@ namespace IVSoftware.Portable
             {
                 throw new NotImplementedException();
             }
+
+            public static async Task WaitAsync() =>
+                await _ready.Task.ConfigureAwait(false);
         }
 
         public Dictionary<string, Glyph> GlyphLookup
@@ -284,7 +305,7 @@ namespace IVSoftware.Portable
                 if (!Equals(_name, value))
                 {
                     _name = value;
-                    Key = $"{Assembly?.GetName().Name }.{localToPascalCase(_name)}";
+                    Key = $"{Assembly?.GetName().Name ?? getAutoId().ToFullKey()}.{localToPascalCase(_name)}";
                 }
                 #region L o c a l F x		
                 string localToPascalCase(string input)
@@ -581,6 +602,8 @@ You can safely remove this file once other assets are present.".TrimStart());
         public static Dictionary<T, Glyph?> GetGlyphs<T>(bool allowAppDomainFallback = false)
             where T : Enum
         {
+            var keys = FontFamilyLookupProvider.Keys;
+            { }
             throw new NotImplementedException("ToDo");
         }
 
@@ -593,10 +616,8 @@ You can safely remove this file once other assets are present.".TrimStart());
             if (_started) return;
             _started = true;
 
-            await Task.Run(() =>
-            {
-                _ = FontFamilyLookupProvider.Keys;
-            });
+            _ = FontFamilyLookupProvider.Keys;
+            await FontFamilyLookupProvider.WaitAsync();
         }
         private static bool _started = false;
     }

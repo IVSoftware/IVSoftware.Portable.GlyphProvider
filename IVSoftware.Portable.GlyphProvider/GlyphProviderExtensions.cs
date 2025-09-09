@@ -27,5 +27,7 @@ namespace IVSoftware.Portable
                 .GetField(opid.ToString())
                 ?.GetCustomAttributes<TAttr>()
                 .SingleOrDefault();
+
+        internal static string ToFullKey(this Enum member) => $"{member.GetType().Name}.{member}";
     }
 }

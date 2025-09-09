@@ -53,7 +53,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
             else
             {
-                CounterBtn.Font = BasicsFont;
+                CounterBtn.Font = IconBasicsFont;
                 CounterBtn.Text = IconBasics.Search.ToGlyph();
                 CounterBtn.Width = CounterBtn.Height;
                 // Alt
@@ -61,21 +61,24 @@ namespace IVSGlyphProvider.Demo.WinForms
                 // Readable
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
                 { }
-                var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
+                var fonts = GlyphProvider.ListDomainFontResources();
             }
         }
         private readonly int _widthRequestPrev;
         private readonly Font _fontPrev;
 
-        public Font BasicsFont
+        public Font IconBasicsFont
         {
             get
             {
+                var azz = GlyphProvider.GetGlyphs<IconBasics>();
+                { }
+                throw new NotImplementedException("ToDo");
                 var fontName = "basics-icons.ttf";
                 var alias = "basics-icons";
                 if (_basicsFont is null)
                 {
-                    var asm = typeof(IVSoftware.Portable.GlyphProvider).Assembly;
+                    var asm = typeof(GlyphProvider).Assembly;
                     var fullName = 
                         asm
                         .GetManifestResourceNames()                        

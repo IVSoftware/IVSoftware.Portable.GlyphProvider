@@ -396,10 +396,11 @@ namespace IVSoftware.Portable
             });
         }
 
+        /// <summary>
+        /// Find or optionally create the Resources\Fonts directory
+        /// </summary>
         public static bool TryGetFontsDirectory(out string? dir, bool allowCreate = false)
         {
-            bool foundBin = false;
-            dir = null;
             var baseDir = AppContext.BaseDirectory;
 
             // Start at the base dir and walk upward until we hit "bin" or root
@@ -409,26 +410,34 @@ namespace IVSoftware.Portable
             { 
                 if(current.Name.Equals("bin", StringComparison.OrdinalIgnoreCase))
                 {
-                    foundBin = true;
                     aspirant = Path.Combine(current.Parent.FullName, "Resources", "Fonts");
                     break;
                 }
                 current = current.Parent;
             }
 
-            if (foundBin)
+            dir = null;
+            if (aspirant is not null)
             {
-                if(Directory.Exists(aspirant))
+                if (Directory.Exists(aspirant))
                 {
-
+                    dir = aspirant;
                 }
-                else
+                else if (allowCreate)
                 {
-
+                    Directory.CreateDirectory(aspirant);
+                    dir = aspirant;
+                    var readmePath = Path.Combine(dir, "autogen-readme.md");
+                    if (!File.Exists(readmePath))
+                    {
+                        File.WriteAllText(readmePath,
+                            "This folder is created by IVSoftware.Portable.GlyphProvider.\r\n" +
+                            "It is the default location for copied font resources.\r\n" +
+                            "You can safely remove this file once other assets are present.");
+                    }
                 }
-                throw new NotImplementedException("ToDo");
             }
-            else return false;
+            return dir is not null;
         }
 
         private static bool _started = false;

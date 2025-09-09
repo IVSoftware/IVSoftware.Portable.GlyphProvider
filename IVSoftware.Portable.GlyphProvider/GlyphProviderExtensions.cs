@@ -35,7 +35,25 @@ namespace IVSoftware.Portable
         internal static string ToFullKey(this Enum member) =>
             $"{member.GetType().Name}.{member}";
 
-        internal static string ToAssemblyKey(this Enum member) =>
+        /// <summary>
+        /// Produces a key in the form "AssemblyName.EnumType".
+        /// This goes beyond using just GetType().Name:
+        /// - Within an AppDomain, type names are unique, so that alone is enough
+        ///   when you already hold an enum member.
+        /// - But when lookup is string-driven (camel, kebab, underscore),
+        ///   or the type isn’t guaranteed to be an enum, the assembly name
+        ///   provides a stronger anchor across packages and contexts.
+        /// </summary>
+        /// <remarks>
+        /// - This key identifies the font family dictionary for the enum’s assembly.
+        /// - Once that dictionary is located, the same member is used as the key
+        ///   to retrieve the glyph. The pattern makes enum-to-glyph mapping
+        ///   feel natural and fluent in code, rather than requiring a separate
+        ///   type and member lookup. 
+        /// - This also explains why we don't yet use the actual member value 
+        ///   in this intermediate step.
+        /// </remarks>
+        internal static string ToGlyphProviderKey(this Enum member) =>
             $"{member.GetType().Assembly.GetName().Name}.{member.GetType().Name}";
     }
 }

@@ -64,7 +64,21 @@ namespace IVSoftware.Portable
         {
             get
             {
-                throw new NotImplementedException("ToDo");
+                var css = stdEnum.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                if (css is null)
+                {
+                    Debug.Fail(
+                        "ADVISORY - Are you sure you want to do this? The css in the config.json must match exactly!");
+                    css = stdEnum.ToString();
+                }
+                if(GlyphLookup.TryGetValue(css, out var glyph))
+                {
+                    throw new NotImplementedException("ToDo");
+                }
+                else
+                {
+                    throw new NotImplementedException("ToDo");
+                }
             }
         }
 
@@ -242,35 +256,9 @@ namespace IVSoftware.Portable
             private static Dictionary<string, GlyphProvider> _impl = new();
 
             public static string[] Keys => _impl.Keys.ToArray();
-
-            //public static GlyphProvider this[Enum stdEnum]
-            //{
-            //    get 
-            //    {
-            //        if (_impl.TryGetValue(stdEnum.GetType().FullName!, out var glyphProvider))
-            //        {
-            //            return glyphProvider;
-            //        }
-            //        else return null;
-            //    }
-            //    set => throw new NotImplementedException("ToDo");
-            //}
-
-            //public GlyphProvider this[Assembly asm, string css]
-            //{
-            //    set
-            //    {
-            //        var key = $"{asm.GetName().Name}.{localToPascalCase(css)}";
-            //        if(_impl.ContainsKey(key))
-            //        {
-            //            Debug.Fail("ADVISORY - Check concurrency.");
-            //        }
-            //        _impl[key] = value;
-            //    }
-            //}
             public static bool TryGetValue(Enum stdEnum, out GlyphProvider? provider)
             {
-                var key = stdEnum.ToAssemblyKey();
+                var key = stdEnum.ToGlyphProviderKey();
                 if(Keys.Any())
                 {
                     foreach (var knownkey in Keys)

@@ -71,16 +71,16 @@ namespace IVSoftware.Portable
                         "ADVISORY - Are you sure you want to do this? The css in the config.json must match exactly!");
                     css = stdEnum.ToString();
                 }
+                string? cMe = null;
                 if(GlyphLookup.TryGetValue(css, out var glyph))
                 {
-                    throw new NotImplementedException("ToDo");
+                    cMe = FormatCode(glyph.Code, format);
                 }
-                else
-                {
-                    throw new NotImplementedException("ToDo");
-                }
+                cMe ??= stdEnum.ToString().First().ToString().ToUpper();
+                return cMe;
             }
         }
+
 
         /// <summary>
         /// Retrieves a glyph string in the requested GlyphFormat.
@@ -135,15 +135,10 @@ namespace IVSoftware.Portable
                         return fallback;
                     }
                 }
-                return code.HasValue
-                ? format switch
-                {
-                    GlyphFormat.Unicode => char.ConvertFromUtf32(code.Value),
-                    GlyphFormat.UnicodeDisplay => $"U+{code.Value:X4}",
-                    GlyphFormat.Xaml => $"&#x{code.Value:X};",
-                    _ => fallback
-                }
-                : fallback;
+                string? cMe = null;
+                cMe = FormatCode(code, format);
+                cMe ??= fuzzyKey.First().ToString().ToUpper();
+                return cMe;
 
                 #region L o c a l   M e t h o d
                 string[] localNormalizeKey(string input)
@@ -160,6 +155,20 @@ namespace IVSoftware.Portable
                 }
                 #endregion
             }
+        }
+        private static string? FormatCode(int? code, GlyphFormat format)
+        {
+            if (code.HasValue)
+            {
+                return format switch
+                {
+                    GlyphFormat.Unicode => char.ConvertFromUtf32(code.Value),
+                    GlyphFormat.UnicodeDisplay => $"U+{code.Value:X4}",
+                    GlyphFormat.Xaml => $"&#x{code.Value:X};",
+                    _ => throw new NotImplementedException($"Bad case: {format}"),
+                };
+            }
+            else return null;
         }
 
         private static readonly object _lock = new object();

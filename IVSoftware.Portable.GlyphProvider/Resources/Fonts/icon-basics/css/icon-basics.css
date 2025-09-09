@@ -1,11 +1,11 @@
 @font-face {
-  font-family: 'basics-icons';
-  src: url('../font/basics-icons.eot?74993818');
-  src: url('../font/basics-icons.eot?74993818#iefix') format('embedded-opentype'),
-       url('../font/basics-icons.woff2?74993818') format('woff2'),
-       url('../font/basics-icons.woff?74993818') format('woff'),
-       url('../font/basics-icons.ttf?74993818') format('truetype'),
-       url('../font/basics-icons.svg?74993818#basics-icons') format('svg');
+  font-family: 'icon-basics';
+  src: url('../font/icon-basics.eot?37842528');
+  src: url('../font/icon-basics.eot?37842528#iefix') format('embedded-opentype'),
+       url('../font/icon-basics.woff2?37842528') format('woff2'),
+       url('../font/icon-basics.woff?37842528') format('woff'),
+       url('../font/icon-basics.ttf?37842528') format('truetype'),
+       url('../font/icon-basics.svg?37842528#icon-basics') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,13 +14,13 @@
 /*
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
-    font-family: 'basics-icons';
-    src: url('../font/basics-icons.svg?74993818#basics-icons') format('svg');
+    font-family: 'icon-basics';
+    src: url('../font/icon-basics.svg?37842528#icon-basics') format('svg');
   }
 }
 */
 [class^="onepage-"]:before, [class*=" onepage-"]:before {
-  font-family: "basics-icons";
+  font-family: "icon-basics";
   font-style: normal;
   font-weight: normal;
   speak: never;

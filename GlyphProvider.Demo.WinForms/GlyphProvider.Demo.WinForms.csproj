@@ -8,8 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local16" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\IVSoftware.Portable.GlyphProvider\IVSoftware.Portable.GlyphProvider.csproj" />
+	</ItemGroup>
 
 </Project>

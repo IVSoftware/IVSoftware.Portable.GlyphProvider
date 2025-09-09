@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.WinForms
 		{6EC1662E-5888-4425-A0AA-53C6A2926C3A} = {6EC1662E-5888-4425-A0AA-53C6A2926C3A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.Wpf", "GlyphProvider.Demo.WPF\GlyphProvider.Demo.Wpf.csproj", "{AD247347-6B3A-4DB0-ACED-147D47739C4E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphProvider.Demo.Wpf", "GlyphProvider.Demo.Wpf\GlyphProvider.Demo.Wpf.csproj", "{427BB49B-7146-9090-A1FF-4EBC39EFE994}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6EC1662E-5888-4425-A0AA-53C6A2926C3A} = {6EC1662E-5888-4425-A0AA-53C6A2926C3A}
 	EndProjectSection
@@ -49,10 +49,10 @@ Global
 		{7BFCCB69-0772-48A3-963A-294808194726}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BFCCB69-0772-48A3-963A-294808194726}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BFCCB69-0772-48A3-963A-294808194726}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD247347-6B3A-4DB0-ACED-147D47739C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD247347-6B3A-4DB0-ACED-147D47739C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD247347-6B3A-4DB0-ACED-147D47739C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD247347-6B3A-4DB0-ACED-147D47739C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{427BB49B-7146-9090-A1FF-4EBC39EFE994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{427BB49B-7146-9090-A1FF-4EBC39EFE994}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{427BB49B-7146-9090-A1FF-4EBC39EFE994}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{427BB49B-7146-9090-A1FF-4EBC39EFE994}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

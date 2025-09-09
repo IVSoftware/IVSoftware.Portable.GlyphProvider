@@ -57,11 +57,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local16\contentFiles\any\any\MARKLAR.txt" />
+	  <Content Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local17\contentFiles\any\any\basics-icons.ttf" />
+	  <Content Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local17\contentFiles\any\any\MARKLAR.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local16" />
+	  <None Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local20\contentFiles\any\any\Resources\Fonts\icon-basics.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />

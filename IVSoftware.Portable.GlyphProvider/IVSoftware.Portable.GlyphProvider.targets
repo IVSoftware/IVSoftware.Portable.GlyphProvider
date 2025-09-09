@@ -1,4 +1,8 @@
 <Project>
-  <ItemGroup Condition="'$(UseMaui)' == 'true'">
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="$(MSBuildThisPackageRoot)contentFiles\any\any\Resources\Fonts\icon-basics\font\icon-basics.ttf">
+			<Link>Resources\icon-basics.ttf</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

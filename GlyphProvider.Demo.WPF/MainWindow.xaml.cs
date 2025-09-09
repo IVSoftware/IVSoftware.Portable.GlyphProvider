@@ -21,48 +21,52 @@ namespace GlyphProvider.Demo.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            localInitSizeAsRawPixels();
-			// This lowers the lazy init time
-			IVSoftware.Portable.GlyphProvider.BoostCache();
-			_fontFamilyPrev = CounterBtn.FontFamily;
-			_widthPrev = CounterBtn.Width;
+            // This lowers the lazy init time
+            IVSoftware.Portable.GlyphProvider.BoostCache();
+            _fontFamilyPrev = CounterBtn.FontFamily;
+            _widthPrev = CounterBtn.Width;
 
-			#region L o c a l F x       
+            #region L o c a l F x       
             void localInitSizeAsRawPixels()
             {
                 var dpi = VisualTreeHelper.GetDpi(this);
 
                 this.Width *= (96.0 / dpi.PixelsPerInchX);
                 this.Height *= (96.0 / dpi.PixelsPerInchY);
-			}	
+            }
             #endregion L o c a l F x
-		}
+        }
 
-		private void OnCounterClicked(object sender, EventArgs e)
-		{
-			count++;
-			if (count % 2 == 0)
-			{
-				var cycleCount = count / 2;
-				CounterBtn.FontFamily = new FontFamily("Open Sans");
-				if (cycleCount == 1)
-					CounterBtn.Content = $"Cycled {cycleCount} time";
-				else
-					CounterBtn.Content = $"Cycled {cycleCount} times";
-				if (_widthPrev is double width)
-				{
-					CounterBtn.Width = width;
-				}
-			}
-			else
-			{
-				var stopwatch = Stopwatch.StartNew();
-				CounterBtn.FontFamily = new FontFamily("basics-icons");
-				CounterBtn.Content = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search);
-				CounterBtn.Width = CounterBtn.Height;
+        private void OnCounterClicked(object sender, EventArgs e)
+        {
+            count++;
+            if (count % 2 == 0)
+            {
+                var cycleCount = count / 2;
+                CounterBtn.FontFamily = new FontFamily("Open Sans");
+                if (cycleCount == 1)
+                    CounterBtn.Content = $"Cycled {cycleCount} time";
+                else
+                    CounterBtn.Content = $"Cycled {cycleCount} times";
+                if (_widthPrev is double width)
+                {
+                    CounterBtn.Width = width;
+                }
+            }
+            else
+            {
+                var stopwatch = Stopwatch.StartNew();
+                CounterBtn.FontFamily = new FontFamily("basics-icons");
+
+
+                var xaml = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+                var display = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
+
+                CounterBtn.Content = CounterBtn.FontFamily.Source.ToGlyph(StdBasicsIcons.Search);
+                CounterBtn.Width = CounterBtn.Height;
 #if false
 				// Alt
-				var xaml = CounterBtn.FontFamily.N.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+				var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
 				// Readable
 				var display = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
 				{ }
@@ -77,11 +81,11 @@ namespace GlyphProvider.Demo.Wpf
 				// If preloaded (call to ToGlyph()) 640675 ticks
 				// Otherwise as much as            2764151
 #endif
-			}
+            }
 
-		}
-		private readonly FontFamily _fontFamilyPrev;
-		private readonly double _widthPrev;
-		int count = 0;
-	}
+        }
+        private readonly FontFamily _fontFamilyPrev;
+        private readonly double _widthPrev;
+        int count = 0;
+    }
 }

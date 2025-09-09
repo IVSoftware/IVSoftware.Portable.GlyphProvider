@@ -12,9 +12,9 @@ namespace IVSGlyphProvider.Demo.WinForms
         {
             InitializeComponent();
 #if DEBUG
-            if(GlyphProvider.TryGetFontsDirectory(out string dir, allowCreate: true))
+            if(GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
             {
-
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
 #endif
 

@@ -440,6 +440,54 @@ You can safely remove this file once other assets are present.".TrimStart());
             return dir is not null;
         }
 
+        /// <summary>
+        /// Specialized debug-time utility to copy out the 
+        /// fonts file structure from this package specifically.
+        /// </summary>
+        public static bool CopyEmbeddedFontsFromPackage(string? targetDir = null, bool overwrite = false)
+        {
+            if(targetDir is null)
+            {
+                if (!TryGetFontsDirectory(out targetDir, true))
+                {
+                    return false;
+                }
+            }
+            const string ROOT = ".Resources.Fonts.";
+            var asm = typeof(GlyphProvider).Assembly;
+            var names = 
+                asm.GetManifestResourceNames()
+                .Where(_ => _.Contains(ROOT));
+            string? 
+                resourceRoot = null,
+                sub,
+                dir,
+                fileName;
+            foreach (var resourceName in names)
+            {
+                using var stream = asm.GetManifestResourceStream(resourceName);
+                if (stream is not null)
+                {
+                    resourceRoot ??=
+                        resourceName
+                        [..(resourceName.IndexOf(".Resources.Fonts.") + ROOT.Length)];
+                    sub = resourceName.Substring(resourceRoot.Length)
+                        .Replace('.', Path.DirectorySeparatorChar);
+                    dir = Path.Combine(targetDir!, sub);
+                    Directory.CreateDirectory(dir);
+                    fileName = Path.Combine(
+                        dir,
+                        Path.GetFileName(resourceName));
+                    if (overwrite || !File.Exists(fileName))
+                    {
+                        using var copyToFile = File.Create(fileName);
+                        stream.CopyTo(copyToFile);
+                    }
+                }
+            }
+            return true;
+        }
+
         private static bool _started = false;
     }
 }

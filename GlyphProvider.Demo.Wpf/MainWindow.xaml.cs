@@ -2,23 +2,11 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace IVSGlyphProvider.Demo.Wpf
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -56,15 +44,88 @@ namespace IVSGlyphProvider.Demo.Wpf
                 _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
             var prototypes = await GlyphProvider.CreateEnumPrototypes();
-            Debug.WriteLine(string.Empty);
-            Debug.WriteLine(
+            Debug.Assert(
+                prototypes.Any(),
+                "At the very least, you should see the IconBasics prototype." +
+                "You should also see any config.json files marked as Embedded Resource." +
+                "Even for WPF this should be Embedded Resource not Resource."
+           );
+
+            var showMe =
                 string.Join(
                     $"{Environment.NewLine}{Environment.NewLine}",
-                    prototypes));
-            { }
+                    prototypes);
+            var expected = @"[CssName(""icon-basics"")]
+public enum StdIconBasics
+{
+	[CssName(""add"")]
+	Add
+
+	[CssName(""delete"")]
+	Delete
+
+	[CssName(""edit"")]
+	Edit
+
+	[CssName(""ellipsis-horizontal"")]
+	EllipsisHorizontal
+
+	[CssName(""ellipsis-vertical"")]
+	EllipsisVertical
+
+	[CssName(""filter"")]
+	Filter
+
+	[CssName(""menu"")]
+	Menu
+
+	[CssName(""search"")]
+	Search
+
+	[CssName(""settings"")]
+	Settings
+
+	[CssName(""checked"")]
+	Checked
+
+	[CssName(""unchecked"")]
+	Unchecked
+
+	[CssName(""eye"")]
+	Eye
+
+	[CssName(""eye-off"")]
+	EyeOff
+
+	[CssName(""help-circled"")]
+	HelpCircled
+
+	[CssName(""help-circled-alt"")]
+	HelpCircledAlt
+
+	[CssName(""doc-empty"")]
+	DocEmpty
+
+	[CssName(""doc"")]
+	Doc
+
+	[CssName(""doc-new"")]
+	DocNew
+}".Trim();
+
+            Debug.Assert(showMe == expected, "ADVISORY: This will only hold true until more config.json files are added!");
 
             var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
-            { }
+            expected = "icon-basics";
+            Debug.Assert(fontFamily == expected);
+
+            fontFamily = typeof(IconBasics).ToCssFontFamilyName(ext: "ttf");
+            expected = "icon-basics.ttf";
+            Debug.Assert(fontFamily == expected);
+
+            fontFamily = typeof(IconBasics).ToCssFontFamilyName(ext: ".ttf");
+            expected = "icon-basics.ttf";
+            Debug.Assert(fontFamily == expected);
 #endif
         }
 
@@ -91,28 +152,15 @@ namespace IVSGlyphProvider.Demo.Wpf
                 CounterBtn.Content = IconBasics.Search.ToGlyph();
                 CounterBtn.Width = CounterBtn.Height;
 
-                var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
-                var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
-#if false
 				// Alt
-				var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
+                var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
 				// Readable
-				var display = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.UnicodeDisplay);
-				{ }
-
-				var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
-
-
-				var names = GetType().Assembly.GetManifestResourceNames();
-				{ }
+                var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
 				stopwatch.Stop();
 				Debug.WriteLine(stopwatch.ElapsedTicks);
-				// If preloaded (call to ToGlyph()) 640675 ticks
-				// Otherwise as much as            2764151
-#endif
             }
         }
-        private FontFamily _fontFamilyPrev;
+        private FontFamily? _fontFamilyPrev;
         private double _widthPrev;
         int count = 0;
 

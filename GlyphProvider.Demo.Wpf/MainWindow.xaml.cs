@@ -111,9 +111,7 @@ public enum StdIconBasics
 
 	[CssName(""doc-new"")]
 	DocNew
-}".Trim();
-
-            Debug.Assert(showMe == expected, "ADVISORY: This will only hold true until more config.json files are added!");
+}";
 
             var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
             expected = "icon-basics";
@@ -147,15 +145,20 @@ public enum StdIconBasics
             }
             else
             {
+                CounterBtn.Width = CounterBtn.Height;
                 var stopwatch = Stopwatch.StartNew();
+
+                string expected;
+
                 CounterBtn.FontFamily = IconBasicsFontFamily;
                 CounterBtn.Content = IconBasics.Search.ToGlyph();
-                CounterBtn.Width = CounterBtn.Height;
 
 				// Alt
                 var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
+                expected = "&#xE807;";
 				// Readable
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
+                expected = "U+E807";
 				stopwatch.Stop();
 				Debug.WriteLine(stopwatch.ElapsedTicks);
             }

@@ -30,7 +30,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         public MainForm()
         {
             InitializeComponent();
-            _fontPrev = CounterBtn.Font;
+            _fontPrototype = CounterBtn.Font;
             _widthRequestPrev = CounterBtn.Width;
             CounterBtn.UseCompatibleTextRendering = true;
             CounterBtn.SizeChanged += (sender, e) =>
@@ -82,9 +82,9 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         private readonly int _widthRequestPrev;
-        private readonly Font _fontPrev;
+        private static Font? _fontPrototype;
 
-        public Font IconBasicsFont
+        public static Font IconBasicsFont
         {
             get
             {
@@ -124,15 +124,15 @@ namespace IVSGlyphProvider.Demo.WinForms
                             Marshal.FreeCoTaskMem(fontPtr); // Avoid memory leak
                         }
                         FontFamily fontFamily = CustomFonts.Families.Single(_ => _.Name == cssName);
-                        _basicsFont = new Font(fontFamily, _fontPrev.Size);
+                        _basicsFont = new Font(fontFamily, _fontPrototype?.Size ?? 12);
                     }
                 }
                 return _basicsFont;
             }
         }
-        Font? _basicsFont = null;
+        static Font? _basicsFont = null;
 
-        public PrivateFontCollection CustomFonts
+        public static PrivateFontCollection CustomFonts
         {
             get
             {
@@ -143,7 +143,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 return _customFonts;
             }
         }
-        PrivateFontCollection? _customFonts = null;
+        static PrivateFontCollection? _customFonts = null;
 
         int count = 0;
     }

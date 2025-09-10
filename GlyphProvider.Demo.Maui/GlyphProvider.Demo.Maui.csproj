@@ -67,11 +67,6 @@
 
 	<ItemGroup>
 	  <None Remove="C:\Users\tgreg\.nuget\packages\ivsoftware.portable.glyphprovider\1.0.0-local20\contentFiles\any\any\Resources\Fonts\icon-basics.ttf" />
-	  <None Remove="Resources\Fonts\icon_basics\config.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Fonts\icon_basics\config.json" />
 	</ItemGroup>
 
 	<ItemGroup>

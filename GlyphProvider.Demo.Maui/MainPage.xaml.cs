@@ -53,8 +53,12 @@ namespace IVSGlyphProvider.Demo.Maui
                 }
                 else
                 {
-                    //CounterBtn.FontFamily = typeof(IconBasics).ToFontFamily();
-                    throw new NotImplementedException("ToDo");
+                    // Works independently
+                    // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
+
+                    // Also works, but this must be aliased in Maui.AddFont
+                    CounterBtn.FontFamily = nameof(IconBasics);
+
                     CounterBtn.Text = IconBasics.Search.ToGlyph();
                     CounterBtn.WidthRequest = CounterBtn.Height;
                     // Alt

@@ -662,13 +662,7 @@ You can safely remove this file once other assets are present.".TrimStart());
         /// Safe to call multiple times; subsequent calls are ignored.
         /// </summary>
         public static async Task BoostCache()
-        {
-            if (_started) return;
-            _started = true;
-
-            _ = FontFamilyLookupProvider.Keys;
-            await FontFamilyLookupProvider.WaitAsync();
-        }
+            => await FontFamilyLookupProvider.WaitAsync();
 
         /// <summary>
         /// Enumerate att config.json embedded resources in assembly.
@@ -683,7 +677,5 @@ You can safely remove this file once other assets are present.".TrimStart());
             }
             return builder.ToArray();
         }
-
-        private static bool _started = false;
     }
 }

@@ -328,7 +328,9 @@ namespace IVSoftware.Portable
 
         internal string CreateEnumPrototype()
         {
-            var builder = new List<string>();
+            List<string>
+                members = new(),
+                builder = new();
             foreach (var name in GlyphLookup.Keys)
             {
                 // Only allow glyph names that can be linted into valid C# identifiers.
@@ -337,9 +339,8 @@ namespace IVSoftware.Portable
                 {
                     continue;
                 }
-                builder.Add($"\t[CssName(\"{name}\")]\n\t{localLintTerm(name)}");
+                members.Add($"\t[CssName(\"{name}\")]\n\t{localLintTerm(name)}");
             }
-            var members = string.Join($"{Environment.NewLine}{Environment.NewLine}", builder);
             builder.Clear();
 
             builder.Add($"[CssName(\"{Name}\")]");
@@ -355,7 +356,7 @@ namespace IVSoftware.Portable
                 builder.Add($"public enum Std{enumType}Glyph");
             }
             builder.Add($"{{");
-            builder.Add(members);
+            builder.Add(string.Join($"{Environment.NewLine}{Environment.NewLine}", members));
             builder.Add($"}}");
             var joined = string.Join(Environment.NewLine, builder);
             return joined;

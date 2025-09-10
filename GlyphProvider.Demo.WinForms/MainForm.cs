@@ -33,7 +33,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 #if DEBUG
             if (GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
             {
-                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir, includeEnumDefinition: true);
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
             var prototypes = await GlyphProvider.CreateEnumPrototypes();
             Debug.WriteLine(string.Empty);

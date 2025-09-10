@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             CounterBtn = new Button();
+            centeringPanel = new CenteringPanel();
             SuspendLayout();
             // 
             // CounterBtn
@@ -43,11 +44,20 @@
             CounterBtn.Text = "Click me";
             CounterBtn.UseVisualStyleBackColor = false;
             // 
+            // centeringPanel
+            // 
+            centeringPanel.Dock = DockStyle.Bottom;
+            centeringPanel.Location = new Point(0, 839);
+            centeringPanel.Name = "centeringPanel";
+            centeringPanel.Size = new Size(518, 65);
+            centeringPanel.TabIndex = 1;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(518, 904);
+            Controls.Add(centeringPanel);
             Controls.Add(CounterBtn);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
@@ -58,5 +68,6 @@
         #endregion
 
         private Button CounterBtn;
+        private CenteringPanel centeringPanel;
     }
 }

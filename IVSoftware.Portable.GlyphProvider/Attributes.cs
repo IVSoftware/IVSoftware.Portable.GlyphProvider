@@ -8,7 +8,15 @@ namespace IVSoftware.Portable
     {
         public GlyphAttribute() { }
         public GlyphAttribute(string key) => Key = key;
-        public GlyphAttribute(Enum stdEnum) { }
+        
+        public GlyphAttribute(Type stdEnumType, string key)
+        {
+            if (!stdEnumType.IsEnum)
+                throw new ArgumentException("Type must be an enum.", nameof(stdEnumType));
+
+            var value = Enum.Parse(stdEnumType, key);
+            StdEnum = (Enum)value;
+        }
         public string FontFamily
         {
             get =>
@@ -45,7 +53,7 @@ namespace IVSoftware.Portable
         public Enum? StdEnum
         {
             get => _stdEnum;
-            set
+            private set
             {
                 if (!Equals(_stdEnum, value))
                 {

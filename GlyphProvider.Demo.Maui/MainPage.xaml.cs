@@ -46,31 +46,35 @@ namespace IVSGlyphProvider.Demo.Maui
         {
                 var stopwatch = Stopwatch.StartNew();
                 count++;
-                if (count % 2 == 0)
-                {
-                    var cycleCount = count / 2;
-                    if (cycleCount == 1)
-                        CounterBtn.Text = $"Cycled {cycleCount} time";
-                    else
-                        CounterBtn.Text = $"Cycled {cycleCount} times";
-                    CounterBtn.WidthRequest = _widthRequestPrev;
-                }
+            if (count % 2 == 0)
+            {
+                var cycleCount = count / 2;
+                if (cycleCount == 1)
+                    CounterBtn.Text = $"Cycled {cycleCount} time";
                 else
-                {
-                    // Works independently
-                    // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
+                    CounterBtn.Text = $"Cycled {cycleCount} times";
+                CounterBtn.WidthRequest = _widthRequestPrev;
+            }
+            else
+            {
+                string expected;
+                // namespace IVSGlyphProvider.Demo.Maui
 
-                    // Also works, but this must be aliased in Maui.AddFont
-                    CounterBtn.FontFamily = nameof(IconBasics);
+                // Works independently
+                // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
 
-                    CounterBtn.Text = IconBasics.Search.ToGlyph();
-                    CounterBtn.WidthRequest = CounterBtn.Height;
-                    // Alt
-                    var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
-                    // Readable
-                    var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
-                    { }
-                    //var fonts = GlyphProvider.ListDomainFontResources();
+                // Also works, but this must be aliased in Maui.AddFont
+                CounterBtn.FontFamily = nameof(IconBasics);
+
+                CounterBtn.Text = IconBasics.Search.ToGlyph();
+                CounterBtn.WidthRequest = CounterBtn.Height;
+                // Alt
+                var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
+                expected = "&#xE807;";
+                // Readable
+                var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
+                expected = "U+E807";
+                { }
 #if false
                 CounterBtn.FontFamily = "basics-icons";
                 CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(IconBasics.Search);

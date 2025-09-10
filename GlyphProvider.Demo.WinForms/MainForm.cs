@@ -8,6 +8,23 @@ using System.Windows.Forms;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
+    public enum ToolbarButtons
+    {
+        [Glyph(typeof(IconBasics), nameof(IconBasics.HelpCircled))]
+        Help,
+
+        [Glyph(typeof(IconBasics), nameof(IconBasics.Add))]
+        Add,
+
+        [Glyph(typeof(IconBasics), nameof(IconBasics.Edit))]
+        Edit,
+
+        [Glyph(typeof(IconBasics), nameof(IconBasics.Delete))]
+        Delete,
+
+        [Glyph(typeof(IconBasics), nameof(IconBasics.EllipsisVertical))]
+        Menu,
+    }
     public partial class MainForm : Form
     {
         public MainForm()
@@ -35,17 +52,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
-            var prototypes = await GlyphProvider.CreateEnumPrototypes();
-            Debug.WriteLine(string.Empty);
-            Debug.WriteLine(
-                string.Join(
-                    $"{Environment.NewLine}{Environment.NewLine}",
-                    prototypes));
-            { }
-
-            var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
-            { }
 #endif
+            centeringPanel.Configure<ToolbarButtons>();
         }
 
         private void OnCounterClicked(object? sender, EventArgs e)

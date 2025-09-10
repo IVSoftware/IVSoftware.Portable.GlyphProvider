@@ -1,15 +1,65 @@
 ﻿# Glyph Provider
 
-### Abstract
+## Abstract  
 
-The **Glyph Provider** is a portable identity resolver built on **embedded resources**.
+**GlyphProvider** eliminates the need to inspect raw `config.json` files by automatically locating and mapping them. The cost of admission? Mark each `config.json` as an Embedded Resource and let discovery take it from there. From that point, CSS-style names are surfaced as strongly typed enum members, keeping raw glyph values and magic codepoints transparent to the developer.  
 
-Typically, when creating custom fonts (for example, with [Fontello](https://www.fontello.com)), the tool produces both a `.ttf` font file and a corresponding `config.json`. When the config file is embedded into the assembly, the entire mapping of *friendly name -> Unicode codepoint* is available without reliance on platform APIs or file paths. At runtime, the `GlyphProvider` discovers and caches all of the available information, exposing glyphs by declarative name or enum attribute.
+```csharp
+[CssName("icon-basics")]
+public enum IconBasics
+{
+    [CssName("help-circled")]
+    Help,
 
-This is what makes the scheme portable: the source of truth for glyph identity lives in embedded JSON, not in platform-specific font mechanics.
+    [CssName("help-circled-alt")]
+    HelpReversed,
+}
+```
+Typically, tools like [Fontello](https://www.fontello.com) generate font files in multiple formats plus a config.json rosetta stone that makes mapping names to codepoints straightforward. **GlyphProvider** goes further, capturing these associations as strongly typed enums. In doing so, the mapping gains assembly-specific identity and syntactic sugar, even in sticky cases where font names might otherwise collide.  
 
-⚠️ The `.ttf` file itself is still subject to platform import rules.  
-MAUI, WPF, WinForms, etc. each require you to register or package fonts according to their own conventions. The `GlyphProvider` does not replace that step - it complements it by providing a uniform, declarative way to resolve glyphs across platforms.
+This makes for a glyph mapping scheme that is portable, peacefully coexisting with platform-specific font mechanics without ever trying to intervene in them.  
+
+## Benefits  
+
+You get instant gratification — syntax you can use immediately without a lot of fuss or bother.  
+
+```csharp
+myButton.Text = IconBasics.Search.ToGlyph(); // Programmatic assignment
+```
+
+
+
+
+### Platform Notes
+
+Glyph identity is portable, but font rendering is still governed by each platform’s rules. The public repo includes minimal reproductions for **MAUI**, **WinForms**, and **WPF** showing how GlyphProvider integrates without replacing native font mechanics:
+
+| Platform | How fonts are handled | GlyphProvider support |
+|----------|-----------------------|-----------------------|
+| **WinForms** | Uses `PrivateFontCollection` with `.ttf` embedded as resources | Enums resolve glyphs by name; fonts load via embedded resources |
+| **WPF** | Requires fonts marked as `Resource` in the local assembly | Debug helper `CopyEmbeddedFontsFromPackage()` makes embedded fonts usable without manual duplication |
+| **MAUI** | Fonts registered via `MauiProgram` `.AddFont` (local) or `.AddEmbeddedResourceFont` (local or external) | Enums and attributes provide declarative glyph identity once the font is registered |
+
+GlyphProvider’s role to consistently dispense the "ugly" glyphs in a readable and unambiguous manner!
+
+
+```
+// namespace IVSGlyphProvider.Demo.Maui
+
+// Works independently
+// CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
+
+// Also works, but this must be aliased in Maui.AddFont
+CounterBtn.FontFamily = nameof(IconBasics);
+
+CounterBtn.Text         = IconBasics.Search.ToGlyph();
+CounterBtn.WidthRequest = CounterBtn.Height;
+
+// Alternate formats
+var xaml    = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);          // "&#xE807;"
+var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay); // "U+E807"
+
+```
 
 ---
 

@@ -116,8 +116,6 @@ namespace IVSGlyphProvider.Demo.Wpf
         private double _widthPrev;
         int count = 0;
 
-
-
         public static FontFamily IconBasicsFontFamily
         {
             get
@@ -149,7 +147,6 @@ namespace IVSGlyphProvider.Demo.Wpf
         }
         static FontFamily? _iconBasicsFontFamily = null; 
         private const string PackApplicationBaseUri = "pack://application:,,,/";
-
     }
 
     static class PlatformExtensions

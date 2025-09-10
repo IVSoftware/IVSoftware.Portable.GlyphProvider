@@ -65,7 +65,7 @@ namespace IVSoftware.Portable
         {
             get
             {
-                var css = stdEnum.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                var css = stdEnum.GetCustomAttribute<CssNameAttribute>()?.Name;
                 if (css is null)
                 {
                     Debug.Fail(
@@ -337,7 +337,7 @@ namespace IVSoftware.Portable
                 {
                     continue;
                 }
-                builder.Add($"\t[Description(\"{name}\")]\n\t{localLintTerm(name)}");
+                builder.Add($"\t[CssName(\"{name}\")]\n\t{localLintTerm(name)}");
             }
             var members = string.Join($"{Environment.NewLine}{Environment.NewLine}", builder);
             builder.Clear();
@@ -562,20 +562,32 @@ You can safely remove this file once other assets are present.".TrimStart());
                 enumPath ??= Path.Combine(dir, $"{nameof(IconBasics)}.Enum.cs");
                 if (overwrite || !File.Exists(enumPath))
                 {
-                    var builder = new List<string>();
+                    List<string> 
+                        members = new(),
+                        builder = new();
                     builder.Add($"using System.ComponentModel;");
                     builder.Add($"");
                     builder.Add($"namespace {typeof(IconBasics).Namespace};");
+                    builder.Add($"");
+
+                    if (typeof(IconBasics).GetCustomAttribute<CssNameAttribute>()?.Name is { } cssName)
+                    {
+                        builder.Add($"[CssName(\"{cssName}\")]");
+                    }
                     builder.Add($"public enum {nameof(IconBasics)}");
                     builder.Add($"{{");
                     foreach (var member in Enum.GetValues<IconBasics>())
                     {
-                        if (member.GetCustomAttribute<DescriptionAttribute>()?.Description is { } description)
+                        if (member.GetCustomAttribute<CssNameAttribute>()?.Name is { } name)
                         {
-                            builder.Add($"\t[Description(\"{description}\")]");
+                            members.Add($"\t[CssName(\"{name}\")]\n\t{member.ToString()},");
                         }
-                        builder.Add($"\t{member.ToString()},");
+                        else
+                        {
+                            members.Add($"\t{member.ToString()},");
+                        }
                     }
+                    builder.Add(string.Join($"{Environment.NewLine}{Environment.NewLine}", members));
                     builder.Add($"}}");
                     builder.Add($"");
 

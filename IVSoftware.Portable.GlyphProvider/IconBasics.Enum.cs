@@ -7,60 +7,61 @@ namespace IVSoftware.Portable
     /// This file must remain C# Compiler.
     /// The CreateEnumPrototype utility bases its code gen on this concrete definition.
     /// </summary>
+    [CssName("icon-basics")]
     public enum IconBasics
     {
-        [Description("add")]
+        [CssName("add")]
         Add,
 
-        [Description("delete")]
+        [CssName("delete")]
         Delete,
 
-        [Description("edit")]
+        [CssName("edit")]
         Edit,
 
-        [Description("ellipsis-horizontal")]
+        [CssName("ellipsis-horizontal")]
         EllipsisHorizontal,
 
-        [Description("ellipsis-vertical")]
+        [CssName("ellipsis-vertical")]
         EllipsisVertical,
 
-        [Description("filter")]
+        [CssName("filter")]
         Filter,
 
-        [Description("menu")]
+        [CssName("menu")]
         Menu,
 
-        [Description("search")]
+        [CssName("search")]
         Search,
 
-        [Description("settings")]
+        [CssName("settings")]
         Settings,
 
-        [Description("checked")]
+        [CssName("checked")]
         Checked,
 
-        [Description("unchecked")]
+        [CssName("unchecked")]
         Unchecked,
 
-        [Description("eye")]
+        [CssName("eye")]
         Eye,
 
-        [Description("eye-off")]
+        [CssName("eye-off")]
         EyeOff,
 
-        [Description("help-circled")]
+        [CssName("help-circled")]
         HelpCircled,
 
-        [Description("help-circled-alt")]
+        [CssName("help-circled-alt")]
         HelpCircledAlt,
 
-        [Description("doc-empty")]
+        [CssName("doc-empty")]
         DocEmpty,
 
-        [Description("doc")]
+        [CssName("doc")]
         Doc,
 
-        [Description("doc-new")]
+        [CssName("doc-new")]
         DocNew,
     }
 

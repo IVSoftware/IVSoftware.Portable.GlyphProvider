@@ -51,8 +51,8 @@ namespace IVSoftware.Portable
                     if (value is not null)
                     {
                         _key =
-                            value.GetCustomAttribute<DescriptionAttribute>()
-                            ?.Description
+                            value.GetCustomAttribute<CssNameAttribute>()
+                            ?.Name
                             ?? value.ToString();
                     }
                     _stdEnum = value;
@@ -62,7 +62,7 @@ namespace IVSoftware.Portable
         Enum? _stdEnum = default;
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Enum)]
     public class CssNameAttribute : Attribute
     {
         public CssNameAttribute(string name)

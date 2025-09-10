@@ -3,10 +3,9 @@
 namespace IVSoftware.Portable
 {
     /// <summary>
-    /// [Careful] 
+    /// [Careful(IFD)] 
     /// This file must remain C# Compiler.
-    /// The CreateEnumPrototype utility bases its
-    /// code gen on this concrete definition.
+    /// The CreateEnumPrototype utility bases its code gen on this concrete definition.
     /// </summary>
     public enum IconBasics
     {

@@ -1,6 +1,8 @@
 using IVSoftware.Portable;
 using System;
+using System.Diagnostics;
 using System.Drawing.Text;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -11,21 +13,6 @@ namespace IVSGlyphProvider.Demo.WinForms
         public MainForm()
         {
             InitializeComponent();
-#if DEBUG
-            if(GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
-            {
-                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir );
-            }
-#endif
-            GlyphProvider.BoostCache()
-                .GetAwaiter()
-                .OnCompleted(() =>
-                { 
-                    var fsol = IconBasics.HelpCircled.ToGlyph();
-                });
-
-
-
             _fontPrev = CounterBtn.Font;
             _widthRequestPrev = CounterBtn.Width;
             CounterBtn.UseCompatibleTextRendering = true;
@@ -36,8 +23,27 @@ namespace IVSGlyphProvider.Demo.WinForms
                 CounterBtn.Left = (containerWidth - btnWidth) / 2;
             };
             CounterBtn.Click += OnCounterClicked;
+            _ = InitAsync();
         }
 
+        private async Task InitAsync()
+        {
+            // Reduce the lazy "first time click" latency.
+            await GlyphProvider.BoostCache();
+#if DEBUG
+            if (GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
+            {
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
+            }
+            var prototypes = await GlyphProvider.CreateEnumPrototypes();
+            Debug.WriteLine(string.Empty);
+            Debug.WriteLine(
+                string.Join(
+                    $"{Environment.NewLine}{Environment.NewLine}",
+                    prototypes));
+            { }
+#endif
+        }
 
         private void OnCounterClicked(object? sender, EventArgs e)
         {
@@ -61,7 +67,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 // Readable
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
                 { }
-                var fonts = GlyphProvider.ListDomainFontResources();
+                //var fonts = GlyphProvider.ListDomainFontResources();
             }
         }
         private readonly int _widthRequestPrev;

@@ -61,4 +61,14 @@ namespace IVSoftware.Portable
         }
         Enum? _stdEnum = default;
     }
+
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class CssNameAttribute : Attribute
+    {
+        public CssNameAttribute(string name)
+        {
+            Name = name;
+        }
+        public string Name { get; }
+    }
 }

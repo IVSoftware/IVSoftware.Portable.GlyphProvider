@@ -10,31 +10,40 @@ namespace IVSGlyphProvider.Demo.Maui
         {
             InitializeComponent();
             // This lowers the lazy init time
-            IVSoftware.Portable.GlyphProvider.BoostCache();
+            GlyphProvider.BoostCache();
             _fontFamilyPrev = CounterBtn.FontFamily;
             _widthRequestPrev = CounterBtn.WidthRequest;
+
+#if DEBUG
+            GlyphProvider.CopyEmbeddedFontsFromPackage();
+#endif
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
         {
-            count++;
-            if (count % 2 == 0)
-            {
-                var cycleCount = count / 2;
-                CounterBtn.FontFamily = "OpenSans-Regular";
-                if (cycleCount == 1)
-                    CounterBtn.Text = $"Cycled {cycleCount} time";
-                else
-                    CounterBtn.Text = $"Cycled {cycleCount} times";
-                if(_widthRequestPrev is double width)
-                {
-                    CounterBtn.WidthRequest = width;
-                }
-            }
-            else
-            {
                 var stopwatch = Stopwatch.StartNew();
-                throw new NotImplementedException("ToDo");
+                count++;
+                if (count % 2 == 0)
+                {
+                    var cycleCount = count / 2;
+                    if (cycleCount == 1)
+                        CounterBtn.Text = $"Cycled {cycleCount} time";
+                    else
+                        CounterBtn.Text = $"Cycled {cycleCount} times";
+                    CounterBtn.WidthRequest = _widthRequestPrev;
+                }
+                else
+                {
+                    //CounterBtn.FontFamily = typeof(IconBasics).ToFontFamily();
+                    throw new NotImplementedException("ToDo");
+                    CounterBtn.Text = IconBasics.Search.ToGlyph();
+                    CounterBtn.WidthRequest = CounterBtn.Height;
+                    // Alt
+                    var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
+                    // Readable
+                    var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
+                    { }
+                    var fonts = GlyphProvider.ListDomainFontResources();
 #if false
                 CounterBtn.FontFamily = "basics-icons";
                 CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(IconBasics.Search);
@@ -56,8 +65,7 @@ namespace IVSGlyphProvider.Demo.Maui
                 // If preloaded (call to ToGlyph()) 640675 ticks
                 // Otherwise as much as            2764151
 #endif
-            }
-
+                }
         }
         private readonly string _fontFamilyPrev;
         private readonly double _widthRequestPrev;

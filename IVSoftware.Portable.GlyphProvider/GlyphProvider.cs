@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace IVSoftware.Portable
 {
@@ -195,7 +196,7 @@ namespace IVSoftware.Portable
             }
         }
 
-        static class FontFamilyLookupProvider
+        internal static class FontFamilyLookupProvider
         {
             static TaskCompletionSource _ready = new ();
             static FontFamilyLookupProvider()
@@ -265,6 +266,7 @@ namespace IVSoftware.Portable
             private static Dictionary<string, GlyphProvider> _impl = new();
 
             public static string[] Keys => _impl.Keys.ToArray();
+            public static GlyphProvider[] Values => _impl.Values.ToArray();
             public static bool TryGetValue(Enum stdEnum, out GlyphProvider? provider)
             {
                 var key = stdEnum.ToGlyphProviderKey();
@@ -326,10 +328,24 @@ namespace IVSoftware.Portable
 
         internal string CreateEnumPrototype()
         {
+            var builder = new List<string>();
+            foreach (var name in GlyphLookup.Keys)
+            {
+                // Only allow glyph names that can be linted into valid C# identifiers.
+                // Regex: letters, digits, underscore, and hyphen (lint strips hyphen/underscore).
+                if (!Regex.IsMatch(name, @"^[A-Za-z0-9\-_]+$"))
+                {
+                    continue;
+                }
+                builder.Add($"\t[Description(\"{name}\")]\n\t{localLintTerm(name)}");
+            }
+            var members = string.Join($"{Environment.NewLine}{Environment.NewLine}", builder);
+            builder.Clear();
+
+            builder.Add($"[CssName(\"{Name}\")]");
             var enumType = localLintTerm(string.IsNullOrWhiteSpace(Name) ? "Prototype" : Name);
 
-            var builder = new List<string>();
-            if(enumType.Contains("glyph", StringComparison.InvariantCultureIgnoreCase) ||
+            if (enumType.Contains("glyph", StringComparison.InvariantCultureIgnoreCase) ||
                enumType.Contains("icon", StringComparison.InvariantCultureIgnoreCase))
             {
                 builder.Add($"public enum Std{enumType}");
@@ -339,23 +355,9 @@ namespace IVSoftware.Portable
                 builder.Add($"public enum Std{enumType}Glyph");
             }
             builder.Add($"{{");
-            foreach (var name in GlyphLookup.Keys)
-            {
-                // Only allow glyph names that can be linted into valid C# identifiers.
-                // Regex: letters, digits, underscore, and hyphen (lint strips hyphen/underscore).
-                if (!Regex.IsMatch(name, @"^[A-Za-z0-9\-_]+$"))
-                {
-                    continue;
-                }
-                builder.Add($"\t[Description(\"{name}\")]");
-                builder.Add($"\t{localLintTerm(name)}");
-                builder.Add(string.Empty);
-            }
-            if(builder.Count > 1) 
-                builder.Remove(builder.Last());
+            builder.Add(members);
             builder.Add($"}}");
             var joined = string.Join(Environment.NewLine, builder);
-            Debug.WriteLine(joined);
             return joined;
 
             string localLintTerm(string expr)
@@ -375,6 +377,9 @@ namespace IVSoftware.Portable
         }
 
 
+#if false && SAVE
+        // We ended up with more efficient discovery,
+        // but this is how we got the ball rolling.
         public static string ListDomainFontConfigs()
         {
             var builder = new List<string>();
@@ -451,10 +456,11 @@ namespace IVSoftware.Portable
             string AssemblyFile,
             string ResourceName
         );
+#endif
 
-        /// <summary>
-        /// Find or optionally create the Resources\Fonts directory
-        /// </summary>
+            /// <summary>
+            /// Find or optionally create the Resources\Fonts directory
+            /// </summary>
         public static bool TryGetFontsDirectory(out string? dir, bool allowCreate = false)
         {
             var baseDir = AppContext.BaseDirectory;
@@ -579,6 +585,10 @@ You can safely remove this file once other assets are present.".TrimStart());
             }
             return true;
         }
+
+        public static IEnumerable<GlyphProvider> GetProviders()
+            => FontFamilyLookupProvider.Values;
+
         public static GlyphProvider? GetProvider<T>()
             where T : struct, Enum
             => FontFamilyLookupProvider.TryGetValue(typeof(T).ToGlyphProviderKey(), out var glyphProvider)
@@ -642,6 +652,21 @@ You can safely remove this file once other assets are present.".TrimStart());
             _ = FontFamilyLookupProvider.Keys;
             await FontFamilyLookupProvider.WaitAsync();
         }
+
+        /// <summary>
+        /// Enumerate att config.json embedded resources in assembly.
+        /// </summary>
+        public static async Task<string[]> CreateEnumPrototypes()
+        {
+            var builder = new List<string>();
+            await BoostCache();
+            foreach (var glyphProvider in FontFamilyLookupProvider.Values)
+            {
+                builder.Add(glyphProvider.CreateEnumPrototype());
+            }
+            return builder.ToArray();
+        }
+
         private static bool _started = false;
     }
 }

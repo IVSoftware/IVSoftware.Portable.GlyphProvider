@@ -13,9 +13,28 @@ namespace IVSGlyphProvider.Demo.Maui
             GlyphProvider.BoostCache();
             _fontFamilyPrev = CounterBtn.FontFamily;
             _widthRequestPrev = CounterBtn.WidthRequest;
+            _ = InitAsync();
+        }
 
+        private async Task InitAsync()
+        {
+            // Reduce the lazy "first time click" latency.
+            await GlyphProvider.BoostCache();
 #if DEBUG
-            GlyphProvider.CopyEmbeddedFontsFromPackage();
+            if (GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
+            {
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
+            }
+            var prototypes = await GlyphProvider.CreateEnumPrototypes();
+            Debug.WriteLine(string.Empty);
+            Debug.WriteLine(
+                string.Join(
+                    $"{Environment.NewLine}{Environment.NewLine}",
+                    prototypes));
+            Debug.Assert(prototypes.Any(), "Did you set config.json to Embedded resource?");
+
+            var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
+            { }
 #endif
         }
 
@@ -43,7 +62,7 @@ namespace IVSGlyphProvider.Demo.Maui
                     // Readable
                     var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
                     { }
-                    var fonts = GlyphProvider.ListDomainFontResources();
+                    //var fonts = GlyphProvider.ListDomainFontResources();
 #if false
                 CounterBtn.FontFamily = "basics-icons";
                 CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(IconBasics.Search);

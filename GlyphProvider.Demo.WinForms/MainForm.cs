@@ -42,6 +42,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                     $"{Environment.NewLine}{Environment.NewLine}",
                     prototypes));
             { }
+
+            var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
+            { }
 #endif
         }
 

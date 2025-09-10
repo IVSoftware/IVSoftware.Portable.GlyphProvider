@@ -79,5 +79,17 @@ namespace IVSoftware.Portable
 
             return sb.ToString();
         }
+
+        public static string ToCssFontFamilyName(this Type @this, bool @throw = false)
+        {
+            if (@this.GetCustomAttribute<CssNameAttribute>()?.Name is { } name && !string.IsNullOrWhiteSpace(name))
+            {
+                return name;
+            }
+            else return 
+               @throw
+               ? throw new InvalidOperationException($"Missing Attribute: {nameof(CssNameAttribute)}")
+               : @this.Name;
+        }
     }
 }

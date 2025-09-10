@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local21" />
+	  <PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local22" />
 	</ItemGroup>
 
 	<ItemGroup>

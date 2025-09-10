@@ -201,7 +201,10 @@ namespace IVSoftware.Portable
             static TaskCompletionSource _ready = new ();
             static FontFamilyLookupProvider()
             {
-                Task.Run(() =>
+                Task.Run(localBoot);
+
+                #region L o c a l F x	
+                void localBoot()
                 {
                     var all = AppDomain.CurrentDomain
                         .GetAssemblies()
@@ -242,7 +245,8 @@ namespace IVSoftware.Portable
                         }
                     }
                     _ready.SetResult();
-                });
+                }	
+                #endregion L o c a l F x       
             }
 #if false
 

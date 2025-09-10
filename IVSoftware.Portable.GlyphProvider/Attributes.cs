@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 
 namespace IVSoftware.Portable
 {
@@ -54,6 +55,11 @@ namespace IVSoftware.Portable
                             value.GetCustomAttribute<CssNameAttribute>()
                             ?.Name
                             ?? value.ToString();
+                        if( value.GetType().GetCustomAttribute<CssNameAttribute>()?.Name is { } cssName &&
+                            !string.IsNullOrWhiteSpace(cssName))
+                        {
+                            _fontFamily = cssName;
+                        }
                     }
                     _stdEnum = value;
                 }

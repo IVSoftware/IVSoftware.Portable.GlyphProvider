@@ -9,8 +9,6 @@ namespace IVSGlyphProvider.Demo.Maui
         public MainPage()
         {
             InitializeComponent();
-            // This lowers the lazy init time
-            GlyphProvider.BoostCache();
             _fontFamilyPrev = CounterBtn.FontFamily;
             _widthRequestPrev = CounterBtn.WidthRequest;
             _ = InitAsync();
@@ -26,12 +24,18 @@ namespace IVSGlyphProvider.Demo.Maui
                 _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
             var prototypes = await GlyphProvider.CreateEnumPrototypes();
-            Debug.WriteLine(string.Empty);
-            Debug.WriteLine(
+            Debug.Assert(
+                prototypes.Any(), 
+                "At the very least, you should see the IconBasics prototype." +
+                "You should also see any config.json files marked as Embedded Resource." +
+                "Even for WPF this should be Embedded Resource not Resource."
+           );
+
+            var showMe =
                 string.Join(
                     $"{Environment.NewLine}{Environment.NewLine}",
-                    prototypes));
-            Debug.Assert(prototypes.Any(), "Did you set config.json to Embedded resource?");
+                    prototypes);
+            var expected = @"".Trim();
 
             var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
             { }

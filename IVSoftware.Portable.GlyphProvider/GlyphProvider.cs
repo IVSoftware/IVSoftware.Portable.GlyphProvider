@@ -213,16 +213,6 @@ namespace IVSoftware.Portable
                             !_.Location.Contains("Microsoft.NETCore", StringComparison.OrdinalIgnoreCase) &&
                             !_.Location.Contains("System.Private.CoreLib", StringComparison.OrdinalIgnoreCase))
                         .ToArray();
-                    { }
-#if DEBUG
-                    if (AppDomain.CurrentDomain
-                        .GetAssemblies().FirstOrDefault(_ => _.GetName().Name?.Contains("IVSoftware.Portable") == true)
-                        is { } ivs)
-                    {
-                        var ivsNames = ivs.GetManifestResourceNames();
-                    }
-#endif
-
                     foreach (var asm in all)
                     {
                         var cMe1 = asm.GetName().Name;
@@ -248,25 +238,6 @@ namespace IVSoftware.Portable
                 }	
                 #endregion L o c a l F x       
             }
-#if false
-
-            foreach (var family in families)
-            {
-                // Resolve the provider
-                var provider = GlyphProvider.FromFontConfigJson(family);
-
-                // Touch its glyph lookup to force dictionary construction
-                _ = provider.GlyphLookup.Count;
-
-                // Optionally: touch the first glyph to also warm up format switches
-                if (provider.GlyphLookup.Count > 0)
-                {
-                    var firstKey = provider.GlyphLookup.Keys.First();
-                    _ = provider[firstKey, GlyphFormat.Unicode];
-                    _ = provider[firstKey, GlyphFormat.Xaml];
-                }
-            }
-#endif
             private static Dictionary<string, GlyphProvider> _impl = new();
 
             public static string[] Keys => _impl.Keys.ToArray();

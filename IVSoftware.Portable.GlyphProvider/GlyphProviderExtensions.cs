@@ -80,16 +80,21 @@ namespace IVSoftware.Portable
             return sb.ToString();
         }
 
-        public static string ToCssFontFamilyName(this Type @this, bool @throw = false)
+        public static string ToCssFontFamilyName(this Type @this, string? ext=null, bool @throw = false)
         {
             if (@this.GetCustomAttribute<CssNameAttribute>()?.Name is { } name && !string.IsNullOrWhiteSpace(name))
             {
-                return name;
+                return name.WithExtension(ext);
             }
             else return 
                @throw
                ? throw new InvalidOperationException($"Missing Attribute: {nameof(CssNameAttribute)}")
-               : @this.Name;
+               : @this.Name.WithExtension(ext);
+        }
+        private static string WithExtension(this string @this, string? ext)
+        {
+            ext = ext?.TrimStart('.').Insert(0, ".");
+            return $"{@this}{ext}";
         }
     }
 }

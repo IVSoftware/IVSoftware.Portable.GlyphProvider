@@ -75,14 +75,12 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
 	</ItemGroup>
 
-
-
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 		<ProjectReference Include="..\IVSoftware.Portable.GlyphProvider\IVSoftware.Portable.GlyphProvider.csproj" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local22" />
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local23" />
 	</ItemGroup>
 
 </Project>

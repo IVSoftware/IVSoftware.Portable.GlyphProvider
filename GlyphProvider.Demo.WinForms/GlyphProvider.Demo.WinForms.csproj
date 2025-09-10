@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local22" />
+		<PackageReference Include="IVSoftware.Portable.GlyphProvider" Version="1.0.0-local23" />
 	</ItemGroup>
 
 	<ItemGroup>

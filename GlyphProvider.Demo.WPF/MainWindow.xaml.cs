@@ -1,5 +1,8 @@
 ﻿using IVSoftware.Portable;
 using System.Diagnostics;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,10 +31,7 @@ namespace IVSGlyphProvider.Demo.Wpf
             { }
 #endif
             InitializeComponent();
-            // This lowers the lazy init time
-            IVSoftware.Portable.GlyphProvider.BoostCache();
-            _fontFamilyPrev = CounterBtn.FontFamily;
-            _widthPrev = CounterBtn.Width;
+            _ = InitAsync();
 
             #region L o c a l F x       
             void localInitSizeAsRawPixels()
@@ -42,6 +42,30 @@ namespace IVSGlyphProvider.Demo.Wpf
                 this.Height *= (96.0 / dpi.PixelsPerInchY);
             }
             #endregion L o c a l F x
+        }
+
+        private async Task InitAsync()
+        {
+            // Reduce the lazy "first time click" latency.
+            await GlyphProvider.BoostCache();
+            _fontFamilyPrev = CounterBtn.FontFamily;
+            _widthPrev = CounterBtn.Width;
+#if DEBUG
+            if (GlyphProvider.TryGetFontsDirectory(out string? dir, allowCreate: true))
+            {
+                _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
+            }
+            var prototypes = await GlyphProvider.CreateEnumPrototypes();
+            Debug.WriteLine(string.Empty);
+            Debug.WriteLine(
+                string.Join(
+                    $"{Environment.NewLine}{Environment.NewLine}",
+                    prototypes));
+            { }
+
+            var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
+            { }
+#endif
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
@@ -63,13 +87,13 @@ namespace IVSGlyphProvider.Demo.Wpf
             else
             {
                 var stopwatch = Stopwatch.StartNew();
+                CounterBtn.FontFamily = IconBasicsFontFamily;
+                CounterBtn.Content = IconBasics.Search.ToGlyph();
+                CounterBtn.Width = CounterBtn.Height;
 
                 var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
-                throw new NotImplementedException("ToDo");
 #if false
-                CounterBtn.Content = CounterBtn.FontFamily.Source.ToGlyph(IconBasics.Search);
-                CounterBtn.Width = CounterBtn.Height;
 				// Alt
 				var xaml = CounterBtn.FontFamily.ToGlyph(StdBasicsIcons.Search, GlyphFormat.Xaml);
 				// Readable
@@ -87,12 +111,67 @@ namespace IVSGlyphProvider.Demo.Wpf
 				// Otherwise as much as            2764151
 #endif
             }
-
         }
-        private readonly FontFamily _fontFamilyPrev;
-        private readonly double _widthPrev;
+        private FontFamily _fontFamilyPrev;
+        private double _widthPrev;
         int count = 0;
 
 
+
+        public static FontFamily IconBasicsFontFamily
+        {
+            get
+            {
+                if (_iconBasicsFontFamily is null)
+                {
+                    // WPF programmatic font load
+                    // We do not expect this to work because in GlyphProvider
+                    // the 'icon-basics.ttf' file is an embedded resource.
+                    // var asmName = typeof(IVSoftware.Portable.GlyphProvider).Assembly.GetName().Name;
+
+                    // WPF programmatic font load
+                    // On the other hand, in this assembly the 'icon-basics.ttf' file is marked Resource.
+                    var asm = typeof(MainWindow).Assembly;
+
+
+                    // This URI looks in Resources/Fonts/icon-basics.ttf
+                    // (assuming Build Action = Resource, not EmbeddedResource)
+                    var fontUri = new Uri(
+                        $"{PackApplicationBaseUri}{asm.GetName().Name};component/{
+                            asm.GetResourcePathMatch(endsWith: typeof(IconBasics).ToCssFontFamilyName(ext: ".ttf"), @throw: true)}",
+                        UriKind.Absolute);
+
+                    // The string after # must match the internal font face name declared in the TTF
+                    _iconBasicsFontFamily = new FontFamily(fontUri, $"./#{typeof(IconBasics).ToCssFontFamilyName()}");
+                }
+                return _iconBasicsFontFamily;
+            }
+        }
+        static FontFamily? _iconBasicsFontFamily = null; 
+        private const string PackApplicationBaseUri = "pack://application:,,,/";
+
+    }
+
+    static class PlatformExtensions
+    {
+        public static string GetResourcePathMatch(this Assembly asm, string endsWith, bool @throw = false)
+        {
+            // Open the compiled WPF .g.resources
+            var resName = asm.GetName().Name + ".g.resources";
+            using var stream = asm.GetManifestResourceStream(resName);
+            if (stream is null) return string.Empty;
+
+            using var reader = new ResourceReader(stream);
+            return
+                reader
+                .Cast<System.Collections.DictionaryEntry>()
+                .Select(_=>_.Key as string)
+                .Where(_=>_ is not null)
+                .SingleOrDefault(_ => _!.EndsWith(endsWith, StringComparison.InvariantCultureIgnoreCase)) 
+                ??
+                (@throw
+                    ? throw new NullReferenceException()
+                    : string.Empty);
+        }
     }
 }

@@ -619,7 +619,7 @@ You can safely remove this file once other assets are present.".TrimStart());
                 bool foundAll = true;
                 foreach (var stdEnum in Enum.GetValues<T>())
                 {
-                    var css = stdEnum.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                    var css = stdEnum.GetCustomAttribute<CssNameAttribute>()?.Name;
                     if(css is not null)
                     {
                         Glyph? glyph;

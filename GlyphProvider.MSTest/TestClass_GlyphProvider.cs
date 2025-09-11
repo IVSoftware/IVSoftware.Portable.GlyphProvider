@@ -9,54 +9,87 @@ namespace IVSGlyphProvider.MSTest
     public sealed class TestClass_GlyphProvider
     {
         [TestMethod]
-        public void Test_Prototype()
+        public void Test_CenteringContainerMetrics()
         {
             string actual, expected;
 
             int opcCount = 0;
             var builder = new List<string?>();
-            var uut = new CenteringPanel();
-            try
-            {
-                uut.PropertyChanged += localOPC;
 
-                Assert.AreEqual(6, uut.ContentMargin.Vertical);
-                Assert.AreEqual(31, uut.PreferredRowHeight);
-                Assert.AreEqual(1, opcCount);
-                actual = string.Join(" ", builder);
-                expected = @" 
+            subtestHorizontal();
+            subtestVertical();
+            void subtestHorizontal()
+            {
+                var uut = new CenteringPanel();
+                try
+                {
+                    uut.PropertyChanged += localOPC;
+                    Assert.AreEqual(6, uut.ContentMargin.Vertical);
+                    Assert.AreEqual(31, uut.PreferredRowHeight);
+                    Assert.AreEqual(1, opcCount);
+                    actual = string.Join(" ", builder);
+                    expected = @" 
 PreferredRowHeight"
-                ;
+                    ;
 
-                Assert.AreEqual(
-                    expected.NormalizeResult(),
-                    actual.NormalizeResult(),
-                    "Expecting property changed to match."
-                );
+                    Assert.AreEqual(
+                        expected.NormalizeResult(),
+                        actual.NormalizeResult(),
+                        "Expecting property changed to match."
+                    );
 
-                localClear();
-                uut.ContentMargin = Padding.Empty;
-                Assert.AreEqual(2, opcCount);
-                Assert.AreEqual(0, uut.ContentMargin.Vertical);
-                Assert.AreEqual(25, uut.PreferredRowHeight);
-                actual = string.Join(" ", builder);
-                expected = @" 
+                    localClear();
+                    uut.ContentMargin = Padding.Empty;
+                    Assert.AreEqual(2, opcCount);
+                    Assert.AreEqual(0, uut.ContentMargin.Vertical);
+                    Assert.AreEqual(25, uut.PreferredRowHeight);
+                    actual = string.Join(" ", builder);
+                    expected = @" 
 ContentMargin PreferredRowHeight"
-                ;
+                    ;
 
-                Assert.AreEqual(
-                    expected.NormalizeResult(),
-                    actual.NormalizeResult(),
-                    "Expecting property changed to match."
-                );
+                    Assert.AreEqual(
+                        expected.NormalizeResult(),
+                        actual.NormalizeResult(),
+                        "Expecting property changed to match."
+                    );
 
-                localClear();
-                uut.PreferredRowHeight = 10;
-                Assert.AreEqual(0, opcCount, "Expecting no change.");
+                    localClear();
+                    uut.PreferredRowHeight = 10;
+                    Assert.AreEqual(0, opcCount, "Expecting no change.");
+                }
+                finally
+                {
+                    uut.PropertyChanged -= localOPC;
+                }
             }
-            finally
+
+            void subtestVertical()
             {
-                uut.PropertyChanged -= localOPC;
+                var uut = new CenteringPanel
+                {
+                    CenteringMode = CenteringMode.Vertical,
+                };
+                try
+                {
+                    uut.PropertyChanged += localOPC;
+                    Assert.AreEqual(25, uut.ContentHeightRequest);
+                    Assert.AreEqual(2, opcCount);
+                    actual = string.Join(" ", builder);
+                    actual.ToClipboardExpected();
+                    expected = @" 
+PreferredRowHeight ContentHeightRequest";
+
+                    Assert.AreEqual(
+                        expected.NormalizeResult(),
+                        actual.NormalizeResult(),
+                        "Expecting property changed to match."
+                    );
+                }
+                finally
+                {
+                    uut.PropertyChanged -= localOPC;
+                }
             }
 
             #region L o c a l F x	
@@ -69,7 +102,7 @@ ContentMargin PreferredRowHeight"
             {
                 opcCount = 0;
                 builder.Clear();
-            }	
+            }
             #endregion L o c a l F x
         }
 #if false

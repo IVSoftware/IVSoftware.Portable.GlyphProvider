@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
@@ -46,6 +47,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                     BackColor = ColorTranslator.FromHtml("#444444"),
                     ForeColor = Color.WhiteSmoke,
                     Id = value,
+                    Height = Height - Padding.Vertical - Margin.Vertical,
                 });
             }
         }
@@ -60,7 +62,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (_wdtSettle is null)
                 {
-                    _wdtSettle = new WatchdogTimer { Interval = TimeSpan.FromSeconds(1) };
+                    _wdtSettle = new WatchdogTimer { Interval = TimeSpan.FromSeconds(0.1) };
                     _wdtSettle.RanToCompletion += async (sender, e) =>
                     {
                         Debug.WriteLine(++_count);

@@ -95,9 +95,8 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     var control = content[i];
                     var cell = centeringCells[i];
-                    var controlNetWidth = control.Width + control.Margin.Horizontal;
-                    var cellFreeSpace = cell.Width - controlNetWidth;
-                    control.Bounds = new Rectangle(cell.X + cellFreeSpace / 2, cell.Y, controlNetWidth, cell.Height);
+                    var cellFreeSpace = cell.Width - control.Width;
+                    control.Bounds = new Rectangle(cell.X + cellFreeSpace / 2, cell.Y, control.Width, cell.Height);
                 }
             }
 

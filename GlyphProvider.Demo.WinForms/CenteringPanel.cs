@@ -49,7 +49,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
 
-        const int MIN_ITEM_WIDTH = 10;
+        const int MIN_ITEM_WIDTH = 20;
         const int MIN_ITEM_HEIGHT = 25;
         const int MIN_ROW_HEIGHT = 25;
 
@@ -79,10 +79,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             #region L o c a l F x
             void localCalcCenteredMetricsH()
             {
-                var itemWidth =
-                    (int)Math.Ceiling(
-                        (double)items.Sum(_ => _.Width) + ItemMargin.Horizontal * items.Length);
-
                 // CSS style collapsed height (intuitive)
                 int itemY = Math.Max(Padding.Top, ItemMargin.Top);
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
@@ -103,8 +99,6 @@ namespace IVSGlyphProvider.Demo.WinForms
                 int maxItemWidth = widthAlloc - ItemMargin.Horizontal;
                 int netItemWidth = Math.Min(maxItemWidth, ItemWidthRequest);
 
-                if(netItemWidth < MIN_ITEM_WIDTH)
-                { }
 
                 for (int i = 0; i < items.Length; i++)
                 {
@@ -115,8 +109,12 @@ namespace IVSGlyphProvider.Demo.WinForms
 
                     int x = cell.X + (cell.Width - netItemWidth) / 2;
                     int y = cell.Y + (cell.Height - ItemHeightRequest) / 2;
-                    
-                    item.Bounds = new Rectangle(x, y, netItemWidth, height);
+                    bounds[item] = new Rectangle(x, y, netItemWidth, height);
+                }
+                if(netItemWidth < MIN_ITEM_WIDTH)
+                {
+                    BeginInvoke(() => // Because we're inside of SuspendLayout
+                    throw new InvalidOperationException("Minimum width violation. Either add fewer items or increase the container minimum width."));
                 }
             }
 

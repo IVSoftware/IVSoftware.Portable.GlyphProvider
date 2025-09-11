@@ -18,44 +18,71 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (e.Control is { } control)
                 {
-                    control.Layout += localTrackControl;
+                    control.VisibleChanged += localTrackControl;
                 }
             };
             ControlRemoved += (sender, e) =>
             {
                 if (e.Control is { } control)
                 {
-                    control.Layout -= localTrackControl;
+                    control.VisibleChanged -= localTrackControl;
                 }
             };
             SizeChanged += (sender, e) =>
             {
                 if (IsHandleCreated) WDTSettle.StartOrRestart();
             };
-            void localTrackControl(object? sender, EventArgs e) => WDTSettle.StartOrRestart();
+            void localTrackControl(object? sender, EventArgs e)
+            {
+                if (IsHandleCreated) WDTSettle.StartOrRestart();
+            }
+        }
+        protected override void OnLayout(LayoutEventArgs levent)
+        {
+            base.OnLayout(levent);
+            if (Controls.Count != 0)
+            {
+                var controls = Controls.OfType<GlyphButton>().ToList();
+
+                var contentWidth = controls.Sum(_ => _.Width + _.Margin.Horizontal);
+                var freeSpace =
+                    Width - Padding.Horizontal - contentWidth;
+                var spacing = freeSpace / (controls.Count);
+
+                int x = Padding.Left + spacing / 2;
+                int y = (ClientSize.Height - controls[0].Height) / 2;
+
+                foreach (var control in controls)
+                {
+                    control.Height = Height - Padding.Vertical - control.Margin.Vertical;
+                    x += control.Margin.Left;
+                    control.Location = new Point(x, y);
+                    x += control.Width + control.Margin.Right + spacing;
+                }
+            }
         }
 
         public void Configure<T>() where T : struct, Enum
         {
-            Visible = false;
             Controls.Clear();
             foreach (var value in Enum.GetValues<T>())
             {
-                Controls.Add(new GlyphButton
+                var btn = new GlyphButton
                 {
                     Visible = false,
                     BackColor = ColorTranslator.FromHtml("#444444"),
                     ForeColor = Color.WhiteSmoke,
                     Id = value,
-                    Height = Height - Padding.Vertical - Margin.Vertical,
-                });
+                };
+                btn.Height = this.Height - this.Padding.Vertical - btn.Margin.Vertical;
+                Controls.Add(btn);
+            }
+            foreach (Control control in Controls)
+            {
+                control.Visible = true;
             }
         }
-        protected override void OnControlAdded(ControlEventArgs e)
-        {
-            base.OnControlAdded(e);
-            WDTSettle.StartOrRestart();
-        }
+
         public WatchdogTimer WDTSettle
         {
             get
@@ -63,38 +90,11 @@ namespace IVSGlyphProvider.Demo.WinForms
                 if (_wdtSettle is null)
                 {
                     _wdtSettle = new WatchdogTimer { Interval = TimeSpan.FromSeconds(0.1) };
-                    _wdtSettle.RanToCompletion += async (sender, e) =>
-                    {
-                        Debug.WriteLine(++_count);
-                        SuspendLayout();
-                        var controls = Controls.OfType<GlyphButton>().ToList();
-
-                        var contentWidth = controls.Sum(_ => _.Width + _.Margin.Horizontal);
-                        var freeSpace =
-                            Width - Padding.Horizontal - contentWidth;
-                        var spacing = freeSpace / (controls.Count);
-
-                        int x = Padding.Left + spacing / 2;
-                        int y = (ClientSize.Height - controls[0].Height) / 2;
-
-                        foreach (var control in controls)
-                        {
-                            control.Height = Height - Padding.Vertical - control.Margin.Vertical;
-                            x += control.Margin.Left;
-                            control.Location = new Point(x, y);
-                            x += control.Width + control.Margin.Right + spacing;
-                        }
-                        controls.ForEach(_ => _.IsInitialized = true);
-                        ResumeLayout();
-                        await Task.Delay(100);
-                        Visible = true;
-                    };
+                    _wdtSettle.RanToCompletion += (sender, e) => PerformLayout(); ;
                 }
                 return _wdtSettle;
             }
         }
         WatchdogTimer? _wdtSettle = null;
-
-        int _count = 0;
     }
 }

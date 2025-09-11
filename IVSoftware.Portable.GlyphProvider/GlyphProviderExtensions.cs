@@ -21,13 +21,29 @@ namespace IVSoftware.Portable
         /// - Throws if multiple attributes of type TAttr are applied to the same Enum member.
         /// - To retrieve intentional multiple attributes, call GetOnePageAttributes() instead.
         /// </summary>
-        internal static TAttr? GetCustomAttribute<TAttr>(this Enum opid)
+        internal static TAttr? GetCustomAttribute<TAttr>(this Enum id)
             where TAttr : Attribute
-            => opid
+            => id
                 .GetType()
-                .GetField(opid.ToString())
+                .GetField(id.ToString())
                 ?.GetCustomAttributes<TAttr>()
                 .SingleOrDefault();
+
+        /// <summary>
+        /// - Retrieves a standard attribute applied to an Enum member, or null if not found.
+        /// - Throws if multiple attributes of type TAttr are applied to the same Enum member.
+        /// - To retrieve intentional multiple attributes, call GetOnePageAttributes() instead.
+        /// </summary>
+        public static GlyphAttribute? GetGlyphAttribute(this Enum id)
+            => id.GetCustomAttribute<GlyphAttribute>();
+
+        /// <summary>
+        /// - Retrieves a standard attribute applied to an Enum member, or null if not found.
+        /// - Throws if multiple attributes of type TAttr are applied to the same Enum member.
+        /// - To retrieve intentional multiple attributes, call GetOnePageAttributes() instead.
+        /// </summary>
+        public static CssNameAttribute? GetCssNameAttribute(this Enum id)
+            => id.GetCustomAttribute<CssNameAttribute>();
 
         /// <summary>
         /// Produces a key in the form "EnumType.Member".

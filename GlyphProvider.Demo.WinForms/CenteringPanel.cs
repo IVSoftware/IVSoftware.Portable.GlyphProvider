@@ -12,6 +12,7 @@ namespace IVSGlyphProvider.Demo.WinForms
     {
         public CenteringPanel()
         {
+            BackColor = Color.LightBlue;
             ControlAdded += (sender, e) =>
             {
                 if (e.Control is { } control)
@@ -26,16 +27,22 @@ namespace IVSGlyphProvider.Demo.WinForms
                     control.Layout -= localTrackControl;
                 }
             };
+            SizeChanged += (sender, e) =>
+            {
+                if (IsHandleCreated) WDTSettle.StartOrRestart();
+            };
             void localTrackControl(object? sender, EventArgs e) => WDTSettle.StartOrRestart();
         }
 
         public void Configure<T>() where T : struct, Enum
         {
+            Visible = false;
             Controls.Clear();
             foreach (var value in Enum.GetValues<T>())
             {
                 Controls.Add(new GlyphButton
                 {
+                    Visible = false,
                     BackColor = ColorTranslator.FromHtml("#444444"),
                     ForeColor = Color.WhiteSmoke,
                     Id = value,
@@ -53,8 +60,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (_wdtSettle is null)
                 {
-                    _wdtSettle = new WatchdogTimer { Interval = TimeSpan.FromSeconds(0.250) };
-                    _wdtSettle.RanToCompletion += (sender, e) =>
+                    _wdtSettle = new WatchdogTimer { Interval = TimeSpan.FromSeconds(1) };
+                    _wdtSettle.RanToCompletion += async (sender, e) =>
                     {
                         Debug.WriteLine(++_count);
                         SuspendLayout();
@@ -77,6 +84,8 @@ namespace IVSGlyphProvider.Demo.WinForms
                         }
                         controls.ForEach(_ => _.IsInitialized = true);
                         ResumeLayout();
+                        await Task.Delay(100);
+                        Visible = true;
                     };
                 }
                 return _wdtSettle;

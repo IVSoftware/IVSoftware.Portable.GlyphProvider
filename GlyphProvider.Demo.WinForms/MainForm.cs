@@ -42,6 +42,15 @@ namespace IVSGlyphProvider.Demo.WinForms
             CounterBtn.Click += OnCounterClicked;
             _ = InitAsync();
         }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED
+                return cp;
+            }
+        }
 
         private async Task InitAsync()
         {

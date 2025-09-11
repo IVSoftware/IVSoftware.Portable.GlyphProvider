@@ -77,12 +77,12 @@ namespace IVSGlyphProvider.Demo.WinForms
             #region L o c a l F x
             void localCalcCenteredMetricsH()
             {
-                var contentWidth = 
+                var itemWidth =
                     (int)Math.Ceiling(
-                        (double)content.Sum(_ => _.Width) + ContentMargin.Horizontal * content.Length);
+                        (double)content.Sum(_ => _.Width) + ItemMargin.Horizontal * content.Length);
 
                 // CSS style collapsed height (intuitive)
-                int contentY = Math.Max(Padding.Top, ContentMargin.Top);
+                int itemY = Math.Max(Padding.Top, ItemMargin.Top);
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / content.Length);
 
                 // What happens here is *not* a collapse, to wit:
@@ -91,15 +91,21 @@ namespace IVSGlyphProvider.Demo.WinForms
                 //   of the "extra room" left by iconized, centered buttons.
                 // - However, if compressed enough, overlapping content padding will be collapsed
                 //   between the overlapping controls, effecively breating "min spacing" between them.
-                var clipBounds = 
+                var clipBounds =
                     Enumerable.Range(0, content.Length)
-                    .Select(_ => new Rectangle(_ * widthAlloc, contentY, widthAlloc, ContentHeightRequest))
+                    .Select(_ => new Rectangle(_ * widthAlloc, itemY, widthAlloc, ItemHeightRequest))
                     .ToArray();
 
-                if (clipBounds[0].Width < MIN_CONTENT_WIDTH)
-                {
-                    throw new InvalidOperationException("Controls are too narrow! Either reduce the control count OR Set minimum width on the container.");
-                }
+                int maxItemWidth = widthAlloc - ItemMargin.Horizontal;
+
+                //if (clipBounds[0].Width < MIN_CONTENT_WIDTH)
+                //{
+                //    throw new InvalidOperationException("Controls are too narrow! Either reduce the control count OR Set minimum width on the container.");
+                //}
+                //else
+                //{
+
+                //}
 
                 for (int i = 0; i < content.Length; i++)
                 {
@@ -107,13 +113,13 @@ namespace IVSGlyphProvider.Demo.WinForms
                     var cell = clipBounds[i];
 
                     int width = control.Width;
-                    int height = ContentHeightRequest;
+                    int height = ItemHeightRequest;
 
                     // NEXT RULE:
                     // This is what I was getting at with cell net width
-                    if(width + ContentMargin.Horizontal > cell.Width)
+                    if (width + ItemMargin.Horizontal > cell.Width)
                     {
-                        width = Math.Max(cell.Width - ContentMargin.Horizontal, MIN_CONTENT_WIDTH);
+                        width = Math.Max(cell.Width - ItemMargin.Horizontal, MIN_CONTENT_WIDTH);
                         if (width < MIN_CONTENT_WIDTH)
                         {
                             // Now relax the margins.
@@ -190,50 +196,50 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         CenteringMode _centeringMode = CenteringMode.Horizontal;
 
-        public Padding ContentMargin
+        public Padding ItemMargin
         {
-            get => _contentMargin;
+            get => _itemMargin;
             set
             {
-                if (!Equals(_contentMargin, value))
+                if (!Equals(_itemMargin, value))
                 {
-                    _contentMargin = value;
+                    _itemMargin = value;
                     PerformLayout();
                     OnPropertyChanged();
                     _ = PreferredRowHeight;
                 }
             }
         }
-        Padding _contentMargin = new(3);
+        Padding _itemMargin = new(3);
 
-        public int ContentWidthRequest
+        public int ItemWidthRequest
         {
             get
             {
-                if (_contentWidthRequest is null)
+                if (_itemWidthRequest is null)
                 {
                     switch (CenteringMode)
                     {
                         case CenteringMode.Horizontal: 
-                            return ContentHeightRequest;
+                            return ItemHeightRequest;
                         case CenteringMode.Vertical:
-                            return Width - Math.Max(Padding.Horizontal, ContentMargin.Horizontal);
+                            return Width - Math.Max(Padding.Horizontal, ItemMargin.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
                 }
-                else return _contentWidthRequest.Value;
+                else return _itemWidthRequest.Value;
             }
             set
             {
-                if (!Equals(_contentWidthRequest, value))
+                if (!Equals(_itemWidthRequest, value))
                 {
-                    _contentWidthRequest = value;
+                    _itemWidthRequest = value;
                     PerformLayout();
                     OnPropertyChanged();
                 }
             }
         }
-        int? _contentWidthRequest = null;
+        int? _itemWidthRequest = null;
 
         /// <summary>
         /// Gets or sets the effective content height.
@@ -241,34 +247,34 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// In vertical mode this is derived from PreferredRowHeight minus collapsed padding.
         /// The getter may adjust the backing field and raise PropertyChanged to maintain invariants.
         /// </summary>
-        public int ContentHeightRequest
+        public int ItemHeightRequest
         {
             get
             {
-                if (_contentHeightRequest is null)
+                if (_itemHeightRequest is null)
                 {
                     switch (CenteringMode)
                     {
                         case CenteringMode.Horizontal:
-                            return Height - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                            return Height - Math.Max(Padding.Vertical, ItemMargin.Vertical);
                         case CenteringMode.Vertical:
-                            return _contentHeightRequest ?? PreferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                            return _itemHeightRequest ?? PreferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
                 }
-                else return _contentHeightRequest.Value;
+                else return _itemHeightRequest.Value;
             }
             set
             {
-                if (!Equals(_contentHeightRequest, value))
+                if (!Equals(_itemHeightRequest, value))
                 {
-                    _contentHeightRequest = value;
+                    _itemHeightRequest = value;
                     PerformLayout();
                     OnPropertyChanged();
                 }
             }
         }
-        int? _contentHeightRequest = null;
+        int? _itemHeightRequest = null;
 
         /// <summary>
         /// Gets or sets the preferred row height.
@@ -280,7 +286,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         {
             get
             {
-                var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
                 var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
                 if(adj != 0)
                 {
@@ -292,7 +298,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             set
             {
                 value = Math.Max(value, MIN_ROW_HEIGHT);
-                var previewContentHeight = value - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                var previewContentHeight = value - Math.Max(Padding.Vertical, ItemMargin.Vertical);
                 var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
                 value += adj;
                 if (!Equals(PreferredRowHeight, value))

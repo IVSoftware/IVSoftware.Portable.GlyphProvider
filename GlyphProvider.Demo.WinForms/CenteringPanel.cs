@@ -47,6 +47,10 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
 
+        const int MIN_CONTENT_WIDTH = 10;
+        const int MIN_ROW_HEIGHT = 25;
+        const int MIN_CONTENT_HEIGHT = 25;
+
         protected override void OnLayout(LayoutEventArgs levent)
         {
             base.OnLayout(levent);
@@ -80,23 +84,46 @@ namespace IVSGlyphProvider.Demo.WinForms
                 // CSS style collapsed height (intuitive)
                 int contentY = Math.Max(Padding.Top, ContentMargin.Top);
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / content.Length);
+
                 // What happens here is *not* a collapse, to wit:
                 // - If this.Padding is 50 then the entire array is shifted left.
                 // - Horizontal padding in content often doesn't play because
                 //   of the "extra room" left by iconized, centered buttons.
                 // - However, if compressed enough, overlapping content padding will be collapsed
                 //   between the overlapping controls, effecively breating "min spacing" between them.
-                var centeringCells = 
+                var clipBounds = 
                     Enumerable.Range(0, content.Length)
                     .Select(_ => new Rectangle(_ * widthAlloc, contentY, widthAlloc, ContentHeightRequest))
                     .ToArray();
-                { }
+
+                if (clipBounds[0].Width < MIN_CONTENT_WIDTH)
+                {
+                    throw new InvalidOperationException("Controls are too narrow! Either reduce the control count OR Set minimum width on the container.");
+                }
+
                 for (int i = 0; i < content.Length; i++)
                 {
                     var control = content[i];
-                    var cell = centeringCells[i];
-                    var cellFreeSpace = cell.Width - control.Width;
-                    control.Bounds = new Rectangle(cell.X + cellFreeSpace / 2, cell.Y, control.Width, cell.Height);
+                    var cell = clipBounds[i];
+
+                    int width = control.Width;
+                    int height = ContentHeightRequest;
+
+                    // NEXT RULE:
+                    // This is what I was getting at with cell net width
+                    if(width + ContentMargin.Horizontal > cell.Width)
+                    {
+                        width = Math.Max(cell.Width - ContentMargin.Horizontal, MIN_CONTENT_WIDTH);
+                        if (width < MIN_CONTENT_WIDTH)
+                        {
+                            // Now relax the margins.
+                        }
+                    }
+
+                    int x = cell.X + (cell.Width - width) / 2;
+                    int y = cell.Y + (cell.Height - height) / 2;
+
+                    control.Bounds = new Rectangle(x, y, width, height);
                 }
             }
 
@@ -277,9 +304,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         int _preferredRowHeight = MIN_ROW_HEIGHT;
-
-        const int MIN_ROW_HEIGHT = 25;
-        const int MIN_CONTENT_HEIGHT = 25;
         #endregion L A Y O U T    T R I G G E R S
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

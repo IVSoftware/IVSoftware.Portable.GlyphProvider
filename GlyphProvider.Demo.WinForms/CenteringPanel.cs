@@ -74,6 +74,12 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 kvp.Key.Bounds = kvp.Value;
             }
+
+            if (bounds.Count > 1)
+            {
+                var space = items[1].Left - items[0].Right;
+                { }
+            }
             ResumeLayout();
 
             #region L o c a l F x
@@ -113,6 +119,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                     int y = cell.Y + (cell.Height - ItemHeightRequest) / 2;
                     bounds[item] = new Rectangle(x, y, netItemWidth, height);
                 }
+
                 if(netItemWidth < MIN_ITEM_WIDTH)
                 {
                     BeginInvoke(() => // Because we're inside of SuspendLayout

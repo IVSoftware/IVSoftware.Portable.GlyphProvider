@@ -37,50 +37,64 @@ namespace IVSGlyphProvider.Demo.WinForms
                 if (IsHandleCreated) WDTSettle.StartOrRestart();
             }
         }
+
         protected override void OnLayout(LayoutEventArgs levent)
         {
             base.OnLayout(levent);
             if (Controls.Count != 0)
             {
-                var controls = Controls.OfType<GlyphButton>().ToList();
+                var rects = localCalcCenteredMetrics();
+                SuspendLayout();
+                for (int i = 0; i < Controls.Count; i++)
+                {
+                    Controls[i].Bounds = rects[i];
+                }
+                ResumeLayout();
+            }
+            Rectangle[] localCalcCenteredMetrics()
+            {
+                var controls = Controls.OfType<GlyphButton>().Where(c => c.Visible).ToList();
+                if (controls.Count == 0) return Array.Empty<Rectangle>();
 
-                var contentWidth = controls.Sum(_ => _.Width + _.Margin.Horizontal);
-                var freeSpace =
-                    Width - Padding.Horizontal - contentWidth;
-                var spacing = freeSpace / (controls.Count);
+                var rects = new Rectangle[controls.Count];
+
+                var contentWidth = controls.Sum(c => c.Width + c.Margin.Horizontal);
+                var freeSpace = Width - Padding.Horizontal - contentWidth;
+                var spacing = freeSpace / controls.Count;
 
                 int x = Padding.Left + spacing / 2;
                 int y = (ClientSize.Height - controls[0].Height) / 2;
 
-                foreach (var control in controls)
+                for (int i = 0; i < controls.Count; i++)
                 {
-                    control.Height = Height - Padding.Vertical - control.Margin.Vertical;
-                    x += control.Margin.Left;
-                    control.Location = new Point(x, y);
-                    x += control.Width + control.Margin.Right + spacing;
+                    var c = controls[i];
+                    var h = Height - Padding.Vertical - c.Margin.Vertical;
+                    x += c.Margin.Left;
+                    rects[i] = new Rectangle(x, y, c.Width, h);
+                    x += c.Width + c.Margin.Right + spacing;
                 }
+                return rects;
             }
         }
 
         public void Configure<T>() where T : struct, Enum
         {
+            SuspendLayout();
+
             Controls.Clear();
             foreach (var value in Enum.GetValues<T>())
             {
                 var btn = new GlyphButton
                 {
-                    Visible = false,
                     BackColor = ColorTranslator.FromHtml("#444444"),
                     ForeColor = Color.WhiteSmoke,
                     Id = value,
                 };
-                btn.Height = this.Height - this.Padding.Vertical - btn.Margin.Vertical;
+                btn.Height = Height - Padding.Vertical - btn.Margin.Vertical;
                 Controls.Add(btn);
             }
-            foreach (Control control in Controls)
-            {
-                control.Visible = true;
-            }
+
+            ResumeLayout(performLayout: true);
         }
 
         public WatchdogTimer WDTSettle

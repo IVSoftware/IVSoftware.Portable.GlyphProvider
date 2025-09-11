@@ -78,9 +78,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                         (double)content.Sum(_ => _.Width) + ContentMargin.Horizontal * content.Length);
 
                 // CSS style collapsed height (intuitive)
-                int contentHeight = Height - Math.Max(Padding.Vertical, ContentMargin.Vertical);
                 int contentY = Math.Max(Padding.Top, ContentMargin.Top);
-
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / content.Length);
                 // What happens here is *not* a collapse, to wit:
                 // - If this.Padding is 50 then the entire array is shifted left.
@@ -88,23 +86,18 @@ namespace IVSGlyphProvider.Demo.WinForms
                 //   of the "extra room" left by iconized, centered buttons.
                 // - However, if compressed enough, overlapping content padding will be collapsed
                 //   between the overlapping controls, effecively breating "min spacing" between them.
-
-
-                var centeringCells = Enumerable.Repeat(new Rectangle(0, contentY, widthAlloc, contentHeight), content.Length).ToArray();
+                var centeringCells = 
+                    Enumerable.Range(0, content.Length)
+                    .Select(_ => new Rectangle(_ * widthAlloc, contentY, widthAlloc, ContentHeightRequest))
+                    .ToArray();
                 { }
-
-                var freeSpace = Width - Padding.Horizontal - (ContentMargin.Horizontal * content.Length);
-
-                var spacing = freeSpace / content.Length;
-                int x = Padding.Left + spacing / 2;
-
-                foreach (var control in content)
+                for (int i = 0; i < content.Length; i++)
                 {
-                    // CenteringContainer is the authority on height
-                    control.Height = contentHeight;
-                    x += ContentMargin.Left;
-                    bounds[control] = new Rectangle(x, contentY, control.Width, control.Height);
-                    x += control.Width + ContentMargin.Right + spacing;
+                    var control = content[i];
+                    var cell = centeringCells[i];
+                    var controlNetWidth = control.Width + control.Margin.Horizontal;
+                    var cellFreeSpace = cell.Width - controlNetWidth;
+                    control.Bounds = new Rectangle(cell.X + cellFreeSpace / 2, cell.Y, controlNetWidth, cell.Height);
                 }
             }
 

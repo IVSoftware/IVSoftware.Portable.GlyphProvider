@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public class GlyphButton : Button
+    public interface IIdButton { Enum? Id { get; } }
+    public class GlyphButton : Button, IIdButton
     {
-        public GlyphButton() => UseCompatibleTextRendering = true;
+        public GlyphButton(Enum id)
+        {
+            UseCompatibleTextRendering = true;
+            Id = id;
+        }
         public Enum? Id
         {
             get => _id;
-            set
+            init
             {
                 if (!Equals(_id, value))
                 {

@@ -1,14 +1,9 @@
 ﻿using IVSoftware.Portable;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public interface IIdButton { Enum? Id { get; } }
-    public class GlyphButton : Button, IIdButton
+    public interface IGlyphButton { Enum? Id { get; } }
+    public class GlyphButton : Button, IGlyphButton
     {
         public GlyphButton(Enum id)
         {

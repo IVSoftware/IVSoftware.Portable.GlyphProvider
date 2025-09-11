@@ -81,6 +81,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 // CSS style collapsed height (intuitive)
                 int itemY = Math.Max(Padding.Top, ItemMargin.Top);
+
+                // Back out the padding of this container itself.
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
 
                 // What happens here is *not* a collapse, to wit:
@@ -96,7 +98,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 
                 // After margins are subtracted, this is
                 // the maximum width for the control itself.
-                int maxItemWidth = widthAlloc - ItemMargin.Horizontal;
+                int maxItemWidth = widthAlloc - (ItemMargin.Horizontal / 2);
                 int netItemWidth = Math.Min(maxItemWidth, ItemWidthRequest);
 
 
@@ -191,11 +193,10 @@ namespace IVSGlyphProvider.Demo.WinForms
                     _itemMargin = value;
                     PerformLayout();
                     OnPropertyChanged();
-                    _ = PreferredRowHeight;
                 }
             }
         }
-        Padding _itemMargin = new(3);
+        Padding _itemMargin = new(2);
 
         public int ItemWidthRequest
         {
@@ -283,10 +284,11 @@ namespace IVSGlyphProvider.Demo.WinForms
             set
             {
                 value = Math.Max(value, MIN_ROW_HEIGHT);
-                var previewContentHeight = value - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                var adj = MIN_ITEM_HEIGHT - previewContentHeight;
-                value += adj;
-                if (!Equals(PreferredRowHeight, value))
+                // To tell whether this is a change, we need
+                // to compare it to the adjusted height getter that adds the padding.
+                var previewGetContentHeight = value - Math.Max(Padding.Vertical, ItemMargin.Vertical);
+
+                if (!Equals(PreferredRowHeight, previewGetContentHeight))
                 {
                     _preferredRowHeight = value;
                     PerformLayout();

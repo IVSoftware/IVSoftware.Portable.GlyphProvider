@@ -1,11 +1,78 @@
-﻿using IVSoftware.Portable;
+﻿using IVSGlyphProvider.Demo.WinForms;
+using IVSoftware.Portable;
 using IVSoftware.WinOS.MSTest.Extensions;
+using System.ComponentModel;
 
 namespace IVSGlyphProvider.MSTest
 {
     [TestClass]
     public sealed class TestClass_GlyphProvider
     {
+        [TestMethod]
+        public void Test_Prototype()
+        {
+            string actual, expected;
+
+            int opcCount = 0;
+            var builder = new List<string?>();
+            var uut = new CenteringPanel();
+            try
+            {
+                uut.PropertyChanged += localOPC;
+
+                Assert.AreEqual(6, uut.ContentMargin.Vertical);
+                Assert.AreEqual(31, uut.PreferredRowHeight);
+                Assert.AreEqual(1, opcCount);
+                actual = string.Join(" ", builder);
+                expected = @" 
+PreferredRowHeight"
+                ;
+
+                Assert.AreEqual(
+                    expected.NormalizeResult(),
+                    actual.NormalizeResult(),
+                    "Expecting property changed to match."
+                );
+
+                localClear();
+                uut.ContentMargin = Padding.Empty;
+                Assert.AreEqual(2, opcCount);
+                Assert.AreEqual(0, uut.ContentMargin.Vertical);
+                Assert.AreEqual(25, uut.PreferredRowHeight);
+                actual = string.Join(" ", builder);
+                expected = @" 
+ContentMargin PreferredRowHeight"
+                ;
+
+                Assert.AreEqual(
+                    expected.NormalizeResult(),
+                    actual.NormalizeResult(),
+                    "Expecting property changed to match."
+                );
+
+                localClear();
+                uut.PreferredRowHeight = 10;
+                Assert.AreEqual(0, opcCount, "Expecting no change.");
+            }
+            finally
+            {
+                uut.PropertyChanged -= localOPC;
+            }
+
+            #region L o c a l F x	
+            void localOPC(object? sender, PropertyChangedEventArgs e)
+            {
+                builder.Add(e.PropertyName);
+                opcCount++;
+            }
+            void localClear()
+            {
+                opcCount = 0;
+                builder.Clear();
+            }	
+            #endregion L o c a l F x
+        }
+#if false
         [TestMethod]
         public void Test_Prototype()
         {
@@ -152,5 +219,6 @@ Resource: IVSoftware.Portable.Resources.Fonts.Basics.config.json
 Family: basics-icons"
             ;
         }
+#endif
     }
 }

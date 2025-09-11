@@ -27,21 +27,21 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (e.Control is { } control)
                 {
-                    control.VisibleChanged += localTrackControl;
+                    control.VisibleChanged += localKickWDT;
                 }
             };
             ControlRemoved += (sender, e) =>
             {
                 if (e.Control is { } control)
                 {
-                    control.VisibleChanged -= localTrackControl;
+                    control.VisibleChanged -= localKickWDT;
                 }
             };
             SizeChanged += (sender, e) =>
             {
                 if (IsHandleCreated) WDTSettle.StartOrRestart();
             };
-            void localTrackControl(object? sender, EventArgs e)
+            void localKickWDT(object? sender, EventArgs e)
             {
                 if (IsHandleCreated) WDTSettle.StartOrRestart();
             }
@@ -119,7 +119,6 @@ namespace IVSGlyphProvider.Demo.WinForms
 
             SuspendLayout();
             Controls.Clear();
-
             foreach (var id in Enum.GetValues<T>())
             {
                 var idButton = ControlTemplate.Activate(id);
@@ -177,8 +176,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                 if (!Equals(_contentMargin, value))
                 {
                     _contentMargin = value;
-                    PerformLayout(); 
+                    PerformLayout();
                     OnPropertyChanged();
+                    _ = PreferredRowHeight;
                 }
             }
         }
@@ -192,11 +192,12 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     switch (CenteringMode)
                     {
-                        case CenteringMode.Horizontal: return ContentHeightRequest;
-                        case CenteringMode.Vertical: break;
+                        case CenteringMode.Horizontal: 
+                            return ContentHeightRequest;
+                        case CenteringMode.Vertical:
+                            return Width - Math.Max(Padding.Horizontal, ContentMargin.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
-                    throw new NotImplementedException("ToDo");
                 }
                 else return _contentWidthRequest;
             }
@@ -220,11 +221,17 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     switch (CenteringMode)
                     {
-                        case CenteringMode.Horizontal: return Height - (int)Math.Max((double)Padding.Vertical, ContentMargin.Vertical);
-                        case CenteringMode.Vertical: break;
+                        case CenteringMode.Horizontal:
+                            return Height - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                        case CenteringMode.Vertical:
+                            if (_contentHeightRequest is null)
+                            {
+                                _contentHeightRequest = PreferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                                OnPropertyChanged();
+                            }
+                            return _contentHeightRequest;
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
-                    throw new NotImplementedException("ToDo");
                 }
                 else return _contentHeightRequest;
             }
@@ -239,6 +246,36 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         int? _contentHeightRequest = null;
+        public int PreferredRowHeight
+        {
+            get
+            {
+                var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
+                if(adj != 0)
+                {
+                    _preferredRowHeight += adj;
+                    OnPropertyChanged();
+                }
+                return _preferredRowHeight;
+            }
+            set
+            {
+                value = Math.Max(value, MIN_ROW_HEIGHT);
+                var previewContentHeight = value - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+                var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
+                value += adj;
+                if (!Equals(PreferredRowHeight, value))
+                {
+                    _preferredRowHeight = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        int _preferredRowHeight = MIN_ROW_HEIGHT;
+
+        const int MIN_ROW_HEIGHT = 25;
+        const int MIN_CONTENT_HEIGHT = 25;
         #endregion L A Y O U T    T R I G G E R S
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

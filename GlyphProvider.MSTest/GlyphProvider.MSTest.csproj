@@ -15,6 +15,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\GlyphProvider.Demo.WinForms\GlyphProvider.Demo.WinForms.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
 	</ItemGroup>
 

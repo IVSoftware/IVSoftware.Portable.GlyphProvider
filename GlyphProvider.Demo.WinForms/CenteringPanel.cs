@@ -88,9 +88,12 @@ namespace IVSGlyphProvider.Demo.WinForms
                 //   of the "extra room" left by iconized, centered buttons.
                 // - However, if compressed enough, overlapping content padding will be collapsed
                 //   between the overlapping controls, effecively breating "min spacing" between them.
-                var freeSpace = Width - Padding.Horizontal - (ContentMargin.Horizontal * content.Length);
+
+
                 var centeringCells = Enumerable.Repeat(new Rectangle(0, contentY, widthAlloc, contentHeight), content.Length).ToArray();
                 { }
+
+                var freeSpace = Width - Padding.Horizontal - (ContentMargin.Horizontal * content.Length);
 
                 var spacing = freeSpace / content.Length;
                 int x = Padding.Left + spacing / 2;
@@ -184,7 +187,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         Padding _contentMargin = new(3);
 
-        public int? ContentWidthRequest
+        public int ContentWidthRequest
         {
             get
             {
@@ -199,7 +202,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
                 }
-                else return _contentWidthRequest;
+                else return _contentWidthRequest.Value;
             }
             set
             {
@@ -213,7 +216,13 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         int? _contentWidthRequest = null;
 
-        public int? ContentHeightRequest
+        /// <summary>
+        /// Gets or sets the effective content height.
+        /// In horizontal mode this is derived from the panel height minus collapsed padding.
+        /// In vertical mode this is derived from PreferredRowHeight minus collapsed padding.
+        /// The getter may adjust the backing field and raise PropertyChanged to maintain invariants.
+        /// </summary>
+        public int ContentHeightRequest
         {
             get
             {
@@ -224,16 +233,11 @@ namespace IVSGlyphProvider.Demo.WinForms
                         case CenteringMode.Horizontal:
                             return Height - Math.Max(Padding.Vertical, ContentMargin.Vertical);
                         case CenteringMode.Vertical:
-                            if (_contentHeightRequest is null)
-                            {
-                                _contentHeightRequest = PreferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
-                                OnPropertyChanged();
-                            }
-                            return _contentHeightRequest;
+                            return _contentHeightRequest ?? PreferredRowHeight - Math.Max(Padding.Vertical, ContentMargin.Vertical);
                         default: throw new NotImplementedException($"Bad case: {CenteringMode}");
                     };
                 }
-                else return _contentHeightRequest;
+                else return _contentHeightRequest.Value;
             }
             set
             {
@@ -246,6 +250,13 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         int? _contentHeightRequest = null;
+
+        /// <summary>
+        /// Gets or sets the preferred row height.
+        /// Enforces both a minimum row height and a minimum usable content height.
+        /// The getter self-normalizes silently to guarantee invariants.
+        /// The setter clamps values, triggers a layout pass, and raises PropertyChanged if changed.
+        /// </summary>
         public int PreferredRowHeight
         {
             get
@@ -255,7 +266,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 if(adj != 0)
                 {
                     _preferredRowHeight += adj;
-                    OnPropertyChanged();
+                    // However, INPC is not necessary or desireable here.
                 }
                 return _preferredRowHeight;
             }
@@ -268,6 +279,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 if (!Equals(PreferredRowHeight, value))
                 {
                     _preferredRowHeight = value;
+                    PerformLayout();
                     OnPropertyChanged();
                 }
             }

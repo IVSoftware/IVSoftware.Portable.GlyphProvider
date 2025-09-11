@@ -29,11 +29,5 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         Enum? _id = default;
-
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            Width = Height;
-        }
     }
 }

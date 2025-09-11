@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            ControlTemplate<GlyphButton> controlTemplate_11 = new ControlTemplate<GlyphButton>();
             CounterBtn = new Button();
             centeringPanel = new CenteringPanel();
             SuspendLayout();
@@ -46,9 +47,16 @@
             // 
             // centeringPanel
             // 
+            centeringPanel.BackColor = Color.LightBlue;
+            centeringPanel.CenteringMode = CenteringMode.Horizontal;
+            centeringPanel.ControlTemplate = controlTemplate_11;
             centeringPanel.Dock = DockStyle.Bottom;
+            centeringPanel.ItemHeightRequest = 59;
+            centeringPanel.ItemMargin = new Padding(3);
+            centeringPanel.ItemWidthRequest = 59;
             centeringPanel.Location = new Point(0, 839);
             centeringPanel.Name = "centeringPanel";
+            centeringPanel.PreferredRowHeight = 31;
             centeringPanel.Size = new Size(518, 65);
             centeringPanel.TabIndex = 1;
             // 

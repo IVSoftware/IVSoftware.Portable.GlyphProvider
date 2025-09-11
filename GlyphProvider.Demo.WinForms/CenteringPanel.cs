@@ -27,6 +27,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (e.Control is { } control)
                 {
+                    e.Control.Anchor = 0;
+                    e.Control.Dock = 0;
                     control.VisibleChanged += localKickWDT;
                 }
             };
@@ -47,19 +49,19 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
 
-        const int MIN_CONTENT_WIDTH = 10;
+        const int MIN_ITEM_WIDTH = 10;
+        const int MIN_ITEM_HEIGHT = 25;
         const int MIN_ROW_HEIGHT = 25;
-        const int MIN_CONTENT_HEIGHT = 25;
 
         protected override void OnLayout(LayoutEventArgs levent)
         {
             base.OnLayout(levent);
-            var content = Controls
+            var items = Controls
                 .Cast<Control>()
                 .Where(c => c.Visible)
                 .ToArray();
-            if (content.Length == 0 || !IsHandleCreated || Disposing ) return;
-            var bounds = new Dictionary<Control, Rectangle>(content.Length);
+            if (items.Length == 0 || !IsHandleCreated || Disposing ) return;
+            var bounds = new Dictionary<Control, Rectangle>(items.Length);
             switch (CenteringMode)
             {
                 case CenteringMode.Horizontal: localCalcCenteredMetricsH(); break;
@@ -79,11 +81,11 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 var itemWidth =
                     (int)Math.Ceiling(
-                        (double)content.Sum(_ => _.Width) + ItemMargin.Horizontal * content.Length);
+                        (double)items.Sum(_ => _.Width) + ItemMargin.Horizontal * items.Length);
 
                 // CSS style collapsed height (intuitive)
                 int itemY = Math.Max(Padding.Top, ItemMargin.Top);
-                int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / content.Length);
+                int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
 
                 // What happens here is *not* a collapse, to wit:
                 // - If this.Padding is 50 then the entire array is shifted left.
@@ -92,44 +94,29 @@ namespace IVSGlyphProvider.Demo.WinForms
                 // - However, if compressed enough, overlapping content padding will be collapsed
                 //   between the overlapping controls, effecively breating "min spacing" between them.
                 var clipBounds =
-                    Enumerable.Range(0, content.Length)
+                    Enumerable.Range(0, items.Length)
                     .Select(_ => new Rectangle(_ * widthAlloc, itemY, widthAlloc, ItemHeightRequest))
                     .ToArray();
 
+                // After margins are subtracted, this is
+                // the maximum width for the control itself.
                 int maxItemWidth = widthAlloc - ItemMargin.Horizontal;
+                int netItemWidth = Math.Min(maxItemWidth, ItemWidthRequest);
 
-                //if (clipBounds[0].Width < MIN_CONTENT_WIDTH)
-                //{
-                //    throw new InvalidOperationException("Controls are too narrow! Either reduce the control count OR Set minimum width on the container.");
-                //}
-                //else
-                //{
+                if(netItemWidth < MIN_ITEM_WIDTH)
+                { }
 
-                //}
-
-                for (int i = 0; i < content.Length; i++)
+                for (int i = 0; i < items.Length; i++)
                 {
-                    var control = content[i];
+                    var item = items[i];
                     var cell = clipBounds[i];
 
-                    int width = control.Width;
                     int height = ItemHeightRequest;
 
-                    // NEXT RULE:
-                    // This is what I was getting at with cell net width
-                    if (width + ItemMargin.Horizontal > cell.Width)
-                    {
-                        width = Math.Max(cell.Width - ItemMargin.Horizontal, MIN_CONTENT_WIDTH);
-                        if (width < MIN_CONTENT_WIDTH)
-                        {
-                            // Now relax the margins.
-                        }
-                    }
-
-                    int x = cell.X + (cell.Width - width) / 2;
-                    int y = cell.Y + (cell.Height - height) / 2;
-
-                    control.Bounds = new Rectangle(x, y, width, height);
+                    int x = cell.X + (cell.Width - netItemWidth) / 2;
+                    int y = cell.Y + (cell.Height - ItemHeightRequest) / 2;
+                    
+                    item.Bounds = new Rectangle(x, y, netItemWidth, height);
                 }
             }
 
@@ -287,7 +274,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             get
             {
                 var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
+                var adj = MIN_ITEM_HEIGHT - previewContentHeight;
                 if(adj != 0)
                 {
                     _preferredRowHeight += adj;
@@ -299,7 +286,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 value = Math.Max(value, MIN_ROW_HEIGHT);
                 var previewContentHeight = value - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                var adj = MIN_CONTENT_HEIGHT - previewContentHeight;
+                var adj = MIN_ITEM_HEIGHT - previewContentHeight;
                 value += adj;
                 if (!Equals(PreferredRowHeight, value))
                 {

@@ -75,11 +75,16 @@ namespace IVSGlyphProvider.Demo.WinForms
                 kvp.Key.Bounds = kvp.Value;
             }
 
+#if DEBUG
             if (bounds.Count > 1)
             {
+                // It would seem that even when the measured space is 0 there
+                // is still a perceived space between. Drawing artifact??
                 var space = items[1].Left - items[0].Right;
                 { }
             }
+
+#endif
             ResumeLayout();
 
             #region L o c a l F x

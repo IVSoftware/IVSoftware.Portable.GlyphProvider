@@ -52,7 +52,7 @@
             centeringPanel.ControlTemplate = controlTemplate_11;
             centeringPanel.Dock = DockStyle.Bottom;
             centeringPanel.ItemHeightRequest = 59;
-            centeringPanel.ItemMargin = new Padding(2);
+            centeringPanel.ItemMargin = new Padding(0);
             centeringPanel.ItemWidthRequest = 59;
             centeringPanel.Location = new Point(0, 839);
             centeringPanel.Name = "centeringPanel";

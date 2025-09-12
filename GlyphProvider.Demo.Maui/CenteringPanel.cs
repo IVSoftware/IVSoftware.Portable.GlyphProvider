@@ -58,20 +58,15 @@ namespace IVSGlyphProvider.Demo.Maui
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
-            bool overwriteRequests = false) where T : struct, Enum
+            bool overwriteDefaults = false) where T : struct, Enum
         {
-            Orientation = orientation;
-            HorizontalDisplayFormatOptions = horizontalDisplayFormatOptions;
-
-
-
-
-            if(horizontalDisplayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
+            if (overwriteDefaults) localOverwriteDefaults();
+            if(displayFormatOptions == DisplayFormatOptions.Auto)
             {
-                horizontalDisplayFormatOptions = orientation switch
+                displayFormatOptions = orientation switch
                 {
-                    LayoutOrientation.Vertical => DisplayFormatOptions.None,
-                    _ => DisplayFormatOptions.IconWidthTracksHeight,
+                    LayoutOrientation.Vertical => DisplayFormatOptions.ShowSquareIconAndMember,
+                    _ => DisplayFormatOptions.ShowSquareIcon,
                 };
             }
 
@@ -86,6 +81,8 @@ namespace IVSGlyphProvider.Demo.Maui
                 case LayoutOrientation.Vertical: localConfigVertical(); break;
                 default: throw new NotImplementedException($"Bad case: {Orientation}");
             }
+
+            #region L o c a l F x	
             void localConfigHorizontal()
             {
                 Grid.RowDefinitions.Add(new());
@@ -102,7 +99,7 @@ namespace IVSGlyphProvider.Demo.Maui
 
                     if (enumIdButton is IPlatformEnumIdComponent view)
                     {
-                        if(horizontalDisplayFormatOptions == DisplayFormatOptions.IconWidthTracksHeight)
+                        if(displayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
                         {
                             view.WidthRequest = UniformHeightRequest;
                         }
@@ -139,6 +136,32 @@ namespace IVSGlyphProvider.Demo.Maui
                     }
                 }
             }
+            void localOverwriteDefaults()
+            {
+                Orientation = orientation;
+                switch (orientation)
+                {
+                    case LayoutOrientation.Horizontal:
+                        HorizontalDisplayFormatOptions = displayFormatOptions;
+                        break;
+                    case LayoutOrientation.Vertical:
+                        VerticalDisplayFormatOptions = displayFormatOptions;
+                        break;
+                    default:
+                        throw new NotImplementedException($"Bad case: {orientation}");
+                }
+
+
+                if (rowHeightRequest.HasValue)
+                    RowHeightRequest = rowHeightRequest.Value;
+
+                if (uniformWidthRequest.HasValue)
+                    UniformWidthRequest = uniformWidthRequest.Value;
+
+                if (uniformFontSize.HasValue)
+                    _uniformFontSize = uniformFontSize.Value;
+            }
+            #endregion L o c a l F x       
         }
 
         public LayoutOrientation Orientation
@@ -154,21 +177,36 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         LayoutOrientation _orientation = default;
+
         public DisplayFormatOptions HorizontalDisplayFormatOptions
         {
-            get => _widthTrackingMode;
+            get => _horizontalDisplayFormatOptions;
             set
             {
-                if (!Equals(_widthTrackingMode, value))
+                if (value > DisplayFormatOptions.IconWidthTracksHeight && 
+                    !Equals(_horizontalDisplayFormatOptions, value))
                 {
-                    _widthTrackingMode = value;
+                    _horizontalDisplayFormatOptions = value;
                     OnPropertyChanged();
                 }
             }
         }
-        DisplayFormatOptions _widthTrackingMode = default;
+        DisplayFormatOptions _horizontalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIcon;
 
-        int UniformHeightRequest => RowHeightRequest - Math.Max((int)Padding.VerticalThickness, UniformSpacing.Vertical);
+        public DisplayFormatOptions VerticalDisplayFormatOptions
+        {
+            get => _verticalDisplayFormatOptions;
+            set
+            {
+                if (value > DisplayFormatOptions.IconWidthTracksHeight && 
+                    !Equals(_verticalDisplayFormatOptions, value))
+                {
+                    _verticalDisplayFormatOptions = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        DisplayFormatOptions _verticalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIconAndMember;
 
         public int RowHeightRequest
         {
@@ -197,6 +235,7 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         UniformThickness _uniformSpacing = new(2);
+        public int UniformHeightRequest => RowHeightRequest - Math.Max((int)Padding.VerticalThickness, UniformSpacing.Vertical);
 
         public float UniformFontSize
         {

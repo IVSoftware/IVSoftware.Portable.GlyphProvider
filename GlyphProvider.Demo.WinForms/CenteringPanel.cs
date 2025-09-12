@@ -174,8 +174,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// </summary>
         public void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
-            DisplayFormatOptions horizontalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIcon,
-            DisplayFormatOptions verticalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIconAndMember,
+            DisplayFormatOptions displayFormatOptions = DisplayFormatOptions.Auto,
              int? rowHeightRequest = null,
              int? uniformWidthRequest = null,
              float? uniformFontSize = null,
@@ -247,17 +246,33 @@ namespace IVSGlyphProvider.Demo.WinForms
 
         public DisplayFormatOptions HorizontalDisplayFormatOptions
         {
-            get => _widthTrackingMode;
+            get => _horizontalDisplayFormatOptions;
             set
             {
-                if (!Equals(_widthTrackingMode, value))
+                if (value > DisplayFormatOptions.IconWidthTracksHeight &&
+                    !Equals(_horizontalDisplayFormatOptions, value))
                 {
-                    _widthTrackingMode = value;
+                    _horizontalDisplayFormatOptions = value;
                     OnPropertyChanged();
                 }
             }
         }
-        DisplayFormatOptions _widthTrackingMode = default;
+        DisplayFormatOptions _horizontalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIcon;
+
+        public DisplayFormatOptions VerticalDisplayFormatOptions
+        {
+            get => _verticalDisplayFormatOptions;
+            set
+            {
+                if (value > DisplayFormatOptions.IconWidthTracksHeight &&
+                    !Equals(_verticalDisplayFormatOptions, value))
+                {
+                    _verticalDisplayFormatOptions = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        DisplayFormatOptions _verticalDisplayFormatOptions = DisplayFormatOptions.ShowSquareIconAndMember;
 
         /// <summary>
         /// Sets a uniform width for content.
@@ -291,6 +306,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         int? _uniformWidthRequest = null;
+
+        public int UniformHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, UniformSpacing.Vertical);
 
         /// <summary>
         /// Gets or sets the effective content height.

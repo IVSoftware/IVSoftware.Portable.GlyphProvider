@@ -2,22 +2,11 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using LayoutOrientation = IVSoftware.Portable.LayoutOrientation;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public enum WidthTrackingMode
-    {
-        Normal,
-
-        /// <summary>
-        /// Make square buttons suitable for glyph icons.
-        /// </summary>
-        WidthTracksHeight,
-
-
-        Auto,
-    }
-    public class CenteringPanel : Panel
+    public class CenteringPanel : Panel, IConfigurableLayoutStack
     {
         public CenteringPanel()
         {
@@ -28,7 +17,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     e.Control.Anchor = 0;
                     e.Control.Dock = 0;
-                    if(Orientation == Orientation.Vertical &&
+                    if (Orientation == LayoutOrientation.Vertical &&
                      control.Height > RowHeightRequest)
                     {
                         RowHeightRequest = control.Height;
@@ -65,14 +54,15 @@ namespace IVSGlyphProvider.Demo.WinForms
                 .Cast<Control>()
                 .Where(c => c.Visible)
                 .ToArray();
-            if (items.Length == 0 || !IsHandleCreated || Disposing ) return;
+            if (items.Length == 0 || !IsHandleCreated || Disposing) return;
             var bounds = new Dictionary<Control, Rectangle>(items.Length);
             switch (Orientation)
             {
-                case Orientation.Horizontal: localCalcCenteredMetricsH(); break;
-                case Orientation.Vertical: localCalcCenteredMetricsV(); break;
+                case LayoutOrientation.Horizontal: localCalcCenteredMetricsH(); break;
+                case LayoutOrientation.Vertical: localCalcCenteredMetricsV(); break;
                 default: throw new NotImplementedException($"Bad case: {Orientation}");
-            };
+            }
+            ;
 
             SuspendLayout();
             foreach (var kvp in bounds)
@@ -96,7 +86,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             void localCalcCenteredMetricsH()
             {
                 // CSS style collapsed height (intuitive)
-                int itemY = Math.Max(Padding.Top, ContentMargin.Top);
+                int itemY = Math.Max(Padding.Top, UniformThickness.Top);
 
                 // Back out the padding of this container itself.
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
@@ -111,15 +101,15 @@ namespace IVSGlyphProvider.Demo.WinForms
                     Enumerable.Range(0, items.Length)
                     .Select(_ => new Rectangle(
                         _ * widthAlloc,
-                        itemY, 
+                        itemY,
                         widthAlloc,
                         ContentHeightRequest))
                     .ToArray();
 
                 // After margins are subtracted, this is
                 // the maximum width for the control itself.
-                int maxItemWidth = widthAlloc - (ContentMargin.Horizontal / 2);
-                int netItemWidth = Math.Min(maxItemWidth, ContentWidthRequest);
+                int maxItemWidth = widthAlloc - (UniformThickness.Horizontal / 2);
+                int netItemWidth = Math.Min(maxItemWidth, UniformWidthRequest);
 
                 for (int i = 0; i < items.Length; i++)
                 {
@@ -133,7 +123,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                     bounds[item] = new Rectangle(x, y, netItemWidth, height);
                 }
 
-                if(netItemWidth < MIN_ITEM_WIDTH)
+                if (netItemWidth < MIN_ITEM_WIDTH)
                 {
                     BeginInvoke(() => // Because we're inside of SuspendLayout
                     throw new InvalidOperationException("Minimum width violation. Either add fewer items or increase the container minimum width."));
@@ -147,9 +137,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                 var clipBounds =
                     Enumerable.Range(0, items.Length)
                     .Select(_ => new Rectangle(
-                        Math.Max(Padding.Left, ContentMargin.Left),
+                        Math.Max(Padding.Left, UniformThickness.Left),
                         _ * RowHeightRequest,
-                        Width - ContentMargin.Horizontal,
+                        Width - UniformThickness.Horizontal,
                         RowHeightRequest))
                     .ToArray();
                 for (int i = 0; i < items.Length; i++)
@@ -159,7 +149,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 
                     //int height = ItemHeightRequest;
 
-                    int x = cell.X ;
+                    int x = cell.X;
                     int y = cell.Y;
                     bounds[item] = new Rectangle(x, y, cell.Width, cell.Height);
                 }
@@ -182,7 +172,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         ///   overwriteRequests is true.
         /// </summary>
         public void Configure<T>(
-            Orientation orientation = Orientation.Horizontal,
+            LayoutOrientation orientation = LayoutOrientation.Horizontal,
              WidthTrackingMode widthMode = WidthTrackingMode.Auto,
              int? rowHeightRequest = null,
              int? uniformWidthRequest = null,
@@ -228,7 +218,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         public ControlTemplate ControlTemplate { get; set; } = new ControlTemplate<GlyphButton>();
 
         #region L A Y O U T    T R I G G E R S
-        public Orientation Orientation
+        public LayoutOrientation Orientation
         {
             get => _centeringMode;
             set
@@ -241,54 +231,55 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        Orientation _centeringMode = Orientation.Horizontal;
+        LayoutOrientation _centeringMode = LayoutOrientation.Horizontal;
 
-        public Padding ContentMargin
-        {
-            get => _itemMargin;
-            set
-            {
-                if (!Equals(_itemMargin, value))
-                {
-                    _itemMargin = value;
-                    PerformLayout();
-                    OnPropertyChanged();
-                }
-            }
-        }
-        Padding _itemMargin = new(2);
+        //public Padding UniformThickness
+        //{
+        //    get => _uniformMargin;
+        //    set
+        //    {
+        //        if (!Equals(_uniformMargin, value))
+        //        {
+        //            _uniformMargin = value;
+        //            PerformLayout();
+        //            OnPropertyChanged();
+        //        }
+        //    }
+        //}
+        //Padding _uniformMargin = new(2);
 
         /// <summary>
         /// Sets a uniform width for content.
         /// </summary>
-        public int ContentWidthRequest
+        public int UniformWidthRequest
         {
             get
             {
-                if (_contentWidthRequest is null)
+                if (_uniformWidthRequest is null)
                 {
                     switch (Orientation)
                     {
-                        case Orientation.Horizontal: 
+                        case LayoutOrientation.Horizontal:
                             return ContentHeightRequest;
-                        case Orientation.Vertical:
-                            return Width - Math.Max(Padding.Horizontal, ContentMargin.Horizontal);
+                        case LayoutOrientation.Vertical:
+                            return Width - Math.Max(Padding.Horizontal, UniformThickness.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {Orientation}");
-                    };
+                    }
+                    ;
                 }
-                else return _contentWidthRequest.Value;
+                else return _uniformWidthRequest.Value;
             }
             set
             {
-                if (!Equals(_contentWidthRequest, value))
+                if (!Equals(_uniformWidthRequest, value))
                 {
-                    _contentWidthRequest = value;
+                    _uniformWidthRequest = value;
                     PerformLayout();
                     OnPropertyChanged();
                 }
             }
         }
-        int? _contentWidthRequest = null;
+        int? _uniformWidthRequest = null;
 
         /// <summary>
         /// Gets or sets the effective content height.
@@ -296,7 +287,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// In vertical mode this is derived from PreferredRowHeight minus collapsed padding.
         /// The getter may adjust the backing field and raise PropertyChanged to maintain invariants.
         /// </summary>
-        public int ContentHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, ContentMargin.Vertical);
+        private int ContentHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, UniformThickness.Vertical);
 
         /// <summary>
         /// Gets or sets the preferred row height.
@@ -316,6 +307,25 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
+
+        public Dictionary<Enum, object> Cache { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        [TypeConverter(typeof(UniformThicknessConverter))]
+        public UniformThickness UniformThickness
+        {
+            get => _uniformThickness;
+            set
+            {
+                if (!Equals(_uniformThickness, value))
+                {
+                    _uniformThickness = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        UniformThickness _uniformThickness = default;
+
+
         int _rowHeightRequest = MIN_ROW_HEIGHT;
         #endregion L A Y O U T    T R I G G E R S
 
@@ -323,10 +333,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public event PropertyChangedEventHandler? PropertyChanged;
 
-    }
-    public abstract class ControlTemplate
-    {
-        public abstract IGlyphButton Activate(Enum id);
     }
 
     public class ControlTemplate<T> : ControlTemplate

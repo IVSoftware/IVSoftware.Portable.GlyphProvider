@@ -1,10 +1,6 @@
 using IVSoftware.Portable;
-using System;
-using System.Diagnostics;
 using System.Drawing.Text;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {

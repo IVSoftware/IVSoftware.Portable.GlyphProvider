@@ -2,7 +2,6 @@
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public interface IGlyphButton { Enum? Id { get; } }
     public class GlyphButton : Button, IGlyphButton
     {
         public GlyphButton(Enum id)

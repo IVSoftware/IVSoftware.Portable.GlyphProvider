@@ -54,20 +54,24 @@ namespace IVSGlyphProvider.Demo.Maui
         /// </summary>
         public void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
-            IVSoftware.Portable.LayoutOptions widthTrackingMode = IVSoftware.Portable.LayoutOptions.WithTracksHeightForHorizontal,
+            DisplayFormatOptions displayFormatOptions = DisplayFormatOptions.Auto,
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
             bool overwriteRequests = false) where T : struct, Enum
         {
             Orientation = orientation;
-            WidthTrackingMode = widthTrackingMode;
-            if(widthTrackingMode == IVSoftware.Portable.LayoutOptions.WithTracksHeightForHorizontal)
+            HorizontalDisplayFormatOptions = horizontalDisplayFormatOptions;
+
+
+
+
+            if(horizontalDisplayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
             {
-                widthTrackingMode = orientation switch
+                horizontalDisplayFormatOptions = orientation switch
                 {
-                    LayoutOrientation.Vertical => IVSoftware.Portable.LayoutOptions.None,
-                    _ => IVSoftware.Portable.LayoutOptions.IconWidthTracksHeight,
+                    LayoutOrientation.Vertical => DisplayFormatOptions.None,
+                    _ => DisplayFormatOptions.IconWidthTracksHeight,
                 };
             }
 
@@ -98,7 +102,7 @@ namespace IVSGlyphProvider.Demo.Maui
 
                     if (enumIdButton is IPlatformEnumIdComponent view)
                     {
-                        if(widthTrackingMode == IVSoftware.Portable.LayoutOptions.IconWidthTracksHeight)
+                        if(horizontalDisplayFormatOptions == DisplayFormatOptions.IconWidthTracksHeight)
                         {
                             view.WidthRequest = UniformHeightRequest;
                         }
@@ -150,7 +154,7 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         LayoutOrientation _orientation = default;
-        public IVSoftware.Portable.LayoutOptions WidthTrackingMode
+        public DisplayFormatOptions HorizontalDisplayFormatOptions
         {
             get => _widthTrackingMode;
             set
@@ -162,7 +166,7 @@ namespace IVSGlyphProvider.Demo.Maui
                 }
             }
         }
-        IVSoftware.Portable.LayoutOptions _widthTrackingMode = default;
+        DisplayFormatOptions _widthTrackingMode = default;
 
         int UniformHeightRequest => RowHeightRequest - Math.Max((int)Padding.VerticalThickness, UniformSpacing.Vertical);
 

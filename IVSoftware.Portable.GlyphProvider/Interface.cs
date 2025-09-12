@@ -11,18 +11,18 @@ namespace IVSoftware.Portable
     }
 
     [Flags]
-    public enum LayoutOptions
+    public enum DisplayFormatOptions
     {
         /// <summary>
         /// Icon, when visible, has square dimensions (width tracks height). 
         /// Does not itself make the icon visible.  
         /// </summary>
-        IconWidthTracksHeight = 1,
+        IconWidthTracksHeight = 0x1,
 
         /// <summary>
         /// Show icon (without constraining its shape).
         /// </summary>
-        ShowIcon = 2,
+        ShowIcon = 0x2,
 
         /// <summary>
         /// Show icon, always with square dimensions.
@@ -35,7 +35,21 @@ namespace IVSoftware.Portable
         /// Does not itself make the icon visible.  
         /// Includes IconWidthTracksHeight so that if an icon *is* shown, it remains square.
         /// </summary>
-        ShowMember = 5,
+        ShowMember = 0x4 | IconWidthTracksHeight, // Text only; enforces square if icon is shown
+
+        /// <summary>
+        /// Show both icon and text.  
+        /// Icon is always square (ShowSquareIcon).  
+        /// Text comes from the enum member name or its [Description] attribute (ShowMember).
+        /// </summary>
+        ShowSquareIconAndMember = ShowSquareIcon | ShowMember,
+
+        /// <summary>
+        /// Obviates all other flags.
+        /// Applies ShowSquareIcon for LayoutOrientation.Horizontal.
+        /// Applies ShowSquareIconAndMember for LayoutOrientation.Vertical.
+        /// </summary>
+        Auto = 0x8,
     }
 
 
@@ -59,17 +73,65 @@ namespace IVSoftware.Portable
         /// </summary>
         void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
-            LayoutOptions widthTrackingMode = LayoutOptions.WithTracksHeightForHorizontal,
+            DisplayFormatOptions displayFormatOptions = DisplayFormatOptions.ShowSquareIcon,
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
             bool overwriteRequests = false) where T : struct, Enum;
+
+        /// <summary>
+        /// Gets or sets the layout orientation used by the stack.
+        /// In horizontal mode, the height request is = RowHeightRequest.
+        /// But in vertical mode, height request attempts to allocate
+        /// N × RowHeightRequest where N is the number of items.
+        /// </summary>
         LayoutOrientation Orientation { get; set; }
-        LayoutOptions WidthTrackingMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the requested row height for child elements.
+        /// Applies inward pressure on contained component heights.
+        /// In vertical mode, applies outware pressure on container height request.
+        /// </summary>
         int RowHeightRequest { get; set; }
+
+        /// <summary>
+        /// The common height of contained components, obtained by CSS-style
+        /// collapsing of container padding with component margin.
+        /// </summary>
+        int UniformHeightRequest { get; }
+
+        /// <summary>
+        /// Gets or sets the display format applied when the orientation
+        /// is horizontal where the typical default is ShowSquareIcon.
+        /// </summary>
+        DisplayFormatOptions HorizontalDisplayFormatOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display format applied when the orientation
+        /// is horizontal where the typical default is ShowSquareIconAndMember.
+        /// </summary>
+        DisplayFormatOptions VerticalDisplayFormatOptions { get; set; }
+
+        /// <summary>
+        /// Combination Padding-Margin quantity with ITypeConverter.
+        /// Uniform in the sense that it applies consistently to all child components.
+        /// </summary>
         UniformThickness UniformSpacing { get; set; }
+
+        /// <summary>
+        /// Width used when component display is not constrained to square.
+        /// A special value of -1 will assign a width that is 1/3 of the container width.
+        /// </summary>
         int UniformWidthRequest { get; set; }
+
+        /// <summary>
+        /// When present, the container is able to autonomously create child components.
+        /// </summary>
         ActivatorTemplate ActivatorTemplate { get; set; }
+
+        /// <summary>
+        /// Recycler for components by id, whether created externally or autonomously.
+        /// </summary>
         IDictionary Cache { get; set; }
     }
     public abstract class ActivatorTemplate

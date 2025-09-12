@@ -174,7 +174,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// </summary>
         public void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
-             WidthTrackingMode widthMode = WidthTrackingMode.Auto,
+             LayoutOptions widthMode = LayoutOptions.WithTracksHeightForHorizontal,
              int? rowHeightRequest = null,
              int? uniformWidthRequest = null,
              float? uniformFontSize = null,
@@ -244,7 +244,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         LayoutOrientation _centeringMode = LayoutOrientation.Horizontal;
 
-        public WidthTrackingMode WidthTrackingMode
+        public LayoutOptions WidthTrackingMode
         {
             get => _widthTrackingMode;
             set
@@ -256,7 +256,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        WidthTrackingMode _widthTrackingMode = default;
+        LayoutOptions _widthTrackingMode = default;
 
         /// <summary>
         /// Sets a uniform width for content.

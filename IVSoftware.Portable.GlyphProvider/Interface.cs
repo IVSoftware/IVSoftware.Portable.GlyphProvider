@@ -9,18 +9,36 @@ namespace IVSoftware.Portable
 
         Vertical,
     }
-    public enum WidthTrackingMode
+
+    [Flags]
+    public enum LayoutOptions
     {
-        Normal,
+        /// <summary>
+        /// Icon, when visible, has square dimensions (width tracks height). 
+        /// Does not itself make the icon visible.  
+        /// </summary>
+        IconWidthTracksHeight = 1,
 
         /// <summary>
-        /// Make square buttons suitable for glyph icons.
+        /// Show icon (without constraining its shape).
         /// </summary>
-        WidthTracksHeight,
+        ShowIcon = 2,
 
+        /// <summary>
+        /// Show icon, always with square dimensions.
+        /// Equivalent to ShowIcon | IconWidthTracksHeight.
+        /// </summary>
+        ShowSquareIcon = ShowIcon | IconWidthTracksHeight,
 
-        Auto,
+        /// <summary>
+        /// Show text content, using the enum member name or its [Description] attribute.  
+        /// Does not itself make the icon visible.  
+        /// Includes IconWidthTracksHeight so that if an icon *is* shown, it remains square.
+        /// </summary>
+        ShowMember = 5,
     }
+
+
     public interface IEnumIdComponent { Enum? EnumId { get; } }
 
     /// <summary>
@@ -41,14 +59,13 @@ namespace IVSoftware.Portable
         /// </summary>
         void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
-            WidthTrackingMode widthTrackingMode = WidthTrackingMode.Auto,
+            LayoutOptions widthTrackingMode = LayoutOptions.WithTracksHeightForHorizontal,
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
             bool overwriteRequests = false) where T : struct, Enum;
         LayoutOrientation Orientation { get; set; }
-        WidthTrackingMode WidthTrackingMode { get; set; }
-
+        LayoutOptions WidthTrackingMode { get; set; }
         int RowHeightRequest { get; set; }
         UniformThickness UniformSpacing { get; set; }
         int UniformWidthRequest { get; set; }

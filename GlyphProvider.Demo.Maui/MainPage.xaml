@@ -3,15 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="IVSGlyphProvider.Demo.Maui.MainPage">
 
-    <Grid>
+    <Grid 
+        RowDefinitions="*,34">
         <Button
             x:Name="CounterBtn"
-            Text="Click me" 
+            Text="Click me!" 
             SemanticProperties.Hint="Counts the number of times you click"
             Clicked="OnCounterClicked"
             WidthRequest="200"
-            HeightRequest="50"
+            HeightRequest="30"
+            FontSize="12"
             HorizontalOptions="Center"/>
+        <Grid
+            Grid.Row="1"
+            BackgroundColor="LightBlue"/>
     </Grid>
 
 </ContentPage>

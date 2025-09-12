@@ -1,26 +1,10 @@
 using IVSoftware.Portable;
+using IVSoftware.Portable.Demo;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public enum ToolbarButtons
-    {
-        [Glyph(typeof(IconBasics), nameof(IconBasics.HelpCircled))]
-        Help,
-
-        [Glyph(typeof(IconBasics), nameof(IconBasics.Add))]
-        Add,
-
-        [Glyph(typeof(IconBasics), nameof(IconBasics.Edit))]
-        Edit,
-
-        [Glyph(typeof(IconBasics), nameof(IconBasics.Delete))]
-        Delete,
-
-        [Glyph(typeof(IconBasics), nameof(IconBasics.EllipsisVertical))]
-        Menu,
-    }
     public partial class MainForm : Form
     {
         public MainForm()
@@ -38,15 +22,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             CounterBtn.Click += OnCounterClicked;
             _ = InitAsync();
         }
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                var cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED
-                return cp;
-            }
-        }
 
         private async Task InitAsync()
         {
@@ -61,6 +36,15 @@ namespace IVSGlyphProvider.Demo.WinForms
 
             // centeringPanel.Orientation = Orientation.Vertical;
             centeringPanel.Configure<ToolbarButtons>();
+        }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED
+                return cp;
+            }
         }
 
         private void OnCounterClicked(object? sender, EventArgs e)

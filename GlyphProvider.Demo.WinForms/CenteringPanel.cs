@@ -1,4 +1,5 @@
 ﻿using IVSoftware.Portable;
+using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -308,8 +309,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
 
-        public Dictionary<Enum, object> Cache { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
         [TypeConverter(typeof(UniformThicknessConverter))]
         public UniformThickness UniformThickness
         {
@@ -324,6 +323,37 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         UniformThickness _uniformThickness = default;
+
+        IDictionary IConfigurableLayoutStack.Cache
+        {
+            get => Cache;
+            set
+            {
+                if (value is Dictionary<Enum, IGlyphButton> cache)
+                {
+                    Cache = cache;
+                }
+                else throw new InvalidCastException(
+                    $"Expected a {typeof(Dictionary<Enum, IGlyphButton>).FullName}, " +
+                    $"but received {value?.GetType().FullName ?? "<null>"}."
+                );
+            }
+        }
+
+        public Dictionary<Enum, IGlyphButton> Cache
+        {
+            get => _cache;
+            set
+            {
+                if (!Equals(_cache, value))
+                {
+                    _cache = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        Dictionary<Enum, IGlyphButton> _cache = new();
+
 
 
         int _rowHeightRequest = MIN_ROW_HEIGHT;

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 
 namespace IVSoftware.Portable
 {
@@ -35,8 +36,7 @@ namespace IVSoftware.Portable
         int UniformWidthRequest { get; set; }
         ControlTemplate ControlTemplate { get; set; }
         LayoutOrientation Orientation { get; set; }
-
-        Dictionary<Enum, object> Cache { get; set; }
+        IDictionary Cache { get; set; }
     }
     public abstract class ControlTemplate
     {

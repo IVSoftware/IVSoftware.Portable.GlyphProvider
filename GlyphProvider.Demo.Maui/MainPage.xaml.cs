@@ -1,4 +1,5 @@
 ﻿using IVSoftware.Portable;
+using IVSoftware.Portable.Demo;
 using System.Diagnostics;
 using Font = Microsoft.Maui.Font;
 
@@ -40,6 +41,7 @@ namespace IVSGlyphProvider.Demo.Maui
             var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
             { }
 #endif
+            CenteringPanel.Configure<ToolbarButtons>();
         }
 
         private void OnCounterClicked(object sender, EventArgs e)

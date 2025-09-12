@@ -29,6 +29,11 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     e.Control.Anchor = 0;
                     e.Control.Dock = 0;
+                    if(Orientation == CenteringOrientation.Vertical &&
+                     control.Height > PreferredRowHeight)
+                    {
+                        PreferredRowHeight = control.Height;
+                    }
                     control.VisibleChanged += localKickWDT;
                 }
             };
@@ -310,13 +315,13 @@ namespace IVSGlyphProvider.Demo.WinForms
         {
             get
             {
-                var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                var adj = MIN_ITEM_HEIGHT - previewContentHeight;
-                if(adj != 0)
-                {
-                    _preferredRowHeight += adj;
-                    // However, INPC is not necessary or desireable here.
-                }
+                //var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
+                //var adj = MIN_ITEM_HEIGHT - previewContentHeight;
+                //if(adj != 0)
+                //{
+                //    _preferredRowHeight += adj;
+                //    // However, INPC is not necessary or desireable here.
+                //}
                 return _preferredRowHeight;
             }
             set

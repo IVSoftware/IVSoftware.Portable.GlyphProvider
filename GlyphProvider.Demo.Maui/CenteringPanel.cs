@@ -75,6 +75,7 @@ namespace IVSGlyphProvider.Demo.Maui
             Grid.ColumnDefinitions.Clear();
 
             var elements = Enum.GetValues<T>().ToList();
+            localStageButtons();
             switch (orientation)
             {
                 case LayoutOrientation.Horizontal: localConfigHorizontal(); break;
@@ -82,12 +83,16 @@ namespace IVSGlyphProvider.Demo.Maui
                 default: throw new NotImplementedException($"Bad case: {orientation}");
             }
 
-            #region L o c a l F x	
+            #region L o c a l F x
+            void localStageButtons()
+            {
+
+            }
             void localConfigHorizontal()
             {
                 Grid.RowDefinitions.Add(new());
                 elements.ForEach(_ => Grid.ColumnDefinitions.Add(new()));
-                HeightRequest = elements.Any() ? RowHeightRequest : 0 ;
+                HeightRequest = elements.Any() ? RowHeightRequest : 0;
                 for (int col = 0; col < elements.Count; col++)
                 {
                     var id = elements[col];
@@ -280,7 +285,7 @@ namespace IVSGlyphProvider.Demo.Maui
                 }
             }
         }
-        string? _uniformBackgroundColor = null;
+        string? _uniformBackgroundColor = "#FF0000";
 
         public string? UniformTextColor
         {

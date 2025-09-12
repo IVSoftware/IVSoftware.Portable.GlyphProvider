@@ -51,12 +51,11 @@
             centeringPanel.Orientation = CenteringOrientation.Horizontal;
             centeringPanel.ControlTemplate = controlTemplate_11;
             centeringPanel.Dock = DockStyle.Bottom;
-            centeringPanel.ItemHeightRequest = 59;
-            centeringPanel.ItemMargin = new Padding(0);
-            centeringPanel.ItemWidthRequest = 59;
+            centeringPanel.ContentMargin = new Padding(0);
+            centeringPanel.ContentWidthRequest = 59;
             centeringPanel.Location = new Point(0, 839);
             centeringPanel.Name = "centeringPanel";
-            centeringPanel.PreferredRowHeight = 31;
+            centeringPanel.RowHeightRequest = 31;
             centeringPanel.Size = new Size(518, 65);
             centeringPanel.TabIndex = 1;
             // 

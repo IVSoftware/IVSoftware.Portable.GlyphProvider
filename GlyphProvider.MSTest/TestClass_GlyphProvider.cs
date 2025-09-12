@@ -24,16 +24,16 @@ namespace IVSGlyphProvider.MSTest
                 try
                 {
                     uut.PropertyChanged += localOPC;
-                    Assert.AreEqual(4, uut.ItemMargin.Vertical);
-                    Assert.AreEqual(29, uut.PreferredRowHeight);
+                    Assert.AreEqual(4, uut.ContentMargin.Vertical);
+                    Assert.AreEqual(29, uut.RowHeightRequest);
                     // Getter no longer notifies
                     Assert.AreEqual(0, opcCount);
 
                     localClear();
-                    uut.ItemMargin = Padding.Empty;
+                    uut.ContentMargin = Padding.Empty;
                     Assert.AreEqual(1, opcCount);
-                    Assert.AreEqual(0, uut.ItemMargin.Vertical);
-                    Assert.AreEqual(25, uut.PreferredRowHeight);
+                    Assert.AreEqual(0, uut.ContentMargin.Vertical);
+                    Assert.AreEqual(25, uut.RowHeightRequest);
                     actual = string.Join(" ", builder);
                     expected = @" 
 ItemMargin"
@@ -46,7 +46,7 @@ ItemMargin"
                     );
 
                     localClear();
-                    uut.PreferredRowHeight = 10;
+                    uut.RowHeightRequest = 10;
                     Assert.AreEqual(0, opcCount, "Expecting no change.");
                 }
                 finally
@@ -64,7 +64,7 @@ ItemMargin"
                 try
                 {
                     uut.PropertyChanged += localOPC;
-                    Assert.AreEqual(25, uut.ItemHeightRequest);
+                    Assert.AreEqual(25, uut.ContentHeightRequest);
                     Assert.AreEqual(2, opcCount);
                     actual = string.Join(" ", builder);
                     actual.ToClipboardExpected();

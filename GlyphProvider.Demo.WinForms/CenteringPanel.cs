@@ -18,6 +18,15 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// </summary>
         Vertical,
     }
+    public enum WidthTrackingMode
+    {
+        Normal,
+
+        /// <summary>
+        /// Make square buttons suitable for glyph icons.
+        /// </summary>
+        WidthTracksHeight,
+    }
     public class CenteringPanel : Panel
     {
         public CenteringPanel()
@@ -30,9 +39,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                     e.Control.Anchor = 0;
                     e.Control.Dock = 0;
                     if(Orientation == CenteringOrientation.Vertical &&
-                     control.Height > PreferredRowHeight)
+                     control.Height > RowHeightRequest)
                     {
-                        PreferredRowHeight = control.Height;
+                        RowHeightRequest = control.Height;
                     }
                     control.VisibleChanged += localKickWDT;
                 }
@@ -56,7 +65,8 @@ namespace IVSGlyphProvider.Demo.WinForms
 
         const int MIN_ITEM_WIDTH = 20;
         const int MIN_ITEM_HEIGHT = 25;
-        const int MIN_ROW_HEIGHT = 25;
+        const int DEFAULT_ROW_HEIGHT = 34;
+        const int MIN_ROW_HEIGHT = 20;
 
         protected override void OnLayout(LayoutEventArgs levent)
         {
@@ -96,7 +106,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             void localCalcCenteredMetricsH()
             {
                 // CSS style collapsed height (intuitive)
-                int itemY = Math.Max(Padding.Top, ItemMargin.Top);
+                int itemY = Math.Max(Padding.Top, ContentMargin.Top);
 
                 // Back out the padding of this container itself.
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
@@ -113,23 +123,23 @@ namespace IVSGlyphProvider.Demo.WinForms
                         _ * widthAlloc,
                         itemY, 
                         widthAlloc,
-                        ItemHeightRequest))
+                        ContentHeightRequest))
                     .ToArray();
 
                 // After margins are subtracted, this is
                 // the maximum width for the control itself.
-                int maxItemWidth = widthAlloc - (ItemMargin.Horizontal / 2);
-                int netItemWidth = Math.Min(maxItemWidth, ItemWidthRequest);
+                int maxItemWidth = widthAlloc - (ContentMargin.Horizontal / 2);
+                int netItemWidth = Math.Min(maxItemWidth, ContentWidthRequest);
 
                 for (int i = 0; i < items.Length; i++)
                 {
                     var item = items[i];
                     var cell = clipBounds[i];
 
-                    int height = ItemHeightRequest;
+                    int height = ContentHeightRequest;
 
                     int x = cell.X + (cell.Width - netItemWidth) / 2;
-                    int y = cell.Y + (cell.Height - ItemHeightRequest) / 2;
+                    int y = cell.Y + (cell.Height - ContentHeightRequest) / 2;
                     bounds[item] = new Rectangle(x, y, netItemWidth, height);
                 }
 
@@ -142,15 +152,15 @@ namespace IVSGlyphProvider.Demo.WinForms
 
             void localCalcCenteredMetricsV()
             {
-                Height = items.Length * PreferredRowHeight;
+                Height = items.Length * RowHeightRequest;
 
                 var clipBounds =
                     Enumerable.Range(0, items.Length)
                     .Select(_ => new Rectangle(
-                        Math.Max(Padding.Left, ItemMargin.Left),
-                        _ * PreferredRowHeight,
-                        Width - ItemMargin.Horizontal,
-                        PreferredRowHeight))
+                        Math.Max(Padding.Left, ContentMargin.Left),
+                        _ * RowHeightRequest,
+                        Width - ContentMargin.Horizontal,
+                        RowHeightRequest))
                     .ToArray();
                 for (int i = 0; i < items.Length; i++)
                 {
@@ -194,7 +204,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             ResumeLayout(performLayout: true);
         }
 
-        public WatchdogTimer WDTSettle
+        private WatchdogTimer WDTSettle
         {
             get
             {
@@ -226,7 +236,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         CenteringOrientation _centeringMode = CenteringOrientation.Horizontal;
 
-        public Padding ItemMargin
+        public Padding ContentMargin
         {
             get => _itemMargin;
             set
@@ -241,7 +251,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         Padding _itemMargin = new(2);
 
-        public int ItemWidthRequest
+        public int ContentWidthRequest
         {
             get
             {
@@ -250,9 +260,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                     switch (Orientation)
                     {
                         case CenteringOrientation.Horizontal: 
-                            return ItemHeightRequest;
+                            return ContentHeightRequest;
                         case CenteringOrientation.Vertical:
-                            return Width - Math.Max(Padding.Horizontal, ItemMargin.Horizontal);
+                            return Width - Math.Max(Padding.Horizontal, ContentMargin.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {Orientation}");
                     };
                 }
@@ -276,34 +286,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// In vertical mode this is derived from PreferredRowHeight minus collapsed padding.
         /// The getter may adjust the backing field and raise PropertyChanged to maintain invariants.
         /// </summary>
-        public int ItemHeightRequest
-        {
-            get
-            {
-                if (_itemHeightRequest is null)
-                {
-                    switch (Orientation)
-                    {
-                        case CenteringOrientation.Horizontal:
-                            return Height - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                        case CenteringOrientation.Vertical:
-                            return _itemHeightRequest ?? PreferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                        default: throw new NotImplementedException($"Bad case: {Orientation}");
-                    };
-                }
-                else return _itemHeightRequest.Value;
-            }
-            set
-            {
-                if (!Equals(_itemHeightRequest, value))
-                {
-                    _itemHeightRequest = value;
-                    PerformLayout();
-                    OnPropertyChanged();
-                }
-            }
-        }
-        int? _itemHeightRequest = null;
+        public int ContentHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, ContentMargin.Vertical);
 
         /// <summary>
         /// Gets or sets the preferred row height.
@@ -311,35 +294,19 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// The getter self-normalizes silently to guarantee invariants.
         /// The setter clamps values, triggers a layout pass, and raises PropertyChanged if changed.
         /// </summary>
-        public int PreferredRowHeight
+        public int RowHeightRequest
         {
-            get
-            {
-                //var previewContentHeight = _preferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                //var adj = MIN_ITEM_HEIGHT - previewContentHeight;
-                //if(adj != 0)
-                //{
-                //    _preferredRowHeight += adj;
-                //    // However, INPC is not necessary or desireable here.
-                //}
-                return _preferredRowHeight;
-            }
+            get => _rowHeightRequest;
             set
             {
-                value = Math.Max(value, MIN_ROW_HEIGHT);
-                // To tell whether this is a change, we need
-                // to compare it to the adjusted height getter that adds the padding.
-                var previewGetContentHeight = value - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-
-                if (!Equals(PreferredRowHeight, previewGetContentHeight))
+                if (!Equals(_rowHeightRequest, value))
                 {
-                    _preferredRowHeight = value;
-                    PerformLayout();
+                    _rowHeightRequest = value;
                     OnPropertyChanged();
                 }
             }
         }
-        int _preferredRowHeight = MIN_ROW_HEIGHT;
+        int _rowHeightRequest = MIN_ROW_HEIGHT;
         #endregion L A Y O U T    T R I G G E R S
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

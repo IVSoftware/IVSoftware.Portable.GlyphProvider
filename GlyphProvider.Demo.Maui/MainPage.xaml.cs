@@ -57,26 +57,26 @@ namespace IVSGlyphProvider.Demo.Maui
                     CounterBtn.FontFamily = nameof(IconBasics);
                     CounterBtn.WidthRequest = CounterBtn.Height;
                     CounterBtn.Text = IconBasics.HelpCircledAlt.ToGlyph();
+                    CenteringPanel.Configure<ToolBarEmpty>();
                     announce = nameof(IconBasics.HelpCircledAlt);
                     break;
                 case string s when s == IconBasics.HelpCircledAlt.ToGlyph():
                     CounterBtn.Text = IconBasics.EllipsisHorizontal.ToGlyph();
-                    CenteringPanel.Configure<ToolbarButtons>();
                     announce = nameof(IconBasics.EllipsisHorizontal);
                     break;
                 case string s when s == IconBasics.EllipsisHorizontal.ToGlyph():
                     CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();
-                    CenteringPanel.Configure<ToolbarButtons>(orientation: LayoutOrientation.Vertical);
+                    CenteringPanel.Configure<ToolbarButtons>();
                     announce = nameof(IconBasics.EllipsisVertical);
                     break;
                 case string s when s == IconBasics.EllipsisVertical.ToGlyph():
-                    CenteringPanel.Configure<ToolBarEmpty>();
                     CounterBtn.WidthRequest = _widthRequestPrev;
                     CounterBtn.FontFamily = _fontFamilyPrev;
                     CounterBtn.Text =
                         count == 0
                         ? $"Cycled {++count} time"
                         : $"Cycled {++count} times";
+                    CenteringPanel.Configure<ToolbarButtons>(orientation: LayoutOrientation.Vertical);
                     announce = CounterBtn.Text;
                     break;
             }

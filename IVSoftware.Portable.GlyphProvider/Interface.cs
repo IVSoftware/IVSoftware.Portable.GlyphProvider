@@ -72,6 +72,8 @@ namespace IVSoftware.Portable
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
+            string? uniformBackgroundColor = null,
+            string? uniformTextColor = null,
             bool overwriteRequests = false) where T : struct, Enum;
 
         /// <summary>
@@ -118,6 +120,18 @@ namespace IVSoftware.Portable
         /// A special value of -1 will assign a width that is 1/3 of the container width.
         /// </summary>
         int UniformWidthRequest { get; set; }
+
+        /// <summary>
+        /// Hex color for child component background color.
+        /// If the term numerically evaluates to 0, the container background color will be used.
+        /// </summary>
+        string? UniformBackgroundColor { get; set; }
+
+        /// <summary>
+        /// Hex color for child components text color.
+        /// If the term numerically evaluates to 0, a contrasting forecolor will be heuristically determined.
+        /// </summary>
+        string? UniformTextColor { get; set; }
 
         /// <summary>
         /// When present, the container is able to autonomously create child components.

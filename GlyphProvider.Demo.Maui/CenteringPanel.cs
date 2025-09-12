@@ -14,9 +14,7 @@ namespace IVSGlyphProvider.Demo.Maui
         const int DEFAULT_FONT_SIZE = 11;
         const int MIN_FONT_SIZE = 7;
         public CenteringPanel() => InitializeComponent();
-        private void InitializeComponent()
-        {
-        }
+        private void InitializeComponent() { } // N O O P
 
         public Grid Grid
         {
@@ -58,6 +56,8 @@ namespace IVSGlyphProvider.Demo.Maui
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
             float? uniformFontSize = null,
+            string? uniformBackgroundColor = null,
+            string? uniformTextColor = null,
             bool overwriteDefaults = false) where T : struct, Enum
         {
             if (overwriteDefaults) localOverwriteDefaults();
@@ -75,11 +75,11 @@ namespace IVSGlyphProvider.Demo.Maui
             Grid.ColumnDefinitions.Clear();
 
             var elements = Enum.GetValues<T>().ToList();
-            switch (Orientation)
+            switch (orientation)
             {
                 case LayoutOrientation.Horizontal: localConfigHorizontal(); break;
                 case LayoutOrientation.Vertical: localConfigVertical(); break;
-                default: throw new NotImplementedException($"Bad case: {Orientation}");
+                default: throw new NotImplementedException($"Bad case: {orientation}");
             }
 
             #region L o c a l F x	
@@ -150,7 +150,6 @@ namespace IVSGlyphProvider.Demo.Maui
                     default:
                         throw new NotImplementedException($"Bad case: {orientation}");
                 }
-
 
                 if (rowHeightRequest.HasValue)
                     RowHeightRequest = rowHeightRequest.Value;
@@ -268,6 +267,35 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         int _uniformWidthRequest = DEFAULT_UNIFORM_WIDTH;
+
+        public string? UniformBackgroundColor
+        {
+            get => _uniformBackgroundColor;
+            set
+            {
+                if (!Equals(_uniformBackgroundColor, value))
+                {
+                    _uniformBackgroundColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        string? _uniformBackgroundColor = null;
+
+        public string? UniformTextColor
+        {
+            get => _uniformTextColor;
+            set
+            {
+                if (!Equals(_uniformTextColor, value))
+                {
+                    _uniformTextColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        string? _uniformTextColor = null;
+
 
 
         public ActivatorTemplate ActivatorTemplate

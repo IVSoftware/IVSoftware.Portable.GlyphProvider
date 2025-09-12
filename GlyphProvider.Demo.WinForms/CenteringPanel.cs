@@ -178,6 +178,8 @@ namespace IVSGlyphProvider.Demo.WinForms
              int? rowHeightRequest = null,
              int? uniformWidthRequest = null,
              float? uniformFontSize = null,
+             string? uniformBackgroundColor = null,
+             string? uniformTextColor = null,
              bool overwriteRequests = false
         ) where T : struct, Enum
         {
@@ -309,6 +311,49 @@ namespace IVSGlyphProvider.Demo.WinForms
 
         public int UniformHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, UniformSpacing.Vertical);
 
+        [TypeConverter(typeof(UniformThicknessConverter))]
+        public UniformThickness UniformSpacing
+        {
+            get => _uniformThickness;
+            set
+            {
+                if (!Equals(_uniformThickness, value))
+                {
+                    _uniformThickness = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        UniformThickness _uniformThickness = default;
+
+        public string? UniformBackgroundColor
+        {
+            get => _uniformBackgroundColor;
+            set
+            {
+                if (!Equals(_uniformBackgroundColor, value))
+                {
+                    _uniformBackgroundColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        string? _uniformBackgroundColor = null;
+
+        public string? UniformTextColor
+        {
+            get => _uniformTextColor;
+            set
+            {
+                if (!Equals(_uniformTextColor, value))
+                {
+                    _uniformTextColor = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        string? _uniformTextColor = null;
+
         /// <summary>
         /// Gets or sets the effective content height.
         /// In horizontal mode this is derived from the panel height minus collapsed padding.
@@ -335,21 +380,6 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-
-        [TypeConverter(typeof(UniformThicknessConverter))]
-        public UniformThickness UniformSpacing
-        {
-            get => _uniformThickness;
-            set
-            {
-                if (!Equals(_uniformThickness, value))
-                {
-                    _uniformThickness = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        UniformThickness _uniformThickness = default;
 
         IDictionary IConfigurableLayoutStack.Cache
         {

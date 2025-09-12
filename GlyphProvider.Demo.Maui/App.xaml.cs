@@ -11,16 +11,24 @@
         {
             if (Application.Current is not null && DeviceInfo.Platform == DevicePlatform.WinUI)
             {
-                var window = base.CreateWindow(activationState);
-                window.Width = 450;
-                window.Height = 850;
+                var window = base.CreateWindow(activationState); var disp = DeviceDisplay.Current.MainDisplayInfo;
 
-                // Ensure window resizing completes
-                window.Dispatcher.DispatchAsync(() => { }).GetAwaiter().OnCompleted(() =>
+                // Intended pixel size ~~ WinForms and WPF
+                double targetPixelWidth = 518;
+                double targetPixelHeight = 904;
+
+                // Convert pixels → DIPs
+                window.Width = targetPixelWidth / disp.Density;
+                window.Height = targetPixelHeight / disp.Density;
+
+                // Center on screen in DIPs
+                window.Dispatcher.DispatchAsync(() =>
                 {
-                    var disp = DeviceDisplay.Current.MainDisplayInfo;
-                    window.X = (disp.Width / disp.Density - window.Width) / 2;
-                    window.Y = (disp.Height / disp.Density - window.Height) / 2;
+                    var screenWidthDip = disp.Width / disp.Density;
+                    var screenHeightDip = disp.Height / disp.Density;
+
+                    window.X = (screenWidthDip - window.Width) / 2;
+                    window.Y = (screenHeightDip - window.Height) / 2;
                 });
                 return window;
             }

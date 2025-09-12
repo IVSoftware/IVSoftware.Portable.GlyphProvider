@@ -78,12 +78,12 @@ namespace IVSGlyphProvider.Demo.WinForms
 #if DEBUG
             if (bounds.Count > 1)
             {
-                // It would seem that even when the measured space is 0 there
-                // is still a perceived space between. Drawing artifact??
+                // Diagnostic: check actual gap between neighbors.
+                // Even if math says 0, WinForms integer rounding (widthAlloc, division)
+                // can leave a stray pixel column when painting. Use breakpoint to inspect.
                 var space = items[1].Left - items[0].Right;
-                { }
+                { } // Breakpoint: inspect 'space' and control bounds
             }
-
 #endif
             ResumeLayout();
 

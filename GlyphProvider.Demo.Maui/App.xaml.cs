@@ -10,20 +10,23 @@
         protected override Window CreateWindow(IActivationState? activationState)
         {
             if (Application.Current is not null && DeviceInfo.Platform == DevicePlatform.WinUI)
-            {
-                var window = base.CreateWindow(activationState); var disp = DeviceDisplay.Current.MainDisplayInfo;
+            {                
+                var disp = DeviceDisplay.Current.MainDisplayInfo;
 
                 // Intended pixel size ~~ WinForms and WPF
                 double targetPixelWidth = 518;
                 double targetPixelHeight = 904;
 
-                // Convert pixels → DIPs
-                window.Width = targetPixelWidth / disp.Density;
-                window.Height = targetPixelHeight / disp.Density;
+                var window = base.CreateWindow(activationState);
+                window.Width = 0;
+                window.Height = 0;
 
                 // Center on screen in DIPs
                 window.Dispatcher.DispatchAsync(() =>
                 {
+                    // Convert pixels → DIPs
+                    window.Width = targetPixelWidth / disp.Density;
+                    window.Height = targetPixelHeight / disp.Density;
                     var screenWidthDip = disp.Width / disp.Density;
                     var screenHeightDip = disp.Height / disp.Density;
 

@@ -76,9 +76,9 @@ namespace IVSGlyphProvider.Demo.Maui
                         Grid.Add(view, col, 0);
                     }
 
-                    if (enumIdButton is Button text)
+                    if (enumIdButton is ITextColorComponent text)
                     {
-                        text.TextColor = Colors.WhiteSmoke;
+                        text.TextColor =  Colors.WhiteSmoke.ToArgbHex();
                     }
                 }
             }

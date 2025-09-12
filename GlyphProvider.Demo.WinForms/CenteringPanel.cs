@@ -104,14 +104,17 @@ namespace IVSGlyphProvider.Demo.WinForms
                 //   between the overlapping controls, effecively breating "min spacing" between them.
                 var clipBounds =
                     Enumerable.Range(0, items.Length)
-                    .Select(_ => new Rectangle(_ * widthAlloc, itemY, widthAlloc, ItemHeightRequest))
+                    .Select(_ => new Rectangle(
+                        _ * widthAlloc,
+                        itemY, 
+                        widthAlloc,
+                        ItemHeightRequest))
                     .ToArray();
 
                 // After margins are subtracted, this is
                 // the maximum width for the control itself.
                 int maxItemWidth = widthAlloc - (ItemMargin.Horizontal / 2);
                 int netItemWidth = Math.Min(maxItemWidth, ItemWidthRequest);
-
 
                 for (int i = 0; i < items.Length; i++)
                 {
@@ -134,6 +137,28 @@ namespace IVSGlyphProvider.Demo.WinForms
 
             void localCalcCenteredMetricsV()
             {
+                Height = items.Length * PreferredRowHeight;
+
+                var clipBounds =
+                    Enumerable.Range(0, items.Length)
+                    .Select(_ => new Rectangle(
+                        Math.Max(Padding.Left, ItemMargin.Left),
+                        _ * PreferredRowHeight,
+                        Width - ItemMargin.Horizontal,
+                        PreferredRowHeight))
+                    .ToArray();
+                for (int i = 0; i < items.Length; i++)
+                {
+                    var item = items[i];
+                    var cell = clipBounds[i];
+
+                    //int height = ItemHeightRequest;
+
+                    int x = cell.X ;
+                    int y = cell.Y;
+                    bounds[item] = new Rectangle(x, y, cell.Width, cell.Height);
+                }
+                return;
                 BeginInvoke(() => // Because we're inside of SuspendLayout
                 throw new NotImplementedException("ToDo"));
             }

@@ -41,11 +41,12 @@ namespace IVSGlyphProvider.Demo.Maui
             var fontFamily = typeof(IconBasics).ToCssFontFamilyName();
             { }
 #endif
-            CenteringPanel.Configure<ToolbarButtons>();
+            // CenteringPanel.Configure<ToolbarButtons>();
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
         {
+            string announce;
             switch (CounterBtn.Text)
             {
                 default:
@@ -56,63 +57,29 @@ namespace IVSGlyphProvider.Demo.Maui
                     CounterBtn.FontFamily = nameof(IconBasics);
                     CounterBtn.WidthRequest = CounterBtn.Height;
                     CounterBtn.Text = IconBasics.HelpCircledAlt.ToGlyph();
+                    announce = nameof(IconBasics.HelpCircledAlt);
                     break;
                 case string s when s == IconBasics.HelpCircledAlt.ToGlyph():
                     CounterBtn.Text = IconBasics.EllipsisHorizontal.ToGlyph();
+                    CenteringPanel.Configure<ToolbarButtons>();
+                    announce = nameof(IconBasics.EllipsisHorizontal);
                     break;
                 case string s when s == IconBasics.EllipsisHorizontal.ToGlyph():
                     CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();
+                    announce = nameof(IconBasics.EllipsisVertical);
                     break;
                 case string s when s == IconBasics.EllipsisVertical.ToGlyph():
+                    CenteringPanel.Configure<ToolBarEmpty>();
                     CounterBtn.WidthRequest = _widthRequestPrev;
                     CounterBtn.FontFamily = _fontFamilyPrev;
                     CounterBtn.Text =
                         count == 0
                         ? $"Cycled {++count} time"
                         : $"Cycled {++count} times";
+                    announce = CounterBtn.Text;
                     break;
             }
-
-#if false
-            var stopwatch = Stopwatch.StartNew();
-            count++;
-            if (count % 2 == 0)
-            {
-                var cycleCount = count / 2;
-                if (cycleCount == 1)
-                    CounterBtn.Text = $"Cycled {cycleCount} time";
-                else
-                    CounterBtn.Text = $"Cycled {cycleCount} times";
-                CounterBtn.WidthRequest = _widthRequestPrev;
-            }
-            else
-            {
-                string expected;
-
-                // Works independently
-                // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
-
-                // Also works, but this must be aliased in Maui.AddFont
-                CounterBtn.FontFamily = nameof(IconBasics);
-
-                CounterBtn.Text = IconBasics.HelpCircledAlt.ToGlyph();
-                CounterBtn.WidthRequest = CounterBtn.Height;
-                // Alt
-                var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
-                expected = "&#xE807;";
-                // Readable
-                var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
-                expected = "U+E807";
-                { }
-            }
-            stopwatch.Stop();
-#if false
-            SemanticScreenReader.Announce(CounterBtn.Text);
-            Debug.WriteLine(stopwatch.ElapsedTicks);
-            // If preloaded (call to ToGlyph()) 640675 ticks
-            // Otherwise as much as            2764151
-#endif
-#endif
+            SemanticScreenReader.Announce(announce);
         }
         private readonly string _fontFamilyPrev;
         private readonly double _widthRequestPrev;

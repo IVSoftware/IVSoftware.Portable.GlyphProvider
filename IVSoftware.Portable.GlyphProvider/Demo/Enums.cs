@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace IVSoftware.Portable.Demo
 {
+    public enum ToolBarEmpty { }
     public enum ToolbarButtons
     {
         [Glyph(typeof(IconBasics), nameof(IconBasics.HelpCircled))]

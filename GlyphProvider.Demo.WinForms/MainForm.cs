@@ -70,6 +70,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
                 { }
                 //var fonts = GlyphProvider.ListDomainFontResources();
+                CounterBtn.AccessibleDescription = "Operation complete";
             }
         }
         private readonly int _widthRequestPrev;

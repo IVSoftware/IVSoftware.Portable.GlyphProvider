@@ -48,7 +48,7 @@
             // centeringPanel
             // 
             centeringPanel.BackColor = Color.LightBlue;
-            centeringPanel.Orientation = CenteringOrientation.Horizontal;
+            centeringPanel.Orientation = Orientation.Horizontal;
             centeringPanel.ControlTemplate = controlTemplate_11;
             centeringPanel.Dock = DockStyle.Bottom;
             centeringPanel.ContentMargin = new Padding(0);

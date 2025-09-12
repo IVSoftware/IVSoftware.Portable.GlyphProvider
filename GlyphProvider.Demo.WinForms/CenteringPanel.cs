@@ -5,19 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public enum CenteringOrientation
-    {
-        /// <summary>
-        /// The width of CenteringPanel is a hard limit.
-        /// </summary>
-        Horizontal,
-
-        /// <summary>
-        /// Provisioning first attempts to adjust the height
-        /// of CenteringPanel, which then becomes a hard limit.
-        /// </summary>
-        Vertical,
-    }
     public enum WidthTrackingMode
     {
         Normal,
@@ -26,6 +13,9 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// Make square buttons suitable for glyph icons.
         /// </summary>
         WidthTracksHeight,
+
+
+        Auto,
     }
     public class CenteringPanel : Panel
     {
@@ -38,7 +28,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 {
                     e.Control.Anchor = 0;
                     e.Control.Dock = 0;
-                    if(Orientation == CenteringOrientation.Vertical &&
+                    if(Orientation == Orientation.Vertical &&
                      control.Height > RowHeightRequest)
                     {
                         RowHeightRequest = control.Height;
@@ -79,8 +69,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             var bounds = new Dictionary<Control, Rectangle>(items.Length);
             switch (Orientation)
             {
-                case CenteringOrientation.Horizontal: localCalcCenteredMetricsH(); break;
-                case CenteringOrientation.Vertical: localCalcCenteredMetricsV(); break;
+                case Orientation.Horizontal: localCalcCenteredMetricsH(); break;
+                case Orientation.Vertical: localCalcCenteredMetricsV(); break;
                 default: throw new NotImplementedException($"Bad case: {Orientation}");
             };
 
@@ -180,7 +170,24 @@ namespace IVSGlyphProvider.Demo.WinForms
             #endregion L o c a l F x
         }
 
-        public void Configure<T>() where T : struct, Enum
+        /// <summary>
+        /// Configures a toolbar based on enum values of type T.
+        /// - Defaults to a horizontal layout where buttons are square (width tracks height).
+        /// - If no row height is specified, the first added element sets the height
+        ///   after collapsing container padding and element margin.
+        /// - If no uniform width is specified, the behavior depends on orientation
+        ///   when widthMode is Auto: for horizontal, width tracks height;
+        ///   for vertical, uniform height is set by the first element.
+        /// - Once established, row height and element width remain fixed unless
+        ///   overwriteRequests is true.
+        /// </summary>
+        public void Configure<T>(
+            Orientation orientation = Orientation.Horizontal,
+             WidthTrackingMode widthMode = WidthTrackingMode.Auto,
+             int? rowHeightRequest = null,
+             int? uniformWidthRequest = null,
+             bool overwriteRequests = false
+        ) where T : struct, Enum
         {
             if (ControlTemplate is null)
                 throw new InvalidOperationException("ControlTemplate must be set before calling Configure<T>().");
@@ -221,7 +228,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         public ControlTemplate ControlTemplate { get; set; } = new ControlTemplate<GlyphButton>();
 
         #region L A Y O U T    T R I G G E R S
-        public CenteringOrientation Orientation
+        public Orientation Orientation
         {
             get => _centeringMode;
             set
@@ -234,7 +241,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        CenteringOrientation _centeringMode = CenteringOrientation.Horizontal;
+        Orientation _centeringMode = Orientation.Horizontal;
 
         public Padding ContentMargin
         {
@@ -251,34 +258,37 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         Padding _itemMargin = new(2);
 
+        /// <summary>
+        /// Sets a uniform width for content.
+        /// </summary>
         public int ContentWidthRequest
         {
             get
             {
-                if (_itemWidthRequest is null)
+                if (_contentWidthRequest is null)
                 {
                     switch (Orientation)
                     {
-                        case CenteringOrientation.Horizontal: 
+                        case Orientation.Horizontal: 
                             return ContentHeightRequest;
-                        case CenteringOrientation.Vertical:
+                        case Orientation.Vertical:
                             return Width - Math.Max(Padding.Horizontal, ContentMargin.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {Orientation}");
                     };
                 }
-                else return _itemWidthRequest.Value;
+                else return _contentWidthRequest.Value;
             }
             set
             {
-                if (!Equals(_itemWidthRequest, value))
+                if (!Equals(_contentWidthRequest, value))
                 {
-                    _itemWidthRequest = value;
+                    _contentWidthRequest = value;
                     PerformLayout();
                     OnPropertyChanged();
                 }
             }
         }
-        int? _itemWidthRequest = null;
+        int? _contentWidthRequest = null;
 
         /// <summary>
         /// Gets or sets the effective content height.

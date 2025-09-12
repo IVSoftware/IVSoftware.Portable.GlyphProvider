@@ -63,7 +63,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
 #endif
 
-            centeringPanel.Orientation = CenteringOrientation.Vertical;
+            // centeringPanel.Orientation = Orientation.Vertical;
             centeringPanel.Configure<ToolbarButtons>();
         }
 

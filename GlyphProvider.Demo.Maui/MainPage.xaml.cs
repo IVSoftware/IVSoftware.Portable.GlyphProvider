@@ -46,8 +46,36 @@ namespace IVSGlyphProvider.Demo.Maui
 
         private void OnCounterClicked(object sender, EventArgs e)
         {
-                var stopwatch = Stopwatch.StartNew();
-                count++;
+            switch (CounterBtn.Text)
+            {
+                default:
+                    // SAVE: Works independently
+                    // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
+
+                    // ALIASED: This must be set up in Maui.AddFont
+                    CounterBtn.FontFamily = nameof(IconBasics);
+                    CounterBtn.WidthRequest = CounterBtn.Height;
+                    CounterBtn.Text = IconBasics.HelpCircledAlt.ToGlyph();
+                    break;
+                case string s when s == IconBasics.HelpCircledAlt.ToGlyph():
+                    CounterBtn.Text = IconBasics.EllipsisHorizontal.ToGlyph();
+                    break;
+                case string s when s == IconBasics.EllipsisHorizontal.ToGlyph():
+                    CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();
+                    break;
+                case string s when s == IconBasics.EllipsisVertical.ToGlyph():
+                    CounterBtn.WidthRequest = _widthRequestPrev;
+                    CounterBtn.FontFamily = _fontFamilyPrev;
+                    CounterBtn.Text =
+                        count == 0
+                        ? $"Cycled {++count} time"
+                        : $"Cycled {++count} times";
+                    break;
+            }
+
+#if false
+            var stopwatch = Stopwatch.StartNew();
+            count++;
             if (count % 2 == 0)
             {
                 var cycleCount = count / 2;
@@ -60,7 +88,6 @@ namespace IVSGlyphProvider.Demo.Maui
             else
             {
                 string expected;
-                // namespace IVSGlyphProvider.Demo.Maui
 
                 // Works independently
                 // CounterBtn.FontFamily = typeof(IconBasics).ToCssFontFamilyName();
@@ -68,7 +95,7 @@ namespace IVSGlyphProvider.Demo.Maui
                 // Also works, but this must be aliased in Maui.AddFont
                 CounterBtn.FontFamily = nameof(IconBasics);
 
-                CounterBtn.Text = IconBasics.Search.ToGlyph();
+                CounterBtn.Text = IconBasics.HelpCircledAlt.ToGlyph();
                 CounterBtn.WidthRequest = CounterBtn.Height;
                 // Alt
                 var xaml = IconBasics.Search.ToGlyph(GlyphFormat.Xaml);
@@ -77,28 +104,15 @@ namespace IVSGlyphProvider.Demo.Maui
                 var display = IconBasics.Search.ToGlyph(GlyphFormat.UnicodeDisplay);
                 expected = "U+E807";
                 { }
+            }
+            stopwatch.Stop();
 #if false
-                CounterBtn.FontFamily = "basics-icons";
-                CounterBtn.Text = CounterBtn.FontFamily.ToGlyph(IconBasics.Search);
-                CounterBtn.WidthRequest = CounterBtn.Height;
-                // Alt
-                var xaml = CounterBtn.FontFamily.ToGlyph(IconBasics.Search, GlyphFormat.Xaml);
-                // Readable
-                var display = CounterBtn.FontFamily.ToGlyph(IconBasics.Search, GlyphFormat.UnicodeDisplay);
-                { }
-
-                var fonts = IVSoftware.Portable.GlyphProvider.ListDomainFontResources();
-
-
-                var names = GetType().Assembly.GetManifestResourceNames();
-                { }
-                SemanticScreenReader.Announce(CounterBtn.Text);
-                stopwatch.Stop();
-                Debug.WriteLine(stopwatch.ElapsedTicks);
-                // If preloaded (call to ToGlyph()) 640675 ticks
-                // Otherwise as much as            2764151
+            SemanticScreenReader.Announce(CounterBtn.Text);
+            Debug.WriteLine(stopwatch.ElapsedTicks);
+            // If preloaded (call to ToGlyph()) 640675 ticks
+            // Otherwise as much as            2764151
 #endif
-                }
+#endif
         }
         private readonly string _fontFamilyPrev;
         private readonly double _widthRequestPrev;

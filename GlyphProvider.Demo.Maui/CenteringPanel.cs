@@ -75,7 +75,8 @@ namespace IVSGlyphProvider.Demo.Maui
             Grid.ColumnDefinitions.Clear();
 
             var elements = Enum.GetValues<T>().ToList();
-            localStageButtons();
+            var components = new List<IView>();
+            localStageComponentss();
             switch (orientation)
             {
                 case LayoutOrientation.Horizontal: localConfigHorizontal(); break;
@@ -84,15 +85,8 @@ namespace IVSGlyphProvider.Demo.Maui
             }
 
             #region L o c a l F x
-            void localStageButtons()
+            void localStageComponentss()
             {
-
-            }
-            void localConfigHorizontal()
-            {
-                Grid.RowDefinitions.Add(new());
-                elements.ForEach(_ => Grid.ColumnDefinitions.Add(new()));
-                HeightRequest = elements.Any() ? RowHeightRequest : 0;
                 for (int col = 0; col < elements.Count; col++)
                 {
                     var id = elements[col];
@@ -101,10 +95,9 @@ namespace IVSGlyphProvider.Demo.Maui
                         enumIdButton = ActivatorTemplate.Activate(id);
                         Cache[id] = enumIdButton;
                     }
-
                     if (enumIdButton is IPlatformEnumIdComponent view)
                     {
-                        if(displayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
+                        if (displayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
                         {
                             view.WidthRequest = UniformHeightRequest;
                         }
@@ -112,8 +105,18 @@ namespace IVSGlyphProvider.Demo.Maui
                         view.TextColor = Colors.WhiteSmoke;
                         view.FontSize = UniformFontSize;
                         view.Padding = 0;
-                        Grid.Add(view, col, 0);
+                        components.Add(view);
                     }
+                }
+            }
+            void localConfigHorizontal()
+            {
+                Grid.RowDefinitions.Add(new());
+                components.ForEach(_ => Grid.ColumnDefinitions.Add(new()));
+                HeightRequest = elements.Any() ? RowHeightRequest : 0;
+                for (int col = 0; col < components.Count; col++)
+                {
+                    Grid.Add(components[col], col, 0);
                 }
             }
             void localConfigVertical()

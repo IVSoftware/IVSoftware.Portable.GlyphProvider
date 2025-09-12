@@ -180,14 +180,14 @@ namespace IVSGlyphProvider.Demo.WinForms
              bool overwriteRequests = false
         ) where T : struct, Enum
         {
-            if (ControlTemplate is null)
+            if (ActivatorTemplate is null)
                 throw new InvalidOperationException("ControlTemplate must be set before calling Configure<T>().");
 
             SuspendLayout();
             Controls.Clear();
             foreach (var id in Enum.GetValues<T>())
             {
-                var idButton = ControlTemplate.Activate(id);
+                var idButton = ActivatorTemplate.Activate(id);
 
                 if (idButton is Control ctl)
                 {
@@ -202,6 +202,8 @@ namespace IVSGlyphProvider.Demo.WinForms
             ResumeLayout(performLayout: true);
         }
 
+        public ActivatorTemplate ActivatorTemplate { get; set; } = new ActivatorTemplate<GlyphButton>();
+
         private WatchdogTimer WDTSettle
         {
             get
@@ -215,8 +217,6 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         WatchdogTimer? _wdtSettle = null;
-
-        public ControlTemplate ControlTemplate { get; set; } = new ControlTemplate<GlyphButton>();
 
         #region L A Y O U T    T R I G G E R S
         public LayoutOrientation Orientation
@@ -234,20 +234,19 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
         LayoutOrientation _centeringMode = LayoutOrientation.Horizontal;
 
-        //public Padding UniformThickness
-        //{
-        //    get => _uniformMargin;
-        //    set
-        //    {
-        //        if (!Equals(_uniformMargin, value))
-        //        {
-        //            _uniformMargin = value;
-        //            PerformLayout();
-        //            OnPropertyChanged();
-        //        }
-        //    }
-        //}
-        //Padding _uniformMargin = new(2);
+        public WidthTrackingMode WidthTrackingMode
+        {
+            get => _widthTrackingMode;
+            set
+            {
+                if (!Equals(_widthTrackingMode, value))
+                {
+                    _widthTrackingMode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        WidthTrackingMode _widthTrackingMode = default;
 
         /// <summary>
         /// Sets a uniform width for content.
@@ -365,7 +364,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 
     }
 
-    public class ControlTemplate<T> : ControlTemplate
+    public class ActivatorTemplate<T> : ActivatorTemplate
         where T : Control, IGlyphButton
     {
         public override IGlyphButton Activate(Enum id) => (IGlyphButton)Ctor.Value.Invoke([id]);

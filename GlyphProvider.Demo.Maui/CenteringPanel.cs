@@ -1,15 +1,97 @@
 ﻿using IVSoftware.Portable;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IVSGlyphProvider.Demo.Maui
 {
     public class CenteringPanel : ContentView , IConfigurableLayoutStack
     {
+        public CenteringPanel() => InitializeComponent();
+        private void InitializeComponent()
+        {
+        }
+
+        private readonly Grid Grid = new();
+
+        /// <summary>
+        /// Configures a toolbar based on enum values of type T.
+        /// - Defaults to a horizontal layout where buttons are square (width tracks height).
+        /// - If no row height is specified, the first added element sets the height
+        ///   after collapsing container padding and element margin.
+        /// - If no uniform width is specified, the behavior depends on orientation
+        ///   when widthMode is Auto: for horizontal, width tracks height;
+        ///   for vertical, uniform height is set by the first element.
+        /// - Once established, row height and element width remain fixed unless
+        ///   overwriteRequests is true.
+        /// </summary>
+        public void Configure<T>(
+            LayoutOrientation orientation = LayoutOrientation.Horizontal,
+            WidthTrackingMode widthTrackingMode = WidthTrackingMode.Auto,
+            int? rowHeightRequest = null,
+            int? uniformWidthRequest = null,
+            bool overwriteRequests = false) where T : struct, Enum
+        {
+            Orientation = orientation;
+            WidthTrackingMode = widthTrackingMode;
+            Grid.Children.Clear();
+            Grid.RowDefinitions.Clear();
+            Grid.ColumnDefinitions.Clear();
+
+            var elements = Enum.GetValues<T>().ToList();
+            switch (Orientation)
+            {
+                case LayoutOrientation.Horizontal:
+                    Grid.RowDefinitions.Add(new());
+                    elements.ForEach(_ =>Grid.ColumnDefinitions.Add(new()));
+                    break;
+                case LayoutOrientation.Vertical:
+                    Grid.ColumnDefinitions.Add(new());
+                    elements.ForEach(_ => Grid.RowDefinitions.Add(new()));
+                    break;
+                default:
+                    throw new NotImplementedException($"Bad case: {Orientation}");
+            }
+            elements.ForEach(_ => 
+            {
+                if(Cache.TryGetValue(_, out var glyphButton) && glyphButton is not null)
+                {
+
+                }
+                else
+                {
+
+                }
+            });
+        }
+
+        public LayoutOrientation Orientation
+        {
+            get => _orientation;
+            set
+            {
+                if (!Equals(_orientation, value))
+                {
+                    _orientation = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        LayoutOrientation _orientation = default;
+
+        public WidthTrackingMode WidthTrackingMode
+        {
+            get => _widthTrackingMode;
+            set
+            {
+                if (!Equals(_widthTrackingMode, value))
+                {
+                    _widthTrackingMode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        WidthTrackingMode _widthTrackingMode = default;
+
+
         public int RowHeightRequest
         {
             get => throw new NotImplementedException();
@@ -21,12 +103,7 @@ namespace IVSGlyphProvider.Demo.Maui
             set => throw new NotImplementedException();
         }
         public int UniformWidthRequest { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IVSoftware.Portable.ControlTemplate ControlTemplate
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-        public LayoutOrientation Orientation
+        public IVSoftware.Portable.ActivatorTemplate ActivatorTemplate
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
@@ -60,14 +137,5 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         Dictionary<Enum, IGlyphButton> _cache = new();
-
-        public void Configure<T>(
-            LayoutOrientation orientation = LayoutOrientation.Horizontal,
-            WidthTrackingMode widthMode = WidthTrackingMode.Auto, 
-            int? rowHeightRequest = null, 
-            int? uniformWidthRequest = null, 
-            bool overwriteRequests = false) where T : struct, Enum
-        {
-        }
     }
 }

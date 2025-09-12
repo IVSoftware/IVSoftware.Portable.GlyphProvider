@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ControlTemplate<GlyphButton> controlTemplate_11 = new ControlTemplate<GlyphButton>();
+            ActivatorTemplate<GlyphButton> controlTemplate_11 = new ActivatorTemplate<GlyphButton>();
             CounterBtn = new Button();
             centeringPanel = new CenteringPanel();
             SuspendLayout();
@@ -48,7 +48,7 @@
             // centeringPanel
             // 
             centeringPanel.BackColor = Color.LightBlue;
-            centeringPanel.ControlTemplate = controlTemplate_11;
+            centeringPanel.ActivatorTemplate = controlTemplate_11;
             centeringPanel.Dock = DockStyle.Bottom;
             centeringPanel.Location = new Point(0, 839);
             centeringPanel.Name = "centeringPanel";

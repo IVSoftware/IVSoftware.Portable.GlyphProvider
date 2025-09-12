@@ -1,5 +1,7 @@
 ﻿using IVSoftware.Portable;
 using System.Collections;
+using System.Drawing;
+using Color = Microsoft.Maui.Graphics.Color;
 
 namespace IVSGlyphProvider.Demo.Maui
 {
@@ -10,7 +12,19 @@ namespace IVSGlyphProvider.Demo.Maui
         {
         }
 
-        private readonly Grid Grid = new();
+        public Grid Grid
+        {
+            get
+            {
+                if (_grid is null)
+                {
+                    _grid = new Grid();
+                    Content = _grid;
+                }
+                return _grid;
+            }
+        }
+        Grid? _grid = null;
 
         /// <summary>
         /// Configures a toolbar based on enum values of type T.
@@ -39,28 +53,40 @@ namespace IVSGlyphProvider.Demo.Maui
             var elements = Enum.GetValues<T>().ToList();
             switch (Orientation)
             {
-                case LayoutOrientation.Horizontal:
-                    Grid.RowDefinitions.Add(new());
-                    elements.ForEach(_ =>Grid.ColumnDefinitions.Add(new()));
-                    break;
-                case LayoutOrientation.Vertical:
-                    Grid.ColumnDefinitions.Add(new());
-                    elements.ForEach(_ => Grid.RowDefinitions.Add(new()));
-                    break;
-                default:
-                    throw new NotImplementedException($"Bad case: {Orientation}");
+                case LayoutOrientation.Horizontal: localConfigHorizontal(); break;
+                case LayoutOrientation.Vertical: localConfigVertical(); break;
+                default: throw new NotImplementedException($"Bad case: {Orientation}");
             }
-            elements.ForEach(_ => 
+            void localConfigHorizontal()
             {
-                if(Cache.TryGetValue(_, out var glyphButton) && glyphButton is not null)
+                Grid.RowDefinitions.Add(new());
+                elements.ForEach(_ => Grid.ColumnDefinitions.Add(new()));
+                for (int col = 0; col < elements.Count; col++)
                 {
+                    var id = elements[col];
+                    if (!Cache.TryGetValue(id, out var enumIdButton) || enumIdButton is null)
+                    {
+                        enumIdButton = ActivatorTemplate.Activate(id);
+                        Cache[id] = enumIdButton;
+                    }
 
-                }
-                else
-                {
+                    if (enumIdButton is View view)
+                    {
+                        view.BackgroundColor = Color.FromArgb("#444444");
+                        Grid.Add(view, col, 0);
+                    }
 
+                    if (enumIdButton is Button text)
+                    {
+                        text.TextColor = Colors.WhiteSmoke;
+                    }
                 }
-            });
+            }
+            void localConfigVertical()
+            {
+                Grid.ColumnDefinitions.Add(new());
+                elements.ForEach(_ => Grid.RowDefinitions.Add(new()));
+            }
         }
 
         public LayoutOrientation Orientation
@@ -103,28 +129,37 @@ namespace IVSGlyphProvider.Demo.Maui
             set => throw new NotImplementedException();
         }
         public int UniformWidthRequest { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IVSoftware.Portable.ActivatorTemplate ActivatorTemplate
+
+        public ActivatorTemplate ActivatorTemplate
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get => _activatorTemplate;
+            set
+            {
+                if (value is not null && !Equals(_activatorTemplate, value))
+                {
+                    _activatorTemplate = value;
+                    OnPropertyChanged();
+                }
+            }
         }
+        ActivatorTemplate _activatorTemplate = new ActivatorTemplate<EnumIdButton>();
         IDictionary IConfigurableLayoutStack.Cache
         {
             get => Cache;
             set
             {
-                if (value is Dictionary<Enum, IGlyphButton> cache)
+                if (value is Dictionary<Enum, IEnumIdComponent> cache)
                 {
                     Cache = cache;
                 }
                 else throw new InvalidCastException(
-                    $"Expected a {typeof(Dictionary<Enum, IGlyphButton>).FullName}, " +
+                    $"Expected a {typeof(Dictionary<Enum, IEnumIdComponent>).FullName}, " +
                     $"but received {value?.GetType().FullName ?? "<null>"}."
                 );
             }
         }
 
-        public Dictionary<Enum, IGlyphButton> Cache
+        public Dictionary<Enum, IEnumIdComponent> Cache
         {
             get => _cache;
             set
@@ -136,6 +171,6 @@ namespace IVSGlyphProvider.Demo.Maui
                 }
             }
         }
-        Dictionary<Enum, IGlyphButton> _cache = new();
+        Dictionary<Enum, IEnumIdComponent> _cache = new();
     }
 }

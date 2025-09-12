@@ -17,7 +17,7 @@ namespace IVSGlyphProvider.Demo.Maui
 
 #if !USE_LOCAL_COPY
                     fonts.AddEmbeddedResourceFont(
-                        typeof(IVSoftware.Portable.GlyphProvider).Assembly,
+                        typeof(GlyphProvider).Assembly,
                         filename: $"{typeof(IconBasics).ToCssFontFamilyName()}.ttf",
                         alias: $"{nameof(IconBasics)}");
 #else

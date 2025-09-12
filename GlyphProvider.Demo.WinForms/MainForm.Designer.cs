@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            ActivatorTemplate<GlyphButton> controlTemplate_11 = new ActivatorTemplate<GlyphButton>();
+            ActivatorTemplate<EnumIdButton> controlTemplate_11 = new ActivatorTemplate<EnumIdButton>();
             CounterBtn = new Button();
             centeringPanel = new CenteringPanel();
             SuspendLayout();

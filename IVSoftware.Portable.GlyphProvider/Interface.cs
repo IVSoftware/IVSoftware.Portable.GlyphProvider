@@ -21,7 +21,8 @@ namespace IVSoftware.Portable
 
         Auto,
     }
-    public interface IGlyphButton { Enum? Id { get; } }
+    public interface IEnumIdComponent { Enum? EnumId { get; } }
+    public interface ITextColorComponent { string TextColor { get; set; } }
 
     /// <summary>
     /// ARCHETYPE: Obfuscate an internal grid with an outer Panel-ContentView.
@@ -56,6 +57,6 @@ namespace IVSoftware.Portable
     }
     public abstract class ActivatorTemplate
     {
-        public abstract IGlyphButton Activate(Enum id);
+        public abstract IEnumIdComponent Activate(Enum id);
     }
 }

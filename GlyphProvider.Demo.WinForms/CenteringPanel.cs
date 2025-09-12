@@ -180,9 +180,6 @@ namespace IVSGlyphProvider.Demo.WinForms
              bool overwriteRequests = false
         ) where T : struct, Enum
         {
-            if (ActivatorTemplate is null)
-                throw new InvalidOperationException("ControlTemplate must be set before calling Configure<T>().");
-
             SuspendLayout();
             Controls.Clear();
             foreach (var id in Enum.GetValues<T>())
@@ -202,7 +199,19 @@ namespace IVSGlyphProvider.Demo.WinForms
             ResumeLayout(performLayout: true);
         }
 
-        public ActivatorTemplate ActivatorTemplate { get; set; } = new ActivatorTemplate<GlyphButton>();
+        public ActivatorTemplate ActivatorTemplate
+        {
+            get => _activatorTemplate;
+            set
+            {
+                if (value is not null && !Equals(_activatorTemplate, value))
+                {
+                    _activatorTemplate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        ActivatorTemplate _activatorTemplate = new ActivatorTemplate<EnumIdButton>();
 
         private WatchdogTimer WDTSettle
         {
@@ -328,18 +337,18 @@ namespace IVSGlyphProvider.Demo.WinForms
             get => Cache;
             set
             {
-                if (value is Dictionary<Enum, IGlyphButton> cache)
+                if (value is Dictionary<Enum, IEnumIdComponent> cache)
                 {
                     Cache = cache;
                 }
                 else throw new InvalidCastException(
-                    $"Expected a {typeof(Dictionary<Enum, IGlyphButton>).FullName}, " +
+                    $"Expected a {typeof(Dictionary<Enum, IEnumIdComponent>).FullName}, " +
                     $"but received {value?.GetType().FullName ?? "<null>"}."
                 );
             }
         }
 
-        public Dictionary<Enum, IGlyphButton> Cache
+        public Dictionary<Enum, IEnumIdComponent> Cache
         {
             get => _cache;
             set
@@ -351,7 +360,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        Dictionary<Enum, IGlyphButton> _cache = new();
+        Dictionary<Enum, IEnumIdComponent> _cache = new();
 
 
 
@@ -365,9 +374,9 @@ namespace IVSGlyphProvider.Demo.WinForms
     }
 
     public class ActivatorTemplate<T> : ActivatorTemplate
-        where T : Control, IGlyphButton
+        where T : Control, IEnumIdComponent
     {
-        public override IGlyphButton Activate(Enum id) => (IGlyphButton)Ctor.Value.Invoke([id]);
+        public override IEnumIdComponent Activate(Enum id) => (IEnumIdComponent)Ctor.Value.Invoke([id]);
 
         private static readonly Lazy<ConstructorInfo> Ctor =
             new Lazy<ConstructorInfo>(() =>

@@ -1,9 +1,4 @@
 ﻿using IVSoftware.Portable;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IVSGlyphProvider.Demo.Maui
 {
@@ -34,13 +29,12 @@ namespace IVSGlyphProvider.Demo.Maui
                 }
             }
         }
+        Enum? _enumId = default;
 
         string ITextColorComponent.TextColor
         { 
             get => TextColor.ToArgbHex();
             set => TextColor = Color.FromArgb(value);
         }
-
-        Enum? _enumId = default;
     }
 }

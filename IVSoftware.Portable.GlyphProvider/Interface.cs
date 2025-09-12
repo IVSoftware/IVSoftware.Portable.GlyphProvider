@@ -62,14 +62,9 @@ namespace IVSoftware.Portable
     {
         /// <summary>
         /// Configures a toolbar based on enum values of type T.
-        /// - Defaults to a horizontal layout where buttons are square (width tracks height).
-        /// - If no row height is specified, the first added element sets the height
-        ///   after collapsing container padding and element margin.
-        /// - If no uniform width is specified, the behavior depends on orientation
-        ///   when widthMode is Auto: for horizontal, width tracks height;
-        ///   for vertical, uniform height is set by the first element.
-        /// - Once established, row height and element width remain fixed unless
-        ///   overwriteRequests is true.
+        /// Uses existing parameters unless supplied, in which case
+        /// supplied values have the option of becoming new defaults
+        /// based on the overwrite bool.
         /// </summary>
         void Configure<T>(
             LayoutOrientation orientation = LayoutOrientation.Horizontal,
@@ -90,7 +85,7 @@ namespace IVSoftware.Portable
         /// <summary>
         /// Gets or sets the requested row height for child elements.
         /// Applies inward pressure on contained component heights.
-        /// In vertical mode, applies outware pressure on container height request.
+        /// In vertical mode, applies outward pressure on container height request.
         /// </summary>
         int RowHeightRequest { get; set; }
 
@@ -108,7 +103,7 @@ namespace IVSoftware.Portable
 
         /// <summary>
         /// Gets or sets the display format applied when the orientation
-        /// is horizontal where the typical default is ShowSquareIconAndMember.
+        /// is vertical where the typical default is ShowSquareIconAndMember.
         /// </summary>
         DisplayFormatOptions VerticalDisplayFormatOptions { get; set; }
 

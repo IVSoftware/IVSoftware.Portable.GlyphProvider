@@ -66,6 +66,7 @@ namespace IVSGlyphProvider.Demo.Maui
                     break;
                 case string s when s == IconBasics.EllipsisHorizontal.ToGlyph():
                     CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();
+                    CenteringPanel.Configure<ToolbarButtons>(orientation: LayoutOrientation.Vertical);
                     announce = nameof(IconBasics.EllipsisVertical);
                     break;
                 case string s when s == IconBasics.EllipsisVertical.ToGlyph():

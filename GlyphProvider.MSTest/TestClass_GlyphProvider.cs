@@ -25,15 +25,15 @@ namespace IVSGlyphProvider.MSTest
                 try
                 {
                     uut.PropertyChanged += localOPC;
-                    Assert.AreEqual(4, uut.UniformThickness.Vertical);
+                    Assert.AreEqual(4, uut.UniformSpacing.Vertical);
                     Assert.AreEqual(29, uut.RowHeightRequest);
                     // Getter no longer notifies
                     Assert.AreEqual(0, opcCount);
 
                     localClear();
-                    uut.UniformThickness = UniformThickness.Empty;
+                    uut.UniformSpacing = UniformThickness.Empty;
                     Assert.AreEqual(1, opcCount);
-                    Assert.AreEqual(0, uut.UniformThickness.Vertical);
+                    Assert.AreEqual(0, uut.UniformSpacing.Vertical);
                     Assert.AreEqual(25, uut.RowHeightRequest);
                     actual = string.Join(" ", builder);
                     expected = @" 

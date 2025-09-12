@@ -2,14 +2,33 @@
 
 namespace IVSGlyphProvider.Demo.Maui
 {
+    interface IPlatformEnumIdComponent 
+        : IEnumIdComponent
+        , IView
+    {
+        Color BackgroundColor { get; set; }
+        Color TextColor { get; set; }
+        double FontSize { get; set; }
+        Thickness Padding { get; set; }
+        double WidthRequest { get; set; }
+    }
     public class EnumIdButton
         : Button
         , IEnumIdComponent
-        , ITextColorComponent
+        , IPlatformEnumIdComponent
+        , IView
     {
         public EnumIdButton(Enum id)
         {
             EnumId = id;
+            PropertyChanged += (sender, e) =>
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(Padding):
+                        break;
+                }
+            };
         }
         public Enum EnumId
         {
@@ -30,11 +49,5 @@ namespace IVSGlyphProvider.Demo.Maui
             }
         }
         Enum? _enumId = default;
-
-        string ITextColorComponent.TextColor
-        { 
-            get => TextColor.ToArgbHex();
-            set => TextColor = Color.FromArgb(value);
-        }
     }
 }

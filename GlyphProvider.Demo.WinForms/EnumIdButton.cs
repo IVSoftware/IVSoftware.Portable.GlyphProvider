@@ -5,7 +5,6 @@ namespace IVSGlyphProvider.Demo.WinForms
     public class EnumIdButton 
         : Button
         , IEnumIdComponent
-        , ITextColorComponent
     {
         public EnumIdButton(Enum id)
         {

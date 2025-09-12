@@ -87,7 +87,7 @@ namespace IVSGlyphProvider.Demo.WinForms
             void localCalcCenteredMetricsH()
             {
                 // CSS style collapsed height (intuitive)
-                int itemY = Math.Max(Padding.Top, UniformThickness.Top);
+                int itemY = Math.Max(Padding.Top, UniformSpacing.Top);
 
                 // Back out the padding of this container itself.
                 int widthAlloc = (int)Math.Floor((double)(Width - Padding.Horizontal) / items.Length);
@@ -109,7 +109,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 
                 // After margins are subtracted, this is
                 // the maximum width for the control itself.
-                int maxItemWidth = widthAlloc - (UniformThickness.Horizontal / 2);
+                int maxItemWidth = widthAlloc - (UniformSpacing.Horizontal / 2);
                 int netItemWidth = Math.Min(maxItemWidth, UniformWidthRequest);
 
                 for (int i = 0; i < items.Length; i++)
@@ -138,9 +138,9 @@ namespace IVSGlyphProvider.Demo.WinForms
                 var clipBounds =
                     Enumerable.Range(0, items.Length)
                     .Select(_ => new Rectangle(
-                        Math.Max(Padding.Left, UniformThickness.Left),
+                        Math.Max(Padding.Left, UniformSpacing.Left),
                         _ * RowHeightRequest,
-                        Width - UniformThickness.Horizontal,
+                        Width - UniformSpacing.Horizontal,
                         RowHeightRequest))
                     .ToArray();
                 for (int i = 0; i < items.Length; i++)
@@ -177,6 +177,7 @@ namespace IVSGlyphProvider.Demo.WinForms
              WidthTrackingMode widthMode = WidthTrackingMode.Auto,
              int? rowHeightRequest = null,
              int? uniformWidthRequest = null,
+             float? uniformFontSize = null,
              bool overwriteRequests = false
         ) where T : struct, Enum
         {
@@ -271,7 +272,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                         case LayoutOrientation.Horizontal:
                             return ContentHeightRequest;
                         case LayoutOrientation.Vertical:
-                            return Width - Math.Max(Padding.Horizontal, UniformThickness.Horizontal);
+                            return Width - Math.Max(Padding.Horizontal, UniformSpacing.Horizontal);
                         default: throw new NotImplementedException($"Bad case: {Orientation}");
                     }
                     ;
@@ -296,7 +297,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         /// In vertical mode this is derived from PreferredRowHeight minus collapsed padding.
         /// The getter may adjust the backing field and raise PropertyChanged to maintain invariants.
         /// </summary>
-        private int ContentHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, UniformThickness.Vertical);
+        private int ContentHeightRequest => RowHeightRequest - Math.Max(Padding.Vertical, UniformSpacing.Vertical);
 
         /// <summary>
         /// Gets or sets the preferred row height.
@@ -318,7 +319,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         }
 
         [TypeConverter(typeof(UniformThicknessConverter))]
-        public UniformThickness UniformThickness
+        public UniformThickness UniformSpacing
         {
             get => _uniformThickness;
             set

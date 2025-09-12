@@ -22,7 +22,6 @@ namespace IVSoftware.Portable
         Auto,
     }
     public interface IEnumIdComponent { Enum? EnumId { get; } }
-    public interface ITextColorComponent { string TextColor { get; set; } }
 
     /// <summary>
     /// ARCHETYPE: Obfuscate an internal grid with an outer Panel-ContentView.
@@ -45,12 +44,13 @@ namespace IVSoftware.Portable
             WidthTrackingMode widthTrackingMode = WidthTrackingMode.Auto,
             int? rowHeightRequest = null,
             int? uniformWidthRequest = null,
+            float? uniformFontSize = null,
             bool overwriteRequests = false) where T : struct, Enum;
         LayoutOrientation Orientation { get; set; }
         WidthTrackingMode WidthTrackingMode { get; set; }
 
         int RowHeightRequest { get; set; }
-        UniformThickness UniformThickness { get; set; }
+        UniformThickness UniformSpacing { get; set; }
         int UniformWidthRequest { get; set; }
         ActivatorTemplate ActivatorTemplate { get; set; }
         IDictionary Cache { get; set; }

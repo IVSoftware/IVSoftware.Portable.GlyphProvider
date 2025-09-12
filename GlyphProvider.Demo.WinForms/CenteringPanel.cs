@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace IVSGlyphProvider.Demo.WinForms
 {
-    public enum CenteringMode
+    public enum CenteringOrientation
     {
         /// <summary>
         /// The width of CenteringPanel is a hard limit.
@@ -62,11 +62,11 @@ namespace IVSGlyphProvider.Demo.WinForms
                 .ToArray();
             if (items.Length == 0 || !IsHandleCreated || Disposing ) return;
             var bounds = new Dictionary<Control, Rectangle>(items.Length);
-            switch (CenteringMode)
+            switch (Orientation)
             {
-                case CenteringMode.Horizontal: localCalcCenteredMetricsH(); break;
-                case CenteringMode.Vertical: localCalcCenteredMetricsV(); break;
-                default: throw new NotImplementedException($"Bad case: {CenteringMode}");
+                case CenteringOrientation.Horizontal: localCalcCenteredMetricsH(); break;
+                case CenteringOrientation.Vertical: localCalcCenteredMetricsV(); break;
+                default: throw new NotImplementedException($"Bad case: {Orientation}");
             };
 
             SuspendLayout();
@@ -134,7 +134,8 @@ namespace IVSGlyphProvider.Demo.WinForms
 
             void localCalcCenteredMetricsV()
             {
-                throw new NotImplementedException("ToDo");
+                BeginInvoke(() => // Because we're inside of SuspendLayout
+                throw new NotImplementedException("ToDo"));
             }
             #endregion L o c a l F x
         }
@@ -180,7 +181,7 @@ namespace IVSGlyphProvider.Demo.WinForms
         public ControlTemplate ControlTemplate { get; set; } = new ControlTemplate<GlyphButton>();
 
         #region L A Y O U T    T R I G G E R S
-        public CenteringMode CenteringMode
+        public CenteringOrientation Orientation
         {
             get => _centeringMode;
             set
@@ -193,7 +194,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        CenteringMode _centeringMode = CenteringMode.Horizontal;
+        CenteringOrientation _centeringMode = CenteringOrientation.Horizontal;
 
         public Padding ItemMargin
         {
@@ -216,13 +217,13 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (_itemWidthRequest is null)
                 {
-                    switch (CenteringMode)
+                    switch (Orientation)
                     {
-                        case CenteringMode.Horizontal: 
+                        case CenteringOrientation.Horizontal: 
                             return ItemHeightRequest;
-                        case CenteringMode.Vertical:
+                        case CenteringOrientation.Vertical:
                             return Width - Math.Max(Padding.Horizontal, ItemMargin.Horizontal);
-                        default: throw new NotImplementedException($"Bad case: {CenteringMode}");
+                        default: throw new NotImplementedException($"Bad case: {Orientation}");
                     };
                 }
                 else return _itemWidthRequest.Value;
@@ -251,13 +252,13 @@ namespace IVSGlyphProvider.Demo.WinForms
             {
                 if (_itemHeightRequest is null)
                 {
-                    switch (CenteringMode)
+                    switch (Orientation)
                     {
-                        case CenteringMode.Horizontal:
+                        case CenteringOrientation.Horizontal:
                             return Height - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                        case CenteringMode.Vertical:
+                        case CenteringOrientation.Vertical:
                             return _itemHeightRequest ?? PreferredRowHeight - Math.Max(Padding.Vertical, ItemMargin.Vertical);
-                        default: throw new NotImplementedException($"Bad case: {CenteringMode}");
+                        default: throw new NotImplementedException($"Bad case: {Orientation}");
                     };
                 }
                 else return _itemHeightRequest.Value;

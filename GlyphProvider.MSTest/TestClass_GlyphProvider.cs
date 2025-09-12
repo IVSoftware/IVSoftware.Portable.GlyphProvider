@@ -59,7 +59,7 @@ ItemMargin"
             {
                 var uut = new CenteringPanel
                 {
-                    CenteringMode = CenteringMode.Vertical,
+                    Orientation = CenteringOrientation.Vertical,
                 };
                 try
                 {

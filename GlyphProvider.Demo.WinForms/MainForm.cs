@@ -62,6 +62,8 @@ namespace IVSGlyphProvider.Demo.WinForms
                 _ = GlyphProvider.CopyEmbeddedFontsFromPackage(dir);
             }
 #endif
+
+            centeringPanel.Orientation = CenteringOrientation.Vertical;
             centeringPanel.Configure<ToolbarButtons>();
         }
 

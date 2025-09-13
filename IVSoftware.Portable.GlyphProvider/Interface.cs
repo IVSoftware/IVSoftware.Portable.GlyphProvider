@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.ComponentModel;
+using System.Drawing;
 
 namespace IVSoftware.Portable
 {
@@ -52,8 +53,44 @@ namespace IVSoftware.Portable
         Auto = 0x8,
     }
 
+    [Flags]
+    public enum ServiceTier
+    {
+        Identity = 0x1,
 
-    public interface IEnumIdComponent { Enum? EnumId { get; } }
+        /// <summary>
+        /// Text + Font Size
+        /// </summary>
+        Text     = 0x2,
+
+        /// <summary>
+        /// BackColor | BackgroundColor expressed as ARGB string in model.
+        /// </summary>
+        Colors   = 0x4,
+
+        /// <summary>
+        /// Supports {[*], Text, [*] Text} display formats
+        /// </summary>
+        Display  = 0x8,
+    }
+    public interface IEnumIdComponent
+    {
+        Enum? EnumId { get; }
+    }
+    public interface IEnumIdComponentPA
+    { 
+        Enum? EnumId { get; }
+        string Text { get; set; }
+        string TextColor { get; set; }
+        string BackgroundColor { get; set; }
+        double FontSize { get; set; }
+
+        [TypeConverter(typeof(UniformThicknessConverter))]
+        UniformThickness Padding { get; set; }
+        double WidthRequest { get; set; }
+
+        DisplayFormatOptions DisplayFormatOptions { get; set; }
+    }
 
     /// <summary>
     /// ARCHETYPE: Obfuscate an internal grid with an outer Panel-ContentView.

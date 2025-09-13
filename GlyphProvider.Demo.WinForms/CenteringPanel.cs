@@ -324,7 +324,7 @@ namespace IVSGlyphProvider.Demo.WinForms
                 }
             }
         }
-        UniformThickness _uniformThickness = default;
+        UniformThickness _uniformThickness = new(2);
 
         public string? UniformBackgroundColor
         {
@@ -373,13 +373,15 @@ namespace IVSGlyphProvider.Demo.WinForms
             get => _rowHeightRequest;
             set
             {
-                if (!Equals(_rowHeightRequest, value))
+                if (value == -1) value = DEFAULT_ROW_HEIGHT;
+                if (value > MIN_ROW_HEIGHT && !Equals(_rowHeightRequest, value))
                 {
                     _rowHeightRequest = value;
                     OnPropertyChanged();
                 }
             }
         }
+        int _rowHeightRequest = DEFAULT_ROW_HEIGHT;
 
         IDictionary IConfigurableLayoutStack.Cache
         {
@@ -410,14 +412,17 @@ namespace IVSGlyphProvider.Demo.WinForms
             }
         }
         Dictionary<Enum, IEnumIdComponent> _cache = new();
-
-
-
-        int _rowHeightRequest = MIN_ROW_HEIGHT;
         #endregion L A Y O U T    T R I G G E R S
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public IEnumIdComponentPA Add(object o)
+        {
+            var w = new EnumIdComponentMapper(o);
+            return w;
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
     }

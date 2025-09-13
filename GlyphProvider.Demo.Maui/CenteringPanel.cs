@@ -63,7 +63,6 @@ namespace IVSGlyphProvider.Demo.Maui
         {
             // You must do this first, before we perform auto on anything.
             if (overwriteDefaults) localOverwriteDefaults();
-            localSetEphemeralDisplayOptions();
             localSetEphemeralComponentColors();
 
             Grid.Children.Clear();
@@ -81,28 +80,37 @@ namespace IVSGlyphProvider.Demo.Maui
             }
 
             #region L o c a l F x
-            void localSetEphemeralDisplayOptions() 
-            { 
-                if(displayFormatOptions == DisplayFormatOptions.Auto)
-                {
+            void localSetEphemeralComponentColors()
+            {
+                Debug.Assert(DateTime.Now.Date == new DateTime(2025, 9, 13).Date, "Don't forget disabled");
+                // uniformBackgroundColor ??= BackgroundColor.ToArgbHex();
+                uniformBackgroundColor ??= "#DDDDDD";
+                uniformTextColor ??= "#222222";
+            }
 
+            // Find or create component.
+            void localStageComponents()
+            {
+                if (displayFormatOptions == DisplayFormatOptions.Auto)
+                {
+                    Debug.Assert(DateTime.Now.Date == new DateTime(2025, 9, 13).Date, "Don't forget disabled");
                     displayFormatOptions = orientation switch
                     {
-                        LayoutOrientation.Vertical => DisplayFormatOptions.ShowSquareIconAndMember,
+                        LayoutOrientation.Vertical => DisplayFormatOptions.ShowMember, // TODO: Icon + Member
                         _ => DisplayFormatOptions.ShowSquareIcon,
                     };
                 }
-            }
-            void localSetEphemeralComponentColors()
-            {
-                uniformBackgroundColor ??= BackgroundColor.ToArgbHex();
-                uniformTextColor ??= "#222222";
-            }
-            void localStageComponents()
-            {
+#if DEBUG
+                else
+                {   /* G T K */
+                }
+#endif
                 for (int col = 0; col < elements.Length; col++)
                 {
                     var id = elements[col];
+                    // [Remember]
+                    // - EUD can preload the cache
+                    // - OR reference an external system-wide Cache that is preloaded.
                     if (!Cache.TryGetValue(id, out var enumIdButton) || enumIdButton is null)
                     {
                         enumIdButton = ActivatorTemplate.Activate(id);
@@ -110,13 +118,20 @@ namespace IVSGlyphProvider.Demo.Maui
                     }
                     if (enumIdButton is IPlatformEnumIdComponent eidc)
                     {
-                        if (displayFormatOptions.HasFlag(DisplayFormatOptions.ShowSquareIcon))
+                        switch (displayFormatOptions)
                         {
-                            eidc.WidthRequest = UniformHeightRequest;
-                        }
-                        else
-                        {
-                            eidc.WidthRequest = UniformWidthRequest;
+                            case DisplayFormatOptions.ShowSquareIcon:
+                                eidc.WidthRequest = UniformHeightRequest;
+                                break;
+                            case DisplayFormatOptions.ShowIcon:
+                            case DisplayFormatOptions.ShowMember:
+                            case DisplayFormatOptions.ShowSquareIconAndMember:
+                                eidc.WidthRequest = UniformWidthRequest;
+                                break;
+                            case DisplayFormatOptions.Auto:
+                                throw new InvalidOperationException("S.B. Already handled.");
+                            default:
+                                throw new NotImplementedException($"Bad case: {displayFormatOptions}");
                         }
                         eidc.BackgroundColor = Color.FromArgb(uniformBackgroundColor);
                         eidc.TextColor = Color.FromArgb(uniformTextColor);

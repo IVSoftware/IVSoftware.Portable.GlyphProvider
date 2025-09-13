@@ -65,8 +65,8 @@ namespace IVSGlyphProvider.Demo.Maui
                     announce = nameof(IconBasics.EllipsisHorizontal);
                     break;
                 case string s when s == IconBasics.EllipsisHorizontal.ToGlyph():
-                    CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();
-                    CenteringPanel.Configure<ToolbarButtons>();
+                    CounterBtn.Text = IconBasics.EllipsisVertical.ToGlyph();    // Staging vertical as next action.
+                    CenteringPanel.Configure<ToolbarButtons>();                 // While responding to the horizontal click.
                     announce = nameof(IconBasics.EllipsisVertical);
                     break;
                 case string s when s == IconBasics.EllipsisVertical.ToGlyph():
@@ -77,12 +77,13 @@ namespace IVSGlyphProvider.Demo.Maui
                         ? $"Cycled {++count} time"
                         : $"Cycled {++count} times";
 
-                    // Here is where we're overriding the default
-                    Debug.Assert(DateTime.Now.Date == new DateTime(2025, 9, 12).Date, "Don't forget disabled");
+                    // Here is where we're overriding the default one way or another.
+                    Debug.Assert(DateTime.Now.Date == new DateTime(2025, 9, 13).Date, "Don't forget disabled");
 
                     CenteringPanel.Configure<ToolbarButtons>(
                         orientation: LayoutOrientation.Vertical,
                         // displayFormatOptions: DisplayFormatOptions.ShowIcon
+                        // displayFormatOptions: DisplayFormatOptions.ShowSquareIconAndMember
                         displayFormatOptions: DisplayFormatOptions.ShowMember
                     );
                     announce = CounterBtn.Text;

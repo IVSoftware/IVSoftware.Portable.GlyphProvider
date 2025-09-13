@@ -1,5 +1,6 @@
 ﻿using IVSoftware.Portable;
 using System.Collections;
+using System.Diagnostics;
 using System.Drawing;
 using Color = Microsoft.Maui.Graphics.Color;
 
@@ -60,23 +61,18 @@ namespace IVSGlyphProvider.Demo.Maui
             string? uniformTextColor = null,
             bool overwriteDefaults = false) where T : struct, Enum
         {
+            // You must do this first, before we perform auto on anything.
             if (overwriteDefaults) localOverwriteDefaults();
-            if(displayFormatOptions == DisplayFormatOptions.Auto)
-            {
-                displayFormatOptions = orientation switch
-                {
-                    LayoutOrientation.Vertical => DisplayFormatOptions.ShowSquareIconAndMember,
-                    _ => DisplayFormatOptions.ShowSquareIcon,
-                };
-            }
+            localSetEphemeralDisplayOptions();
+            localSetEphemeralComponentColors();
 
             Grid.Children.Clear();
             Grid.RowDefinitions.Clear();
             Grid.ColumnDefinitions.Clear();
 
-            var elements = Enum.GetValues<T>().ToList();
+            var elements = Enum.GetValues<T>();
             var components = new List<IView>();
-            localStageComponentss();
+            localStageComponents();
             switch (orientation)
             {
                 case LayoutOrientation.Horizontal: localConfigHorizontal(); break;
@@ -85,9 +81,26 @@ namespace IVSGlyphProvider.Demo.Maui
             }
 
             #region L o c a l F x
-            void localStageComponentss()
+            void localSetEphemeralDisplayOptions() 
+            { 
+                if(displayFormatOptions == DisplayFormatOptions.Auto)
+                {
+
+                    displayFormatOptions = orientation switch
+                    {
+                        LayoutOrientation.Vertical => DisplayFormatOptions.ShowSquareIconAndMember,
+                        _ => DisplayFormatOptions.ShowSquareIcon,
+                    };
+                }
+            }
+            void localSetEphemeralComponentColors()
             {
-                for (int col = 0; col < elements.Count; col++)
+                uniformBackgroundColor ??= "#FF0000";
+                uniformTextColor ??= "#FFFFFF";
+            }
+            void localStageComponents()
+            {
+                for (int col = 0; col < elements.Length; col++)
                 {
                     var id = elements[col];
                     if (!Cache.TryGetValue(id, out var enumIdButton) || enumIdButton is null)
@@ -101,8 +114,12 @@ namespace IVSGlyphProvider.Demo.Maui
                         {
                             view.WidthRequest = UniformHeightRequest;
                         }
-                        view.BackgroundColor = Color.FromArgb("#444444");
-                        view.TextColor = Colors.WhiteSmoke;
+                        else
+                        {
+                            view.WidthRequest = UniformWidthRequest;
+                        }
+                        view.BackgroundColor = Color.FromArgb(uniformBackgroundColor);
+                        view.TextColor = Color.FromArgb(uniformTextColor);
                         view.FontSize = UniformFontSize;
                         view.Padding = 0;
                         components.Add(view);
@@ -122,26 +139,11 @@ namespace IVSGlyphProvider.Demo.Maui
             void localConfigVertical()
             {
                 Grid.ColumnDefinitions.Add(new());
-                elements.ForEach(_ => Grid.RowDefinitions.Add(new()));
-                HeightRequest = elements.Count * RowHeightRequest;
-                for (int row = 0; row < elements.Count; row++)
+                components.ForEach(_ => Grid.RowDefinitions.Add(new()));
+                HeightRequest = components.Count * RowHeightRequest;
+                for (int row = 0; row < components.Count; row++)
                 {
-                    var id = elements[row];
-                    if (!Cache.TryGetValue(id, out var enumIdButton) || enumIdButton is null)
-                    {
-                        enumIdButton = ActivatorTemplate.Activate(id);
-                        Cache[id] = enumIdButton;
-                    }
-
-                    if (enumIdButton is IPlatformEnumIdComponent view)
-                    {
-                        view.WidthRequest = UniformWidthRequest;
-                        view.BackgroundColor = Color.FromArgb("#444444");
-                        view.TextColor = Colors.WhiteSmoke;
-                        view.FontSize = UniformFontSize;
-                        view.Padding = 0;
-                        Grid.Add(view, 0, row);
-                    }
+                    Grid.Add(components[row], 0, row);
                 }
             }
             void localOverwriteDefaults()

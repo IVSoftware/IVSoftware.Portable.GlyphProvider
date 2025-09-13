@@ -76,7 +76,15 @@ namespace IVSGlyphProvider.Demo.Maui
                         count == 0
                         ? $"Cycled {++count} time"
                         : $"Cycled {++count} times";
-                    CenteringPanel.Configure<ToolbarButtons>(orientation: LayoutOrientation.Vertical);
+
+                    // Here is where we're overriding the default
+                    Debug.Assert(DateTime.Now.Date == new DateTime(2025, 9, 12).Date, "Don't forget disabled");
+
+                    CenteringPanel.Configure<ToolbarButtons>(
+                        orientation: LayoutOrientation.Vertical,
+                        // displayFormatOptions: DisplayFormatOptions.ShowIcon
+                        displayFormatOptions: DisplayFormatOptions.ShowMember
+                    );
                     announce = CounterBtn.Text;
                     break;
             }

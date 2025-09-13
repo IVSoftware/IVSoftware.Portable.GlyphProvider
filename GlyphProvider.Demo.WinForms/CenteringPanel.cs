@@ -419,7 +419,7 @@ namespace IVSGlyphProvider.Demo.WinForms
 
         public IEnumIdComponentPA Add(object o)
         {
-            var w = new EnumIdComponentMapper(o);
+            var w = EnumIdComponentMapper.Map(o);
             return w;
         }
 

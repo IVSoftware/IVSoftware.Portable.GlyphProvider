@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace IVSoftware.Portable
 {
@@ -78,7 +79,7 @@ namespace IVSoftware.Portable
         Enum? EnumId { get; }
     }
     public interface IEnumIdComponentPA
-    { 
+    {
         Enum? EnumId { get; }
         string Text { get; set; }
         string TextColor { get; set; }

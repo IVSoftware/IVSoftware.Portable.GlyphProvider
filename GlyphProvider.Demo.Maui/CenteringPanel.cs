@@ -108,21 +108,21 @@ namespace IVSGlyphProvider.Demo.Maui
                         enumIdButton = ActivatorTemplate.Activate(id);
                         Cache[id] = enumIdButton;
                     }
-                    if (enumIdButton is IPlatformEnumIdComponent view)
+                    if (enumIdButton is IPlatformEnumIdComponent eidc)
                     {
-                        if (displayFormatOptions.HasFlag(DisplayFormatOptions.IconWidthTracksHeight))
+                        if (displayFormatOptions.HasFlag(DisplayFormatOptions.ShowSquareIcon))
                         {
-                            view.WidthRequest = UniformHeightRequest;
+                            eidc.WidthRequest = UniformHeightRequest;
                         }
                         else
                         {
-                            view.WidthRequest = UniformWidthRequest;
+                            eidc.WidthRequest = UniformWidthRequest;
                         }
-                        view.BackgroundColor = Color.FromArgb(uniformBackgroundColor);
-                        view.TextColor = Color.FromArgb(uniformTextColor);
-                        view.FontSize = UniformFontSize;
-                        view.Padding = 0;
-                        components.Add(view);
+                        eidc.BackgroundColor = Color.FromArgb(uniformBackgroundColor);
+                        eidc.TextColor = Color.FromArgb(uniformTextColor);
+                        eidc.FontSize = UniformFontSize;
+                        eidc.Padding = 0;
+                        components.Add(eidc);
                     }
                 }
             }
@@ -143,7 +143,15 @@ namespace IVSGlyphProvider.Demo.Maui
                 HeightRequest = components.Count * RowHeightRequest;
                 for (int row = 0; row < components.Count; row++)
                 {
-                    Grid.Add(components[row], 0, row);
+                    var component = components[row];
+                    Grid.Add(component, 0, row);
+                    if (component is IPlatformEnumIdComponent eidc)
+                    {
+                        if (displayFormatOptions.HasFlag(DisplayFormatOptions.ShowMember))
+                        {
+                            eidc.Text = eidc.EnumId?.ToString() ?? "?";
+                        }
+                    }
                 }
             }
             void localOverwriteDefaults()

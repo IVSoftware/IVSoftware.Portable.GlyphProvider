@@ -7,6 +7,7 @@ namespace IVSGlyphProvider.Demo.Maui
         , IView
     {
         Color BackgroundColor { get; set; }
+        string Text { get; set; }
         Color TextColor { get; set; }
         double FontSize { get; set; }
         Thickness Padding { get; set; }

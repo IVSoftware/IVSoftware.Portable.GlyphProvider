@@ -95,8 +95,8 @@ namespace IVSGlyphProvider.Demo.Maui
             }
             void localSetEphemeralComponentColors()
             {
-                uniformBackgroundColor ??= "#FF0000";
-                uniformTextColor ??= "#FFFFFF";
+                uniformBackgroundColor ??= BackgroundColor.ToArgbHex();
+                uniformTextColor ??= "#222222";
             }
             void localStageComponents()
             {

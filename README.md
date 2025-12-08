@@ -14,7 +14,7 @@
 
 ---
 
-## IVSoftware.Portable.Glyph Provider
+## IVSoftware.Portable.Glyph Provider [GitHub](https://github.com/IVSoftware/IVSoftware.Portable.GlyphProvider.git)
 
 This micro utility works with custom [Fontello](https://www.fontello.com) webfont packages whether they contain a few glyphs or dozens. The `config.json` they include is already a good index. This package builds on it - working with multiple config files, generating name-to-unicode mappings for XAML and C#, and generating `enum` structures ideal for binding glyph properties in XAML that are visible to intellisense.
 

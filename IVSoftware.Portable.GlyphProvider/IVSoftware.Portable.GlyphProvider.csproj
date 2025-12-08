@@ -1,0 +1,102 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- ==========================================================
+         END-OF-LIFE (PROTO) PACKAGE
+         Superseded by:
+           - IVSoftware.GlyphProvider.Portable
+           - IVSoftware.GlyphProvider.WinForms
+         This package remains unlisted for archival / migration only.
+         ========================================================== -->
+
+	<PropertyGroup>
+		<Title>IVSoftware.Portable.GlyphProvider (PROTO / EOL)</Title>
+
+		<!-- Explicitly marked as EOL to prevent accidental adoption -->
+		<PackageId>IVSoftware.Portable.GlyphProvider</PackageId>
+
+		<Description>
+			Portable glyph identity resolver using embedded config.json metadata.
+			This is the proto / end-of-life package. Actively maintained successors:
+
+			IVSoftware.GlyphProvider.Portable
+			IVSoftware.GlyphProvider.WinForms
+		</Description>
+
+		<PackageTags>
+			portable;cross-platform;glyphs;fontello;icons;enum;binding;declarative;eol;proto
+		</PackageTags>
+
+		<RepositoryUrl>https://github.com/IVSoftware/IVSoftware.Portable.GlyphProvider.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/IVSoftware/IVSoftware.Portable.GlyphProvider.git</PackageProjectUrl>
+
+		<RootNamespace>IVSoftware.Portable</RootNamespace>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<Author>Thomas C. Gregor</Author>
+		<Owner>IVSoftware LLC</Owner>
+		<Copyright>
+			Copyright © 2023-2025 IVSoftware LLC
+		</Copyright>
+		<BaseVersion>1.0.0</BaseVersion>
+		<VersionPrefix>$(BaseVersion)-proto</VersionPrefix>
+
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+		<PackageReleaseNotes>
+			[PROTO / END-OF-LIFE]
+
+			This archival prerelease includes:
+			- Embedded config.json glyph metadata discovery.
+			- Fuzzy string glyph lookup with fallbacks.
+			- CreateEnumPrototype for strongly typed glyph enums.
+			- GlyphAttribute for declarative glyph binding.
+			- Bundled icon-basics font kit under content/icon-basics/.
+		</PackageReleaseNotes>
+
+		<AssemblyOriginatorKeyFile>D:\PFX\ivsoft-240410.pfx</AssemblyOriginatorKeyFile>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<SignAssembly>true</SignAssembly>
+	</PropertyGroup>
+
+	<!-- 
+		FONT KIT PACKAGING (icon-basics)
+        These files are shipped as content but also discovered via
+        embedded config.json for metadata resolution. 
+	-->
+
+	<ItemGroup>
+		<Content Include="Resources\Fonts\icon-basics\**\*.*">
+			<Pack>true</Pack>
+			<PackagePath>content/icon-basics/</PackagePath>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<EmbeddedResource Include="config.icon-basics.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>true</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="IVSoftware.Portable.Disposable" Version="*-*" />
+		<PackageReference Include="IVSoftware.Portable.WatchdogTimer" Version="*" />
+		<PackageReference Include="IVSoftware.Portable.Common" Version="1.0.0-beta" />
+		<PackageReference Include="IVSoftware.Portable.Collections" Version="1.0.0-alpha01" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+</Project>
